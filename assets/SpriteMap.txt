@@ -36,9 +36,9 @@ Row 10:
   Wall 0-39
 Row 11:
   Wall 40-79
-Row 11:
+Row 12:
   Wall 80-119
-Row 11:
+Row 13:
   Wall 120-159
-Row 11:
+Row 14:
   Wall 160-199

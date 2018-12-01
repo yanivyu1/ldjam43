@@ -4,9 +4,9 @@ var assets = function() {
         npc_stand_right: [0, 2]
     };
 
-    for (var row = 0; row < 10; row++) {
-        for (var col = 0; col < 20; col++) {
-            var wall_num = row * 20 + col;
+    for (var row = 0; row < 5; row++) {
+        for (var col = 0; col < 40; col++) {
+            var wall_num = row * 40 + col;
             var wall_pos = [col, row + 10];
             sprite_map['tile_Wall' + wall_num] = wall_pos;
         }
