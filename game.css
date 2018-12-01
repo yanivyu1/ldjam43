@@ -7,3 +7,8 @@ body {
 #game {
     margin: auto;
 }
+
+@font-face {
+    font-family: Alanden;
+    src: url(assets/Alanden.ttf);
+}
