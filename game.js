@@ -6,7 +6,8 @@ var assets = {
             map: {
                 prophet_stand_right: [0, 0],
                 tile_floor: [0, 8],
-                tile_wall: [1, 8]
+                tile_wall: [1, 8],
+                tile_lava: [7, 0],
             }
         }
     },
@@ -55,6 +56,11 @@ var level = {
             this.addWall(i, 16);
         }
 
+        for (var i = 15; i < 18; i++) {
+            this.addLava(i, 16, 'shallow');
+            this.addLava(i, 17, 'deep');
+        }
+
         this.addNPC(8,15);
         for (var i = 0; i < consts.level_height - 1; i++) {
             this.addWall(0, i, 1);
@@ -81,6 +87,11 @@ var level = {
         this.addEntity('Wall', tiles_x, tiles_y, 1, 1);
     },
 
+    addLava: function(tiles_x, tiles_y, lava_type)
+    {
+        this.addEntity('Lava', tiles_x, tiles_y, 1, 1).setLavaType(lava_type);
+    },
+
     addProphet: function(tiles_x, tiles_y)
     {
         return this.addEntity('Prophet', tiles_x, tiles_y, 1, 1);
@@ -104,6 +115,18 @@ function initComponents()
         init: function() {
             this.addComponent('2D, DOM, tile_wall, gravity_blocking, move_blocking');
         }
+    });
+
+    Crafty.c('Lava', {
+        init: function() {
+            this.addComponent('2D, DOM, Lava, tile_lava, SpriteAnimation');
+            addReel(this, 'deep', 4, 0, 7);
+            addReel(this, 'shallow', 4, 4, 7);
+        },
+
+        setLavaType: function(lava_type) {
+            this.animate(lava_type, -1);
+        },
     });
 
     Crafty.c('Prophet', {
