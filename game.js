@@ -6,6 +6,12 @@ var assets = {
             map: {
                 character_start: [0, 0]
             }
+        },"assets/npc.png": {
+            tile: 32,
+            tileh: 32,
+            map: {
+                npc_start: [0, 0]
+            }
         }
     }
 };
@@ -21,10 +27,10 @@ var level = {
     render: function() {
         Crafty.e('2D, DOM, Image')
             .attr({x: 0, y: 0, w: 960, h: 640})
-            .image('assets/background.png');
+            .image('assets/bg-beach.png');
 
         Crafty.viewport.zoom(1/window.devicePixelRatio, 0, 0, 0);
-        
+
         Crafty.e('2D, DOM, Character, character_start, SpriteAnimation, Twoway, Gravity, Collision')
             .attr({x: consts.tile_width, y: consts.tile_height})
             .reel("walking", 1000/12*5, [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]])
@@ -32,12 +38,12 @@ var level = {
             .twoway(200)
             .gravity("gravity_blocking")
             .bind('Move', this.characterMoved);
-        
+
         this.addFloor(0, 19, 30);
         this.addFloor(0, 16, 5);
 
         this.addWall(8, 16, 5);
-
+        this.addNPC(8,15);
         for (var i = 0; i < consts.level_height - 1; i++) {
             this.addWall(0, i, 1);
             this.addWall(consts.level_width - 1, i, 1);
@@ -54,6 +60,12 @@ var level = {
     {
         Crafty.e('Wall')
             .attr({x: tile_x * 32, y: tile_y * 32, w: tile_width * 32, h: 32});
+    },
+    addNPC: function(tile_x, tile_y)
+    {
+        Crafty.e('NPC')
+        .attr({x: tile_x * 32, y: tile_y * 32})
+        .bind('')
     },
 
     characterMoved: function(evt)
@@ -89,6 +101,15 @@ function initComponents()
             this.image('assets/wall.png', 'repeat');
         }
     });
+
+    Crafty.c('NPC', {
+        init: function() {
+            this.addComponent('2D, DOM, npc_start, SpriteAnimation, Twoway, Gravity, Collision');
+            this.reel("walking", 1000/12*5, [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]])
+            this.twoway(200)
+            this.gravity("gravity_blocking")
+        }
+    })
 }
 
 function initGame()
