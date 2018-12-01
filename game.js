@@ -33,7 +33,7 @@ var consts = {
     scale: 1 / window.devicePixelRatio,
     full_screen_ratio: 0.95,
     zoom_level: 3,
-    prophet_walk_speed: 200,
+    prophet_walk_speed: 120,
     prophet_jump_speed: 300
 };
 
@@ -124,10 +124,14 @@ function initComponents()
     Crafty.c('Prophet', {
         init: function() {
             this.addComponent('2D, DOM, prophet_stand_right, SpriteAnimation, Multiway, Jumper, Gravity, Collision, Keyboard');
-            addReel(this, 'stand_right', 1, 0, 0);
-            addReel(this, 'walk_right', 8, 11, 0);
-            addReel(this, 'stand_left', 1, 0, 1);
-            addReel(this, 'walk_left', 8, 11, 1);
+            addReel(this, 'stand_right', 10, 0, 0);
+            addReel(this, 'walk_right', 7, 11, 0);
+            addReel(this, 'jump_right', 1, 17, 0);
+            addReel(this, 'fall_right', 1, 18, 0);
+            addReel(this, 'stand_left', 10, 0, 1);
+            addReel(this, 'walk_left', 7, 11, 1);
+            addReel(this, 'jump_left', 1, 17, 1);
+            addReel(this, 'fall_left', 1, 18, 1);
             this.multiway({x: consts.prophet_walk_speed},
                 {RIGHT_ARROW: 0,
                  LEFT_ARROW: 180,
@@ -146,20 +150,37 @@ function initComponents()
         },
 
         onNewDirection: function(direction) {
-            if (direction.x == 1) {
-                this.current_direction = 'right';
-                this.animate('walk_right', -1);
-            }
-            else if (direction.x == -1) {
-                this.current_direction = 'left';
-                this.animate('walk_left', -1);
-            }
-            else { // direction.x == 0
-                if (this.current_direction == 'right') {
-                    this.animate('stand_right', -1);
+            if (direction.y == 0) {
+                if (direction.x == 1) {
+                    this.current_direction = 'right';
+                    this.animate('walk_right', -1);
                 }
-                else {
-                    this.animate('stand_left', -1);
+                else if (direction.x == -1) {
+                    this.current_direction = 'left';
+                    this.animate('walk_left', -1);
+                }
+                else { // direction.x == 0
+                    if (this.current_direction == 'right') {
+                        this.animate('stand_right', -1);
+                    }
+                    else {
+                        this.animate('stand_left', -1);
+                    }
+                }
+            }
+            else {
+                if (direction.x == 1) {
+                    this.current_direction = 'right';
+                }
+                else if (direction.x == -1) {
+                    this.current_direction = 'left';
+                }
+
+                if (direction.y == -1) {
+                    this.animate('jump_' + this.current_direction, -1);
+                }
+                else if (direction.y == 1) {
+                    this.animate('fall_' + this.current_direction, -1);
                 }
             }
         },
