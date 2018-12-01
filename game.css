@@ -1,0 +1,9 @@
+body {
+    background: black;
+    text-align: center;
+    color: #DDD;
+}  
+
+#game {
+    margin: auto;
+}
