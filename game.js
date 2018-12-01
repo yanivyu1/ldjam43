@@ -35,7 +35,7 @@ var consts = {
     full_screen_ratio: 0.95,
     zoom_level: 3,
     prophet_walk_speed: 120,
-    prophet_jump_speed: 300
+    prophet_jump_speed: 320
 };
 
 function addReel(entity, anim_name, num_frames, first_frame_col, first_frame_row)
