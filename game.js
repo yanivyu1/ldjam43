@@ -5,8 +5,8 @@ var assets = {
             tileh: 32,
             map: {
                 prophet_stand_right: [0, 0],
-                tile_floor: [0, 4],
-                tile_wall: [1, 4]
+                tile_floor: [0, 8],
+                tile_wall: [1, 8]
             }
         }
     },
@@ -20,6 +20,7 @@ var consts = {
     level_height: 20,
     anim_fps: 12,
     scale: 1 / window.devicePixelRatio,
+    full_screen_ratio: 0.95,
     zoom_level: 3,
     prophet_walk_speed: 200,
     prophet_jump_speed: 300
@@ -38,12 +39,12 @@ function addReel(entity, anim_name, num_frames, first_frame_col, first_frame_row
 var level = {
     render: function() {
         Crafty.e('2D, DOM, Image')
-            .attr({x: 0, y: 0, w: 960, h: 640})
+            .attr({x: 0, y: 0})
             .image('assets/bg-beach.png');
 
         var prophet = this.addProphet(1, 1);
         Crafty.viewport.follow(prophet, 0, 0);
-        
+
         for (var i = 0; i < 30; i++) {
             this.addFloor(i, 19);
         }
@@ -53,7 +54,7 @@ var level = {
         for (var i = 8; i < 13; i++) {
             this.addWall(i, 16);
         }
-        
+
         this.addNPC(8,15);
         for (var i = 0; i < consts.level_height - 1; i++) {
             this.addWall(0, i, 1);
@@ -119,7 +120,7 @@ function initComponents()
                  A: 180});
             this.jumper(consts.prophet_jump_speed, [Crafty.keys.UP_ARROW, Crafty.keys.W]);
             this.gravity('gravity_blocking');
-            
+
             this.current_direction = 'right';
             this.animate('stand_right', -1);
 
@@ -184,8 +185,6 @@ function initComponents()
     Crafty.c('NPC', {
         init: function() {
             this.addComponent('2D, DOM, npc_stand_right, SpriteAnimation, Gravity, Collision');
-            //this.reel("walking", 1000/12*5, [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]])
-            //addReel(this, 'walking_right', )
             this.gravity("gravity_blocking")
         }
     })
@@ -193,7 +192,9 @@ function initComponents()
 
 function initGame()
 {
-    Crafty.init(960 * consts.scale, 640 * consts.scale, document.getElementById('game'));
+    Crafty.init(window.innerWidth * consts.full_screen_ratio,
+                window.innerHeight * consts.full_screen_ratio,
+                document.getElementById('game'));
     Crafty.viewport.scale(consts.scale * consts.zoom_level);
     Crafty.pixelart(true);
     Crafty.load(assets, function() {
