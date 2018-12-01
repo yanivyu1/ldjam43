@@ -1,18 +1,28 @@
-var assets = {
-    "sprites": {
-        "assets/SpriteMap.png": {
-            tile: 32,
-            tileh: 32,
-            map: {
-                prophet_stand_right: [0, 0],
-                tile_floor: [0, 8],
-                tile_wall: [1, 8],
-                tile_lava: [7, 0],
-            }
+var assets = function() {
+    var sprite_map = {
+        prophet_stand_right: [0, 0],
+        npc_stand_right: [0, 2]
+    };
+
+    for (var row = 0; row < 10; row++) {
+        for (var col = 0; col < 20; col++) {
+            var wall_num = row * 20 + col;
+            var wall_pos = [col, row + 10];
+            sprite_map['tile_Wall' + wall_num] = wall_pos;
         }
-    },
-    "images": ["assets/bg-beach.png"]
-};
+    }
+
+    return {
+        "sprites": {
+            "assets/SpriteMap.png": {
+                tile: 32,
+                tileh: 32,
+                map: sprite_map
+            }
+        },
+        "images": ["assets/bg-beach.png"]
+    };
+}();
 
 var consts = {
     tile_width: 32,
@@ -23,7 +33,7 @@ var consts = {
     scale: 1 / window.devicePixelRatio,
     full_screen_ratio: 0.95,
     zoom_level: 3,
-    prophet_walk_speed: 200,
+    prophet_walk_speed: 120,
     prophet_jump_speed: 300
 };
 
@@ -38,53 +48,54 @@ function addReel(entity, anim_name, num_frames, first_frame_col, first_frame_row
 }
 
 var level = {
-    render: function() {
+    render: function(level) {
         Crafty.e('2D, DOM, Image')
             .attr({x: 0, y: 0})
             .image('assets/bg-beach.png');
 
-        var prophet = this.addProphet(1, 1);
-        Crafty.viewport.follow(prophet, 0, 0);
-
-        for (var i = 0; i < 30; i++) {
-            this.addFloor(i, 19);
-        }
-        for (var i = 0; i < 5; i++) {
-            this.addFloor(i, 16);
-        }
-        for (var i = 8; i < 13; i++) {
-            this.addWall(i, 16);
-        }
-
-        for (var i = 15; i < 18; i++) {
-            this.addLava(i, 16, 'shallow');
-            this.addLava(i, 17, 'deep');
-        }
-
-        this.addNPC(8,15);
         for (var i = 0; i < consts.level_height - 1; i++) {
-            this.addWall(0, i, 1);
-            this.addWall(consts.level_width - 1, i, 1);
+            this.addOuterWall(0, i, 1,'tile_wall0');
+            this.addOuterWall(consts.level_width - 1, i, 1,'tile_wall0');
+        }
+        var objects = stages[0].stages[level].objects;
+        for(var i=0;i<objects.length;i++){
+            if(objects[i].type == 'Wall'){
+                this.addWall(objects[i].x, objects[i].y, 'tile_' + objects[i].type +''+objects[i].spriteindex);
+            }else if (objects[i].type == 'Prophet') {
+              var prophet = this.addProphet(objects[i].x, objects[i].y);
+              Crafty.viewport.follow(prophet, 0, 0);
+            }else if(objects[i].type == 'NPC'){
+                this.addNPC(objects[i].x, objects[i].y);
+            }
         }
     },
 
-    addEntity: function(entity_type, tiles_x, tiles_y, tiles_width, tiles_height)
+    addEntity: function(entity_type, tiles_x, tiles_y, tiles_width, tiles_height, tile_type)
     {
-        return Crafty.e(entity_type)
+        return Crafty.e(entity_type, tile_type)
             .attr({x: tiles_x * consts.tile_width,
                    y: tiles_y * consts.tile_height,
                    w: tiles_width * consts.tile_width,
                    h: tiles_height * consts.tile_height});
     },
 
-    addFloor: function(tiles_x, tiles_y)
+    addFloor: function(tiles_x, tiles_y, floorType)
     {
-        this.addEntity('Floor', tiles_x, tiles_y, 1, 1);
+        floor = this.addEntity('Floor', tiles_x, tiles_y, 1, 1, floorType);
     },
 
-    addWall: function(tiles_x, tiles_y)
+    addWall: function(tiles_x, tiles_y, floorType)
     {
-        this.addEntity('Wall', tiles_x, tiles_y, 1, 1);
+        wall = this.addEntity('Wall', tiles_x, tiles_y, 1, 1, floorType);
+    },
+
+    addOuterWall: function(tiles_x, tiles_y, floorType)
+    {
+        Crafty.e('Wall', floorType)
+            .attr({x: tiles_x * consts.tile_width,
+                   y: tiles_y * consts.tile_height,
+                   w: 1,
+                   h: 32});
     },
 
     addLava: function(tiles_x, tiles_y, lava_type)
@@ -107,13 +118,13 @@ function initComponents()
 {
     Crafty.c('Floor', {
         init: function() {
-            this.addComponent('2D, DOM, tile_floor, gravity_blocking');
+            this.addComponent('2D, DOM, gravity_blocking');
         }
     });
 
     Crafty.c('Wall', {
         init: function() {
-            this.addComponent('2D, DOM, tile_wall, gravity_blocking, move_blocking');
+            this.addComponent('2D, DOM, gravity_blocking, move_blocking');
         }
     });
 
@@ -132,10 +143,14 @@ function initComponents()
     Crafty.c('Prophet', {
         init: function() {
             this.addComponent('2D, DOM, prophet_stand_right, SpriteAnimation, Multiway, Jumper, Gravity, Collision, Keyboard');
-            addReel(this, 'stand_right', 1, 0, 0);
-            addReel(this, 'walk_right', 7, 1, 0);
-            addReel(this, 'stand_left', 1, 0, 1);
-            addReel(this, 'walk_left', 7, 1, 1);
+            addReel(this, 'stand_right', 10, 0, 0);
+            addReel(this, 'walk_right', 7, 11, 0);
+            addReel(this, 'jump_right', 1, 17, 0);
+            addReel(this, 'fall_right', 1, 18, 0);
+            addReel(this, 'stand_left', 10, 0, 1);
+            addReel(this, 'walk_left', 7, 11, 1);
+            addReel(this, 'jump_left', 1, 17, 1);
+            addReel(this, 'fall_left', 1, 18, 1);
             this.multiway({x: consts.prophet_walk_speed},
                 {RIGHT_ARROW: 0,
                  LEFT_ARROW: 180,
@@ -155,20 +170,37 @@ function initComponents()
         },
 
         onNewDirection: function(direction) {
-            if (direction.x == 1) {
-                this.current_direction = 'right';
-                this.animate('walk_right', -1);
-            }
-            else if (direction.x == -1) {
-                this.current_direction = 'left';
-                this.animate('walk_left', -1);
-            }
-            else { // direction.x == 0
-                if (this.current_direction == 'right') {
-                    this.animate('stand_right', -1);
+            if (direction.y == 0) {
+                if (direction.x == 1) {
+                    this.current_direction = 'right';
+                    this.animate('walk_right', -1);
                 }
-                else {
-                    this.animate('stand_left', -1);
+                else if (direction.x == -1) {
+                    this.current_direction = 'left';
+                    this.animate('walk_left', -1);
+                }
+                else { // direction.x == 0
+                    if (this.current_direction == 'right') {
+                        this.animate('stand_right', -1);
+                    }
+                    else {
+                        this.animate('stand_left', -1);
+                    }
+                }
+            }
+            else {
+                if (direction.x == 1) {
+                    this.current_direction = 'right';
+                }
+                else if (direction.x == -1) {
+                    this.current_direction = 'left';
+                }
+
+                if (direction.y == -1) {
+                    this.animate('jump_' + this.current_direction, -1);
+                }
+                else if (direction.y == 1) {
+                    this.animate('fall_' + this.current_direction, -1);
                 }
             }
         },
@@ -214,16 +246,24 @@ function initComponents()
             // TODO: death animation instead of walk-right animation
 
             this.animate('walk_right');
-            
+
         }
     });
 
     Crafty.c('NPC', {
         init: function() {
-            this.addComponent('2D, DOM, npc_stand_right, SpriteAnimation, Gravity, Collision');
-            this.gravity("gravity_blocking")
+            this.addComponent('2D, DOM, npc_stand_right, SpriteAnimation, Twoway, Gravity, Collision');
+            this.gravity("gravity_blocking");
+            this.bind('hitOff',this.turnToBeleiver);
+            addReel(this, 'npc_stand_right',1,0,2);
+            this.animate('npc_stand_right', -1);
+        },
+
+        turnToBeleiver: function(evt)
+        {
+            var hitData = this.hit('');
         }
-    })
+    });
 }
 
 function initGame()
@@ -235,7 +275,7 @@ function initGame()
     Crafty.pixelart(true);
     Crafty.load(assets, function() {
         initComponents();
-        level.render();
+        level.render(0);
     });
 }
 
