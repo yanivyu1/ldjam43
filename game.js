@@ -37,7 +37,7 @@ function addReel(entity, anim_name, num_frames, first_frame_col, first_frame_row
 var level = {
     render: function() {
         Crafty.e('2D, DOM, Image')
-            .attr({x: 0, y: 0, w: window.innerWidth * consts.scale, h: window.innerHeight * consts.scale})
+            .attr({x: 0, y: 0, w: 960, h: 640})
             .image('assets/bg-beach.png');
 
         Crafty.viewport.zoom(consts.scale * consts.zoom_level, 0, 0, 0);
