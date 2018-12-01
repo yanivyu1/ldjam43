@@ -6,7 +6,8 @@ var assets = {
             map: {
                 prophet_stand_right: [0, 0],
                 tile_floor: [0, 4],
-                tile_wall: [1, 4]
+                tile_wall: [1, 4],
+                npc_stand_right: [0, 2]
             }
         }
     },
@@ -166,9 +167,18 @@ function initComponents()
     Crafty.c('NPC', {
         init: function() {
             this.addComponent('2D, DOM, npc_stand_right, SpriteAnimation, Twoway, Gravity, Collision');
-            this.gravity("gravity_blocking")
+            this.gravity("gravity_blocking");
+            this.bind('hitOff',this.turnToBeleiver);
+            addReel(this, 'npc_stand_right',1,0,2);
+            this.animate('npc_stand_right', -1);
+        },
+
+        turnToBeleiver: function(evt)
+        {
+            Crafty.log(evt);
+            var hitData = this.hit('');
         }
-    })
+    });
 }
 
 function initGame()
