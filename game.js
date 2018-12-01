@@ -4,14 +4,6 @@ var assets = {
             tile: 32,
             tileh: 32,
             map: {
-                prophet_stand_right: [0, 0],
-                prophet_walk_right: [1, 0],
-                prophet_stand_left: [0, 1],
-                prophet_walk_left: [1, 1],
-                npc_stand_right: [0, 2],
-                npc_walk_right: [1, 2],
-                npc_stand_left: [0, 3],
-                npc_walk_left: [1, 3],
                 tile_floor: [0, 4],
                 tile_wall: [1, 4]
             }
@@ -24,8 +16,21 @@ var consts = {
     tile_width: 32,
     tile_height: 32,
     level_width: 30,
-    level_height: 20
+    level_height: 20,
+    anim_fps: 12,
+    scale: 1 / window.devicePixelRatio,
+    zoom_level: 2.5
 };
+
+function addReel(entity, anim_name, num_frames, first_frame_col, first_frame_row)
+{
+    var frames = [];
+    for (var col = first_frame_col; col < first_frame_col + num_frames; col++) {
+        frames.push([col, first_frame_row]);
+    }
+
+    entity.reel(anim_name, 1000 * num_frames / consts.anim_fps, frames);
+}
 
 var level = {
     render: function() {
@@ -33,9 +38,10 @@ var level = {
             .attr({x: 0, y: 0, w: 960, h: 640})
             .image('assets/bg-beach.png');
 
-        Crafty.viewport.zoom(1/window.devicePixelRatio, 0, 0, 0);
+        Crafty.viewport.zoom(consts.scale * consts.zoom_level, 0, 0, 0);
 
-        this.addProphet(1, 1);
+        var prophet = this.addProphet(1, 1);
+        Crafty.viewport.follow(prophet, 0, 0);
         
         for (var i = 0; i < 30; i++) {
             this.addFloor(i, 19);
@@ -75,7 +81,7 @@ var level = {
 
     addProphet: function(tiles_x, tiles_y)
     {
-        this.addEntity('Prophet', tiles_x, tiles_y, 1, 1)
+        return this.addEntity('Prophet', tiles_x, tiles_y, 1, 1)
             .bind('Move', this.characterMoved);
     },
 
@@ -123,8 +129,34 @@ function initComponents()
     Crafty.c('Prophet', {
         init: function() {
             this.addComponent('2D, DOM, prophet_stand_right, SpriteAnimation, Twoway, Gravity, Collision');
+            addReel(this, 'stand_right', 1, 0, 0);
+            addReel(this, 'walk_right', 7, 1, 0);
+            addReel(this, 'stand_left', 1, 0, 1);
+            addReel(this, 'walk_left', 7, 1, 1);
             this.twoway(200);
             this.gravity('gravity_blocking');
+            
+            this.current_direction = 'right';
+            this.bind('NewDirection', this.onNewDirection);
+        },
+
+        onNewDirection: function(direction) {
+            if (direction.x == 1) {
+                this.current_direction = 'right';
+                this.animate('walk_right', -1);
+            }
+            else if (direction.x == -1) {
+                this.current_direction = 'left';
+                this.animate('walk_left', -1);
+            }
+            else { // direction.x == 0
+                if (this.current_direction == 'right') {
+                    this.animate('stand_right', -1);
+                }
+                else {
+                    this.animate('stand_left', -1);
+                }
+            }
         }
     });
 
@@ -133,6 +165,7 @@ function initComponents()
             this.addComponent('2D, DOM, npc_stand_right, SpriteAnimation, Twoway, Gravity, Collision');
             //this.reel("walking", 1000/12*5, [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]])
             //this.twoway(200)
+            //addReel(this, 'walking_right', )
             this.gravity("gravity_blocking")
         }
     })
@@ -140,8 +173,7 @@ function initComponents()
 
 function initGame()
 {
-    Crafty.init(960/window.devicePixelRatio, 640/window.devicePixelRatio, document.getElementById('game'));
-    //Crafty.viewport.zoom(1/window.devicePixelRatio, 0, 0, 0);
+    Crafty.init(960 * consts.scale, 640 * consts.scale, document.getElementById('game'));
 
     Crafty.load(assets, function() {
         initComponents();
