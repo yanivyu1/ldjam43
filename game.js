@@ -36,6 +36,8 @@ var level = {
         this.addFloor(0, 19, 30);
         this.addFloor(0, 16, 5);
 
+        this.addWall(8, 16, 5);
+
         for (var i = 0; i < consts.level_height - 1; i++) {
             this.addWall(0, i, 1);
             this.addWall(consts.level_width - 1, i, 1);
@@ -57,10 +59,16 @@ var level = {
     characterMoved: function(evt)
     {
         if (this.fixing_position) return;
+        var hitDatas;
 
-        if (this.hit('move_blocking')) {
+        if (hitDatas = this.hit('move_blocking')) {
+            var hitData = hitDatas[0];
             this.fixing_position = true;
             this.x = evt._x;
+            if (this.vy < 0 && evt._y >= hitData.obj.y + hitData.obj.h) {
+                this.vy = 0;
+                this.y = evt._y;
+            }
             this.fixing_position = false;
         }
     }
@@ -70,17 +78,17 @@ function initComponents()
 {
     Crafty.c('Floor', {
         init: function() {
-            this.addComponent('2D, DOM, gravity_blocking, Image');
+            this.addComponent('2D, DOM, Image, gravity_blocking');
             this.image('assets/floor.png', 'repeat');
         }
     });
 
     Crafty.c('Wall', {
         init: function() {
-            this.addComponent('2D, DOM, Image, move_blocking');
+            this.addComponent('2D, DOM, Image, gravity_blocking, move_blocking');
             this.image('assets/wall.png', 'repeat');
         }
-    })
+    });
 }
 
 function initGame()
