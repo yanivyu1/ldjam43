@@ -171,7 +171,9 @@ function initComponents()
 
         onKeyDown: function(e) {
             if (e.key == Crafty.keys.Z) {
-                Crafty.viewport.scale(consts.scale);
+                //var zoom_out_level = 1 / (960 / window.innerWidth);
+                var zoom_out_level = Math.min(window.innerWidth / 960, window.innerHeight / 640);
+                Crafty.viewport.scale(zoom_out_level);
             }
         },
 
