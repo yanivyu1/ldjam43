@@ -1,7 +1,8 @@
 var assets = function() {
     var sprite_map = {
         prophet_stand_right: [0, 0],
-        npc_stand_right: [0, 2]
+        npc_stand_right: [0, 4],
+        tile_lava: [0, 9]
     };
 
     for (var row = 0; row < 10; row++) {
@@ -55,17 +56,25 @@ var level = {
 
         for (var i = 0; i < consts.level_height - 1; i++) {
             this.addOuterWall(0, i, 1,'tile_wall0');
-            this.addOuterWall(consts.level_width - 1, i, 1,'tile_wall0');
+            this.addOuterWall(consts.level_width, i, 1,'tile_wall0');
         }
         var objects = stages[0].stages[level].objects;
         for(var i=0;i<objects.length;i++){
-            if(objects[i].type == 'Wall'){
+            if(objects[i].type == 'Wall') {
                 this.addWall(objects[i].x, objects[i].y, 'tile_' + objects[i].type +''+objects[i].spriteindex);
-            }else if (objects[i].type == 'Prophet') {
+            }
+            else if (objects[i].type == 'Prophet') {
               var prophet = this.addProphet(objects[i].x, objects[i].y);
               Crafty.viewport.follow(prophet, 0, 0);
-            }else if(objects[i].type == 'NPC'){
+            }
+            else if(objects[i].type == 'NPC') {
                 this.addNPC(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'Lava') {
+                this.addLava(objects[i].x, objects[i].y, 'shallow');
+            }
+            else if (objects[i].type == 'DeepLava') {
+                this.addLava(objects[i].x, objects[i].y, 'deep');
             }
         }
     },
@@ -131,8 +140,8 @@ function initComponents()
     Crafty.c('Lava', {
         init: function() {
             this.addComponent('2D, DOM, Lava, tile_lava, SpriteAnimation');
-            addReel(this, 'deep', 4, 0, 7);
-            addReel(this, 'shallow', 4, 4, 7);
+            addReel(this, 'deep', 4, 0, 9);
+            addReel(this, 'shallow', 4, 4, 9);
         },
 
         setLavaType: function(lava_type) {
@@ -151,6 +160,8 @@ function initComponents()
             addReel(this, 'walk_left', 7, 11, 1);
             addReel(this, 'jump_left', 1, 17, 1);
             addReel(this, 'fall_left', 1, 18, 1);
+            // TODO: death animation instead of walk-left animation
+            addReel(this, 'dying', 7, 11, 1);
             this.multiway({x: consts.prophet_walk_speed},
                 {RIGHT_ARROW: 0,
                  LEFT_ARROW: 180,
@@ -167,9 +178,15 @@ function initComponents()
             this.bind('KeyDown', this.onKeyDown);
             this.bind('KeyUp', this.onKeyUp);
             this.onHit('Lava', this.onTouchLava);
+            this.bind('AnimationEnd', this.onAnimationEnd);
         },
 
         onNewDirection: function(direction) {
+            if (this.dying) {
+                this.animate('dying', 1);
+                return;
+            }
+
             if (direction.y == 0) {
                 if (direction.x == 1) {
                     this.current_direction = 'right';
@@ -239,14 +256,16 @@ function initComponents()
         },
 
         onTouchLava: function() {
+            this.dying = true;
             this.gravityConst(0);
             this.resetMotion();
             this.removeComponent('Multiway');
+        },
 
-            // TODO: death animation instead of walk-right animation
-
-            this.animate('walk_right');
-
+        onAnimationEnd: function(data) {
+            if (data.id == 'dying') {
+                this.destroy();
+            }
         }
     });
 
