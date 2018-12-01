@@ -1,7 +1,7 @@
 var assets = function() {
     var sprite_map = {
         prophet_stand_right: [0, 0],
-        npc_stand_right: [0, 4],
+        npc_stand_right: [0, 3],
         tile_lava: [0, 9]
     };
 
@@ -140,8 +140,8 @@ function initComponents()
     Crafty.c('Lava', {
         init: function() {
             this.addComponent('2D, DOM, Lava, tile_lava, SpriteAnimation');
-            addReel(this, 'deep', 4, 0, 9);
-            addReel(this, 'shallow', 4, 4, 9);
+            addReel(this, 'shallow', 10, 0, 9);
+            addReel(this, 'deep', 10, 10, 9);
         },
 
         setLavaType: function(lava_type) {
@@ -160,8 +160,7 @@ function initComponents()
             addReel(this, 'walk_left', 7, 11, 1);
             addReel(this, 'jump_left', 1, 17, 1);
             addReel(this, 'fall_left', 1, 18, 1);
-            // TODO: death animation instead of walk-left animation
-            addReel(this, 'dying', 7, 11, 1);
+            addReel(this, 'dying', 33, 0, 2);
             this.multiway({x: consts.prophet_walk_speed},
                 {RIGHT_ARROW: 0,
                  LEFT_ARROW: 180,
@@ -274,8 +273,6 @@ function initComponents()
             this.addComponent('2D, DOM, npc_stand_right, SpriteAnimation, Twoway, Gravity, Collision');
             this.gravity("gravity_blocking");
             this.bind('hitOff',this.turnToBeleiver);
-            addReel(this, 'npc_stand_right',1,0,2);
-            this.animate('npc_stand_right', -1);
         },
 
         turnToBeleiver: function(evt)
