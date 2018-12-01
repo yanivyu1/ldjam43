@@ -34,8 +34,10 @@ var consts = {
     scale: 1 / window.devicePixelRatio,
     full_screen_ratio: 0.95,
     zoom_level: 3,
-    prophet_walk_speed: 120,
-    prophet_jump_speed: 320
+    prophet_walk_speed: 200,
+    prophet_jump_speed: 300,
+    believer_jump_speed: 3000,
+    follow_x_gap_px: 16
 };
 
 function addReel(entity, anim_name, num_frames, first_frame_col, first_frame_row)
@@ -83,6 +85,11 @@ var level = {
             }
             else console.log(objects[i].type);
         }
+
+        this.addUnbeliever(2, 13).text('1');
+        this.addUnbeliever(5, 13).text('2');
+        this.addUnbeliever(14, 18).text('3');
+        this.addUnbeliever(8, 13).text('4');
     },
 
     addEntity: function(entity_type, tiles_x, tiles_y, tiles_width, tiles_height, tile_type)
@@ -121,6 +128,11 @@ var level = {
     addProphet: function(tiles_x, tiles_y)
     {
         return this.addEntity('Prophet', tiles_x, tiles_y, 1, 1);
+    },
+
+    addUnbeliever: function(tiles_x, tiles_y)
+    {
+        return this.addEntity('UnBeliever', tiles_x, tiles_y, 1, 1);
     },
 
     addNPC: function(tiles_x, tiles_y)
@@ -191,6 +203,11 @@ function initComponents()
             this.bind('KeyUp', this.onKeyUp);
             this.onHit('Lava', this.onTouchLava);
             this.bind('AnimationEnd', this.onAnimationEnd);
+
+            this.onHit('UnBeliever', this.collisionUnBeliever);
+
+            this.believers = [];
+            this.believers_blocked_walls = [];
         },
 
         onNewDirection: function(direction) {
@@ -252,7 +269,35 @@ function initComponents()
                 }
                 this.fixing_position = false;
             }
+
+            var idx = 0;
+            var believers_for_end_of_queue = [];
+            for (believer in this.believers) {
+                if (this.believers[idx].onProphetMoved(this.x, idx)) {
+                    // Successfully moved believer
+                    idx += 1;
+                } else { // The believer was blocked by a wall, and should be pushed to the end of the queue later.
+                    believers_for_end_of_queue.push(this.believers.splice(idx, 1)[0]);
+                }
+            }
+            this.believers = this.believers.concat(believers_for_end_of_queue);
+            //
+            // idx = 0;
+            // for (believer in this.believers_blocked_walls) {
+            //     if (this.believers_blocked_walls[idx].checkIfStillWallBlocked(this.x, idx)) {
+            //         // Inded still blocked by a wall
+            //         idx += 1;
+            //     } else { // No longer blocked by a wall, and should be removed from this queue
+            //         this.believers.push(this.believers_blocked_walls.splice(idx, 1)[0]);
+            //     }
+            // }
         },
+
+        collisionUnBeliever: function(hitData) {
+            var collidedUnbeliever = hitData[0].obj;
+            this.believers.push(collidedUnbeliever.trulyBelieve(this.believers.length));
+        },
+
 
         onKeyDown: function(e) {
             if (e.key == Crafty.keys.Z) {
@@ -281,6 +326,79 @@ function initComponents()
             if (data.id == 'dying') {
                 //this.destroy();
             }
+        }
+    });
+
+    Crafty.c('UnBeliever', {
+        init: function() {
+            this.addComponent('2D, DOM, Text, SolidHitBox, Gravity, Jumper, Collision');
+            this.gravity('gravity_blocking');
+            this.jumper(consts.believer_jump_speed, []);
+            this.textColor('green');
+        },
+
+        // current_total_believers = BEFORE adding this one
+        trulyBelieve: function(current_total_believers) {
+            var trueBeliever = Crafty.e('TrueBeliever')
+                .attr({x: this.x,
+                    y: this.y,
+                    w: consts.tile_width,
+                    h: consts.tile_height,
+                    idx: current_total_believers
+                }).text(this._text);
+            this.destroy();
+            return trueBeliever;
+        }
+    });
+
+    Crafty.c('TrueBeliever', {
+        init: function() {
+            this.addComponent('2D, DOM, SolidHitBox, Text, Gravity, Jumper, Collision');
+            this.gravity('gravity_blocking');
+            this.jumper(consts.believer_jump_speed, []);
+            this.textColor('red');
+            this.onHit('UnBeliever', this.collisionUnBeliever);
+
+            this.blocked_by_wall = false;
+        },
+
+        collisionUnBeliever: function(hitData) {
+            var collidedUnbeliever = hitData[0].obj;
+            var prophet = Crafty('Prophet');
+            prophet.believers.push(collidedUnbeliever.trulyBelieve(prophet.believers.length));
+        },
+
+        onProphetMoved: function(prophetX, idx) {
+            var actual_gap_x_px = (consts.follow_x_gap_px + consts.tile_width) * (idx + 1);
+            var prev_x = this.x;
+            var delta_x = 0;
+            if (this.x >= prophetX - actual_gap_x_px && this.x <= prophetX + actual_gap_x_px) {
+                // Do not move, will overlap prophet
+            } else {
+                if (this.x > prophetX) {
+                    delta_x = prophetX + actual_gap_x_px - this.x;
+                } else {
+                    delta_x = prophetX - actual_gap_x_px - this.x;
+                }
+            }
+
+            this.shift(delta_x, 0, 0, 0);
+
+            if (hitDatas = this.hit('move_blocking')) {
+                this.x = prev_x;
+                this.blocked_by_wall = true;
+                return false;
+            }
+            return true;
+        },
+
+        checkIfStillWallBlocked: function(prophetX, idx) {
+            if (Math.abs(prophetX - this.x) <= (consts.tile_width / 2)) {
+                this.blocked_by_wall = false;
+                return false;
+            }
+
+            return true;
         }
     });
 
