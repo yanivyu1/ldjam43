@@ -25,7 +25,7 @@ var level = {
 
         Crafty.viewport.zoom(1/window.devicePixelRatio, 0, 0, 0);
         
-        Crafty.e('2D, DOM, Character, character_start, SpriteAnimation, Twoway, Gravity, Collision')
+        Crafty.e('2D, DOM, character_start, SpriteAnimation, Twoway, Gravity, Collision')
             .attr({x: consts.tile_width, y: consts.tile_height})
             .reel("walking", 1000/12*5, [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]])
             .animate("walking", -1)
@@ -66,7 +66,9 @@ var level = {
             this.fixing_position = true;
             this.x = evt._x;
             if (this.vy < 0 && evt._y >= hitData.obj.y + hitData.obj.h &&
-                evt._x >= hitData.obj.x && evt._x < hitData.obj.x + hitData.obj.w)
+                ((evt._x >= hitData.obj.x && evt._x < hitData.obj.x + hitData.obj.w)
+                 || (evt._x + consts.tile_width - 1 >= hitData.obj.x 
+                     && evt._x + consts.tile_width - 1 < hitData.obj.x + hitData.obj.w)))
             {
                 this.vy = 0;
                 this.y = evt._y;
