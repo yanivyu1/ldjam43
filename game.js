@@ -1,16 +1,19 @@
 var assets = {
     "sprites": {
-        "assets/character.png": {
+        "assets/SpriteMap.png": {
             tile: 32,
             tileh: 32,
             map: {
-                character_start: [0, 0]
-            }
-        },"assets/npc.png": {
-            tile: 32,
-            tileh: 32,
-            map: {
-                npc_start: [0, 0]
+                prophet_stand_right: [0, 0],
+                prophet_walk_right: [1, 0],
+                prophet_stand_left: [0, 1],
+                prophet_walk_left: [1, 1],
+                npc_stand_right: [0, 2],
+                npc_walk_right: [1, 2],
+                npc_stand_left: [0, 3],
+                npc_walk_left: [1, 3],
+                tile_floor: [0, 4],
+                tile_wall: [1, 4]
             }
         }
     }
@@ -30,19 +33,19 @@ var level = {
             .image('assets/bg-beach.png');
 
         Crafty.viewport.zoom(1/window.devicePixelRatio, 0, 0, 0);
+
+        this.addProphet(1, 1);
         
-        Crafty.e('2D, DOM, character_start, SpriteAnimation, Twoway, Gravity, Collision')
-            .attr({x: consts.tile_width, y: consts.tile_height})
-            .reel("walking", 1000/12*5, [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]])
-            .animate("walking", -1)
-            .twoway(200)
-            .gravity("gravity_blocking")
-            .bind('Move', this.characterMoved);
-
-        this.addFloor(0, 19, 30);
-        this.addFloor(0, 16, 5);
-
-        this.addWall(8, 16, 5);
+        for (var i = 0; i < 30; i++) {
+            this.addFloor(i, 19);
+        }
+        for (var i = 0; i < 5; i++) {
+            this.addFloor(i, 16);
+        }
+        for (var i = 8; i < 13; i++) {
+            this.addWall(i, 16);
+        }
+        
         this.addNPC(8,15);
         for (var i = 0; i < consts.level_height - 1; i++) {
             this.addWall(0, i, 1);
@@ -52,21 +55,27 @@ var level = {
 
     addEntity: function(entity_type, tiles_x, tiles_y, tiles_width, tiles_height)
     {
-        Crafty.e(entity_type)
+        return Crafty.e(entity_type)
             .attr({x: tiles_x * consts.tile_width,
                    y: tiles_y * consts.tile_height,
                    w: tiles_width * consts.tile_width,
                    h: tiles_height * consts.tile_height});
     },
 
-    addFloor: function(tiles_x, tiles_y, tiles_width)
+    addFloor: function(tiles_x, tiles_y)
     {
-        this.addEntity('Floor', tiles_x, tiles_y, tiles_width, 1);
+        this.addEntity('Floor', tiles_x, tiles_y, 1, 1);
     },
 
-    addWall: function(tiles_x, tiles_y, tiles_width)
+    addWall: function(tiles_x, tiles_y)
     {
-        this.addEntity('Wall', tiles_x, tiles_y, tiles_width, 1);
+        this.addEntity('Wall', tiles_x, tiles_y, 1, 1);
+    },
+
+    addProphet: function(tiles_x, tiles_y)
+    {
+        this.addEntity('Prophet', tiles_x, tiles_y, 1, 1)
+            .bind('Move', this.characterMoved);
     },
 
     addNPC: function(tiles_x, tiles_y)
@@ -100,23 +109,29 @@ function initComponents()
 {
     Crafty.c('Floor', {
         init: function() {
-            this.addComponent('2D, DOM, Image, gravity_blocking');
-            this.image('assets/floor.png', 'repeat');
+            this.addComponent('2D, DOM, tile_floor, gravity_blocking');
         }
     });
 
     Crafty.c('Wall', {
         init: function() {
-            this.addComponent('2D, DOM, Image, gravity_blocking, move_blocking');
-            this.image('assets/wall.png', 'repeat');
+            this.addComponent('2D, DOM, tile_wall, gravity_blocking, move_blocking');
+        }
+    });
+
+    Crafty.c('Prophet', {
+        init: function() {
+            this.addComponent('2D, DOM, prophet_stand_right, SpriteAnimation, Twoway, Gravity, Collision');
+            this.twoway(200);
+            this.gravity('gravity_blocking');
         }
     });
 
     Crafty.c('NPC', {
         init: function() {
-            this.addComponent('2D, DOM, npc_start, SpriteAnimation, Twoway, Gravity, Collision');
-            this.reel("walking", 1000/12*5, [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]])
-            this.twoway(200)
+            this.addComponent('2D, DOM, npc_stand_right, SpriteAnimation, Twoway, Gravity, Collision');
+            //this.reel("walking", 1000/12*5, [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]])
+            //this.twoway(200)
             this.gravity("gravity_blocking")
         }
     })
