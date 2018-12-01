@@ -58,7 +58,8 @@ var level = {
             this.addOuterWall(0, i, 1,'tile_wall0');
             this.addOuterWall(consts.level_width, i, 1,'tile_wall0');
         }
-        var objects = stages[0].stages[level].objects;
+        var stage = worlds[0].stages[level];
+        var objects = stage.objects;
         for(var i=0;i<objects.length;i++){
             if(objects[i].type == 'Wall') {
                 this.addWall(objects[i].x, objects[i].y, 'tile_' + objects[i].type +''+objects[i].spriteindex);
@@ -76,6 +77,10 @@ var level = {
             else if (objects[i].type == 'DeepLava') {
                 this.addLava(objects[i].x, objects[i].y, 'deep');
             }
+            else if (objects[i].type == 'Counter') {
+                var counter = this.addCounter(objects[i].x, objects[i].y);
+                counter.setTotal(stage.required);
+            }
         }
     },
 
@@ -90,17 +95,17 @@ var level = {
 
     addFloor: function(tiles_x, tiles_y, floorType)
     {
-        floor = this.addEntity('Floor', tiles_x, tiles_y, 1, 1, floorType);
+        return this.addEntity('Floor', tiles_x, tiles_y, 1, 1, floorType);
     },
 
     addWall: function(tiles_x, tiles_y, floorType)
     {
-        wall = this.addEntity('Wall', tiles_x, tiles_y, 1, 1, floorType);
+        return this.addEntity('Wall', tiles_x, tiles_y, 1, 1, floorType);
     },
 
     addOuterWall: function(tiles_x, tiles_y, floorType)
     {
-        Crafty.e('Wall', floorType)
+        return Crafty.e('Wall', floorType)
             .attr({x: tiles_x * consts.tile_width,
                    y: tiles_y * consts.tile_height,
                    w: 1,
@@ -109,7 +114,7 @@ var level = {
 
     addLava: function(tiles_x, tiles_y, lava_type)
     {
-        this.addEntity('Lava', tiles_x, tiles_y, 1, 1).setLavaType(lava_type);
+        return this.addEntity('Lava', tiles_x, tiles_y, 1, 1).setLavaType(lava_type);
     },
 
     addProphet: function(tiles_x, tiles_y)
@@ -119,7 +124,14 @@ var level = {
 
     addNPC: function(tiles_x, tiles_y)
     {
-        this.addEntity('NPC', tiles_x, tiles_y, 1, 1);
+        return this.addEntity('NPC', tiles_x, tiles_y, 1, 1);
+    },
+
+    addCounter: function(tiles_x, tiles_y)
+    {
+        return Crafty.e('Counter')
+            .attr({x: tiles_x * consts.tile_width,
+                   y: tiles_y * consts.tile_height});
     }
 };
 
@@ -255,10 +267,13 @@ function initComponents()
         },
 
         onTouchLava: function() {
+            if (this.dying) return;
+
             this.dying = true;
             this.gravityConst(0);
             this.resetMotion();
             this.removeComponent('Multiway');
+            Crafty('Counter').increment();
         },
 
         onAnimationEnd: function(data) {
@@ -278,6 +293,50 @@ function initComponents()
         turnToBeleiver: function(evt)
         {
             var hitData = this.hit('');
+        }
+    });
+
+    Crafty.c('Counter', {
+        init: function() {
+            this.addComponent('2D, DOM, Text');
+            this.attr({w: consts.tile_width});
+            this.textAlign('center');
+            this.textColor('black');
+            this.textFont({family: 'Alanden'});
+            this.total = 0;
+            this.count = 0;
+        },
+
+        setTotal: function(total) {
+            this.total = total;
+            this.refreshText();
+        },
+
+        increment: function() {
+            this.count++;
+
+            setTimeout(function() {
+                var counter = Crafty('Counter');
+                counter.refreshText();
+                counter.blowUp();
+            }, 150);
+        },
+
+        refreshText: function() {
+            this.text('' + this.count + ' / ' + this.total);
+        },
+
+        blowUp: function() {
+            this.css({
+                'font-size': '16px',
+                transition: 'font-size 0.3s'
+            });
+            setTimeout(function() {
+                Crafty('Counter').css({
+                    'font-size': '10px',
+                    transition: 'font-size 0.3s'
+                });
+            }, 300);
         }
     });
 }
