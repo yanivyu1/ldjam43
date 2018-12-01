@@ -5,8 +5,28 @@ var assets = {
             tileh: 32,
             map: {
                 prophet_stand_right: [0, 0],
-                tile_floor: [0, 8],
-                tile_wall: [1, 8]
+                npc_stand_right: [0, 2],
+                tile_Floor0: [0, 8],
+                tile_Floor1: [1, 8],
+                tile_Floor2: [2, 8],
+                tile_Floor3: [3, 8],
+                tile_Floor4: [4, 8],
+                tile_Floor5: [5, 8],
+                tile_Floor6: [6, 8],
+                tile_Floor7: [7, 8],
+                tile_Floor8: [8, 8],
+                tile_Floor9: [9, 8],
+                tile_Floor10: [10, 8],
+                tile_Floor11: [11, 8],
+                tile_Floor12: [12, 8],
+                tile_Floor13: [13, 8],
+                tile_Floor14: [14, 8],
+                tile_Floor15: [15, 8],
+                tile_Floor16: [16, 8],
+                tile_Floor17: [17, 8],
+                tile_Floor18: [18, 8],
+                tile_Floor19: [19, 8],
+                tile_wall0: [0, 8]
             }
         }
     },
@@ -35,52 +55,54 @@ function addReel(entity, anim_name, num_frames, first_frame_col, first_frame_row
 
     entity.reel(anim_name, 1000 * num_frames / consts.anim_fps, frames);
 }
-
 var level = {
-    render: function() {
+    render: function(level) {
+        Crafty.log(stages);
         Crafty.e('2D, DOM, Image')
             .attr({x: 0, y: 0})
             .image('assets/bg-beach.png');
 
         var prophet = this.addProphet(1, 1);
         Crafty.viewport.follow(prophet, 0, 0);
-
-        for (var i = 0; i < 30; i++) {
-            this.addFloor(i, 19);
-        }
-        for (var i = 0; i < 5; i++) {
-            this.addFloor(i, 16);
-        }
-        for (var i = 8; i < 13; i++) {
-            this.addWall(i, 16);
-        }
-
         this.addNPC(8,15);
         for (var i = 0; i < consts.level_height - 1; i++) {
-            this.addWall(0, i, 1);
-            this.addWall(consts.level_width - 1, i, 1);
+            this.addOuterWall(0, i, 1,'tile_wall0');
+            this.addOuterWall(consts.level_width - 1, i, 1,'tile_wall0');
+        }
+        var objects = stages[0].stages[level].objects;
+        for(var i=0;i<objects.length;i++){
+            if(objects[i].type.includes('Floor')){
+                this.addWall(objects[i].x, objects[i].y, 'tile_' + objects[i].type);
+            }
         }
     },
 
-    addEntity: function(entity_type, tiles_x, tiles_y, tiles_width, tiles_height)
+    addEntity: function(entity_type, tiles_x, tiles_y, tiles_width, tiles_height, tile_type)
     {
-        return Crafty.e(entity_type)
+        return Crafty.e(entity_type, tile_type)
             .attr({x: tiles_x * consts.tile_width,
                    y: tiles_y * consts.tile_height,
                    w: tiles_width * consts.tile_width,
                    h: tiles_height * consts.tile_height});
     },
 
-    addFloor: function(tiles_x, tiles_y)
+    addFloor: function(tiles_x, tiles_y, floorType)
     {
-        this.addEntity('Floor', tiles_x, tiles_y, 1, 1);
+        floor = this.addEntity('Floor', tiles_x, tiles_y, 1, 1, floorType);
     },
 
-    addWall: function(tiles_x, tiles_y)
+    addWall: function(tiles_x, tiles_y, floorType)
     {
-        this.addEntity('Wall', tiles_x, tiles_y, 1, 1);
+        wall = this.addEntity('Wall', tiles_x, tiles_y, 1, 1, floorType);
     },
-
+    addOuterWall: function(tiles_x, tiles_y, floorType)
+    {
+        Crafty.e('Wall', floorType)
+            .attr({x: tiles_x * consts.tile_width,
+                   y: tiles_y * consts.tile_height,
+                   w: 1,
+                   h: 32});
+    },
     addProphet: function(tiles_x, tiles_y)
     {
         return this.addEntity('Prophet', tiles_x, tiles_y, 1, 1);
@@ -96,13 +118,13 @@ function initComponents()
 {
     Crafty.c('Floor', {
         init: function() {
-            this.addComponent('2D, DOM, tile_floor, gravity_blocking');
+            this.addComponent('2D, DOM, gravity_blocking');
         }
     });
 
     Crafty.c('Wall', {
         init: function() {
-            this.addComponent('2D, DOM, tile_wall, gravity_blocking, move_blocking');
+            this.addComponent('2D, DOM, gravity_blocking, move_blocking');
         }
     });
 
@@ -110,9 +132,9 @@ function initComponents()
         init: function() {
             this.addComponent('2D, DOM, prophet_stand_right, SpriteAnimation, Multiway, Jumper, Gravity, Collision, Keyboard');
             addReel(this, 'stand_right', 1, 0, 0);
-            addReel(this, 'walk_right', 7, 1, 0);
+            addReel(this, 'walk_right', 8, 11, 0);
             addReel(this, 'stand_left', 1, 0, 1);
-            addReel(this, 'walk_left', 7, 1, 1);
+            addReel(this, 'walk_left', 8, 11, 1);
             this.multiway({x: consts.prophet_walk_speed},
                 {RIGHT_ARROW: 0,
                  LEFT_ARROW: 180,
@@ -185,10 +207,19 @@ function initComponents()
 
     Crafty.c('NPC', {
         init: function() {
-            this.addComponent('2D, DOM, npc_stand_right, SpriteAnimation, Gravity, Collision');
-            this.gravity("gravity_blocking")
+            this.addComponent('2D, DOM, npc_stand_right, SpriteAnimation, Twoway, Gravity, Collision');
+            this.gravity("gravity_blocking");
+            this.bind('hitOff',this.turnToBeleiver);
+            addReel(this, 'npc_stand_right',1,0,2);
+            this.animate('npc_stand_right', -1);
+        },
+
+        turnToBeleiver: function(evt)
+        {
+            Crafty.log(evt);
+            var hitData = this.hit('');
         }
-    })
+    });
 }
 
 function initGame()
@@ -200,7 +231,7 @@ function initGame()
     Crafty.pixelart(true);
     Crafty.load(assets, function() {
         initComponents();
-        level.render();
+        level.render(0);
     });
 }
 
