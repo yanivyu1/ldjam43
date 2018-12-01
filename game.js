@@ -20,6 +20,7 @@ var consts = {
     level_height: 20,
     anim_fps: 12,
     scale: 1 / window.devicePixelRatio,
+    full_screen_ratio: 0.95,
     zoom_level: 2.5,
     prophet_speed: 200
 };
@@ -37,7 +38,7 @@ function addReel(entity, anim_name, num_frames, first_frame_col, first_frame_row
 var level = {
     render: function() {
         Crafty.e('2D, DOM, Image')
-            .attr({x: 0, y: 0, w: 960, h: 640})
+            .attr({x: 0, y: 0})
             .image('assets/bg-beach.png');
 
         Crafty.viewport.zoom(consts.scale * consts.zoom_level, 0, 0, 0);
@@ -173,7 +174,9 @@ function initComponents()
 
 function initGame()
 {
-    Crafty.init(window.innerWidth * consts.scale, window.innerHeight * consts.scale, document.getElementById('game'));
+    Crafty.init(window.innerWidth * consts.full_screen_ratio,
+                window.innerHeight * consts.full_screen_ratio,
+                document.getElementById('game'));
     Crafty.load(assets, function() {
         initComponents();
         level.render();
