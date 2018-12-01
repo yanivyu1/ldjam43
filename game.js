@@ -37,14 +37,14 @@ function addReel(entity, anim_name, num_frames, first_frame_col, first_frame_row
 var level = {
     render: function() {
         Crafty.e('2D, DOM, Image')
-            .attr({x: 0, y: 0, w: 960, h: 640})
+            .attr({x: 0, y: 0, w: screen.width * consts.scale, h: screen.height * consts.scale})
             .image('assets/bg-beach.png');
 
         Crafty.viewport.zoom(consts.scale * consts.zoom_level, 0, 0, 0);
 
         var prophet = this.addProphet(1, 1);
         Crafty.viewport.follow(prophet, 0, 0);
-        
+
         for (var i = 0; i < 30; i++) {
             this.addFloor(i, 19);
         }
@@ -54,7 +54,7 @@ var level = {
         for (var i = 8; i < 13; i++) {
             this.addWall(i, 16);
         }
-        
+
         this.addNPC(8,15);
         for (var i = 0; i < consts.level_height - 1; i++) {
             this.addWall(0, i, 1);
@@ -115,7 +115,7 @@ function initComponents()
             addReel(this, 'walk_left', 7, 1, 1);
             this.twoway(consts.prophet_speed);
             this.gravity('gravity_blocking');
-            
+
             this.current_direction = 'right';
             this.animate('stand_right', -1);
 
@@ -166,9 +166,6 @@ function initComponents()
     Crafty.c('NPC', {
         init: function() {
             this.addComponent('2D, DOM, npc_stand_right, SpriteAnimation, Twoway, Gravity, Collision');
-            //this.reel("walking", 1000/12*5, [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]])
-            //this.twoway(200)
-            //addReel(this, 'walking_right', )
             this.gravity("gravity_blocking")
         }
     })
@@ -176,8 +173,7 @@ function initComponents()
 
 function initGame()
 {
-    Crafty.init(960 * consts.scale, 640 * consts.scale, document.getElementById('game'));
-
+    Crafty.init(window.innerWidth * consts.scale, window.innerHeight * consts.scale, document.getElementById('game'));
     Crafty.load(assets, function() {
         initComponents();
         level.render();
