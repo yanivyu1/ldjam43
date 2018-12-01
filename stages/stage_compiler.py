@@ -1,10 +1,39 @@
+import json
+
 
 rows = 20
 cols = 30
-lastworld = 1#5
 reqs = []
 
-def process_stage(stg):
+def floorindex(u, d, l, r, w, t):
+    ind = w * 20
+    if u: ind += 1
+    if d: ind += 2
+    if l: ind += 4
+    if r: ind += 8
+    if u and d and l and r:
+        if 6 == t:
+            ind += 1
+        elif 14 == t:
+            ind += 2
+        elif 19 == t:
+            ind += 3
+        elif 9 == t:
+            ind += 4
+    return ind
+
+def floorindex_xy(stg, y, x, w, obj):
+    uobj = obj
+    if 0 < y: uobj = stg[y-1][x].strip()
+    dobj = obj
+    if rows - 1 > y: dobj = stg[y+1][x].strip()
+    lobj = obj
+    if 0 < x: lobj = stg[y][x-1].strip()
+    robj = obj
+    if cols - 1 > x: robj = stg[y][x+1].strip()
+    return floorindex(uobj == obj, dobj == obj, lobj == obj, robj == obj, w, (y * cols + x) % 25)
+
+def process_stage(stg, w):
     global reqs
     objects1 = []
     objects2 = []
@@ -14,15 +43,19 @@ def process_stage(stg):
         for j in range(cols):
             obj = stg[i][j].strip()
             if 'P' == obj:
-                objects1 += [[str(j), str(i), 'Prophet']]
+                objects1 += [[j, i, 'Prophet']]
             elif 'N' == obj:
-                objects2 += [[str(j), str(i), 'NPC']]
+                objects2 += [[j, i, 'NPC']]
             elif 'L' == obj:
-                objects3 += [[str(j), str(i), 'Lava']]
+                objects3 += [[j, i, 'Lava']]
             elif 'X' == obj:
-                objects4 += [[str(j), str(i), 'Floor']]
+                flind = floorindex_xy(stg, i, j, w, obj)
+                objects4 += [[j, i, 'Floor'+str(flind)]]
+            elif 'Y' == obj:
+                flind = floorindex_xy(stg, i, j, w, obj)+10
+                objects4 += [[j, i, 'Floor'+str(flind)]]
             elif 0 < len(obj) and '0' == obj[0]:
-                objects3 += [[str(j), str(i), 'Counter']]
+                objects3 += [[j, i, 'Counter']]
                 reqs += [int(obj[2:])]
             elif 0 < len(obj):
                 print('Unexpected object type: "'+ obj+'"')
@@ -35,65 +68,50 @@ def read_stages(inf):
     stagecount = int(len(lines) / rows)
     stagesxy = []
     for s in range(stagecount):
-        stagesxy += [process_stage(lines[s*20:(s+1)*20])]
+        stagesxy += [process_stage(lines[s*20:(s+1)*20], int(s/10))]
     return stagesxy
+
+def world(w, stgs):
+    wrd = {}
+    wrd['world'] = w
+    wrd['bgm'] = 'bgm'+str(w)+'.mp3'
+    wrd['stages'] = stgs
+    return wrd
+
+def stage(w, s, r, objs):
+    stg = {}
+    stg['name'] = str(w)+'-'+str(s)
+    stg['required'] = r
+    stg['objects'] = objs
+    return stg
+
+def object(o):
+    obj = {}
+    obj['x'] = o[0]
+    obj['y'] = o[1]
+    obj['type'] = o[2]
+    if 4 < len(o):
+        obj[o[3]] = o[4]
+    return obj
 
 def compile_stages(infp, otfp):
     inf = open(infp, 'rt', newline='')
     otf = open(otfp, 'wt', newline='')
-    currentstage = []
     stages = read_stages(inf)
-    world = 1
-    stage = 1
-    otf.write('[\n')
-    otf.write('  {\n')
-    def worldheader(w):
-        otf.write('    "world":'+str(w)+',\n')
-        otf.write('    "bgm":"bgm'+str(w)+'.mp3,\n')
-        otf.write('    "stages":[\n')
-    def worldfooter(last=False):
-        otf.write('    ]\n')
-        if (last):
-            otf.write('  }\n')
-        else:
-            otf.write('  },\n')
-    def stageheader(w, s, r):
-        otf.write('      "name":"'+str(w)+'-'+str(s)+',\n')
-        otf.write('      "required":'+str(r)+',\n')
-        otf.write('      "objects": [\n')
-    def stagefooter(last=False):
-        if (last):
-            otf.write('      ]')
-        else:
-            otf.write('      ],')
-    def object(o, first=False):
-        if not first:
-            otf.write(',\n')
-        otf.write('        {\n')
-        otf.write('          "x":'+o[0]+',\n')
-        otf.write('          "y":'+o[1]+',\n')
-        otf.write('          "type":'+o[2]+',\n')
-        otf.write('        }')
+    wind = 1
+    sind = 1
+    wrds = []
+    stgs = []
     for s in stages:
-        if 1 == stage:
-            worldheader(world)
-        stageheader(world, stage, reqs[(world-1) * 10 + (stage-1)])
-        firsto=True
-        for o in s:
-            object(o, firsto)
-            firsto=False
-        stage += 1
-        if 10 < stage:
-            stage -= 10
-            world += 1
-            stagefooter(True)
-            if lastworld < world:
-                worldfooter(True)
-            else:
-                worldfooter(False)
-                worldheader(world)
-        else:
-            stagefooter(False)
+        objs = [object(o) for o in s]
+        stgs += [stage(wind, sind, reqs[(wind-1) * 10 + (sind-1)], objs)]
+        sind += 1
+        if 10 < sind:
+            wrds += [world(wind, stgs)]
+            stgs = []
+            sind -= 10
+            wind += 1
+    json.dump(wrds, otf, sort_keys=False)
 
 if __name__ == '__main__':
     compile_stages('stage_data.txt', 'stage_data.json')
