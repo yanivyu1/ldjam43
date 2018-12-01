@@ -18,11 +18,16 @@ var level = {
 
         Crafty.viewport.zoom(1/window.devicePixelRatio, 0, 0, 0);
         
-        Crafty.e('2D, DOM, character_start, SpriteAnimation, Fourway')
+        Crafty.e('2D, DOM, character_start, SpriteAnimation, Twoway, Gravity')
             .attr({x: 0, y: 0})
             .reel("walking", 1000/12*5, [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]])
             .animate("walking", -1)
-            .fourway(200);
+            .twoway(200)
+            .gravity("platform");
+
+        Crafty.e('2D, DOM, platform, Color')
+            .attr({x: 0, y: 540, w: 960, h:100})
+            .color('#F0F');
     }
 };
 
