@@ -4,6 +4,7 @@ var assets = {
             tile: 32,
             tileh: 32,
             map: {
+                prophet_stand_right: [0, 0],
                 tile_floor: [0, 4],
                 tile_wall: [1, 4]
             }
@@ -116,6 +117,8 @@ function initComponents()
             this.gravity('gravity_blocking');
             
             this.current_direction = 'right';
+            this.animate('stand_right', -1);
+
             this.bind('NewDirection', this.onNewDirection);
             this.bind('Move', this.characterMoved);
         },
