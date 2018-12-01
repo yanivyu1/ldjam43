@@ -1,34 +1,3 @@
-<<<<<<< HEAD
-var assets = {
-    "sprites": {
-        "assets/SpriteMap.png": {
-            tile: 32,
-            tileh: 32,
-            map: {
-                prophet_stand_right: [0, 0],
-                npc_stand_right: [0, 2],
-                tile_Wall0: [0, 9],
-                tile_Wall1: [1, 9],
-                tile_Wall2: [2, 9],
-                tile_Wall3: [3, 9],
-                tile_Wall4: [4, 9],
-                tile_Wall5: [5, 9],
-                tile_Wall6: [6, 9],
-                tile_Wall7: [7, 9],
-                tile_Wall8: [8, 9],
-                tile_Wall9: [9, 9],
-                tile_Wall10: [10, 9],
-                tile_Wall11: [11, 9],
-                tile_Wall12: [12, 9],
-                tile_Wall13: [13, 9],
-                tile_Wall14: [14, 9],
-                tile_Wall15: [15, 9],
-                tile_Wall16: [16, 9],
-                tile_Wall17: [17, 9],
-                tile_Wall18: [18, 9],
-                tile_Wall19: [19, 9]
-            }
-=======
 var assets = function() {
     var sprite_map = {
         prophet_stand_right: [0, 0],
@@ -40,7 +9,6 @@ var assets = function() {
             var wall_num = row * 20 + col;
             var wall_pos = [col, row + 10];
             sprite_map['tile_Wall' + wall_num] = wall_pos;
->>>>>>> b9660e942bdf4e89c6ab34bd39b7377046628e12
         }
     }
 
