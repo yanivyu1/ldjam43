@@ -1,0 +1,200 @@
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																	X	X	X	X									
+																													
+																													
+								N						X	X														
+						X	X	X	X																				
+	P				X	X	X	X	X									0/1											
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X	X
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+								N																					
+							X	X	X																				
+																													
+	P													N															
+X	X	X	X	X						X	X	X	X	X	X											X			
+X	X	X	X	X	X				X	X	X	X	X	X	X	X							0/2		X	X	X		
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+										N																			
+									X	X	X																		
+																													
+					N						N																		
+		P		X	X	X	X	X	X	X	X	X	X	X	X														
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X				0/2						X	X	X
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+													N																
+												X	X	X															
+																													
+																		N											
+	P														X	X	X	X	X	X	X	X							
+X	X	X	X	X										X	X	X	X	X							X	X			
+X	X	X	X	X	X	X							X	X	X	X	X												
+X	X	X	X	X	X	X	X	X				X	X	X	X	X		0/3							N				
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X	X
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																	N												
+																X	X	X											
+																	X												
+												N																	
+											X	X	X							X	X	X							
+												X									X								
+																													X
+							X	X	X	X																			X
+	P			N		X	X	X	X	X	X														0/2			X	X
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+										N								X	X	X									
+									X	X	X	X			X	X	X	X	X	X	X	X							
+								X	X	X	X								X	X	X	X							
+							X	X	X	X										X	X	X	X						
+						X	X	X	X												X	X	X						
+	P				X	X	X	X	X		N					N			0/3			X	X	X	X				
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X
+																													
+																													
+																													
+																													
+	P																												
+X	X	X	X	X	X	X						N																	
+X	X	X	X	X	X					X	X	X	X																
+X	X	X	X	X	X							X	X																
+X	X	X	X	X	X								X	X		X													
+X	X	X	X	X										X	X	X													
+X	X	X	X	X			X	X	X																				
+X	X	X	X	X																									
+X	X	X	X																										
+X	X	X	X										X																
+X	X	X	X							X	X	X	X																
+X	X	X																											
+X	X	X						N																	N				
+X	X	X					X	X																X	X	X			
+X	X					X	X	X	X							0/3						X	X	X	X	X	X		
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X	X	X	X
+																													
+																													
+																													
+	P																												
+X	X	X		N																									
+X	X	X	X	X	X	X	X				X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	
+X	X	X	X	X	X	X								X	X	X						X	X	X	X	X			
+X	X	X	X	X	X																			X					
+X	X	X	X	X	X																								
+X	X	X	X	X	X																	X							
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X				X	X	X	X							
+X	X	X	X	X	X	X	X	X																					
+X	X	X	X	X														N											
+X	X	X	X									X	X	X	X	X	X	X	X	X	X	X	X	X	X				
+X	X	X	X													X	X	X	X	X	X								
+X	X	X	X														X	X	X	X									
+X	X	X	X													X	X	X	X							N			
+X	X	X	X	X	X	X	X		N						X	X	X	X	X	X	X	X		X	X	X	X	X	X
+X	X	X	X	X	X	X	X	X	X	X						N		0/4		N	N								
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X	X
+																													
+																													
+																													
+																													
+																											N		
+																			X	X					X	X	X	X	X
+																										X	X	X	X
+																										X	X	X	X
+									X	X						X	X										X	X	X
+							X																				X	X	X
+						X	X																				X	X	X
+																			X	X							X	X	X
+																		X										X	X
+				X	X							X	X	X	X	X	X											X	X
+														X														X	X
+																						X						X	X
+		X	X				X	X													X	X	X	X					X
+																				X	X	X	X	X	X				X
+	P	N											N								N	N	N	N			0/5		X
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X
+																													
+																													
+																N													
+						N									X	X	X								N				
+		X	X	X	X	X	X	X	X				X	X	X	X	X	X	X	X			X	X	X	X			
+					X	X								X	X	X	X	X									X		
+				X	X											X											X		
+X	X	X		X	X																		X	X			X		
+				X	X					N								X	X	X	X	X	X				X		
+					X	X	X	X	X	X	X																X		
+		X	X	X	X	X																			X	X	X		
+					X	X					N					N											X		
+					X	X				X	X	X			X	X	X										X		
+X	X				X	X																X	X	X			X		
+					X	X																					X		
+				X	X	X							N														X		
+			X	X	X	X						X	X		X	X									X	X			
+				X	X						X	X				X	X												
+	P			X	X					X	X	X		0/10		X	X	X											
+X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X	X	X	X	X	X
