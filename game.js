@@ -151,6 +151,7 @@ function initComponents()
             this.bind('Move', this.onMove);
             this.bind('KeyDown', this.onKeyDown);
             this.bind('KeyUp', this.onKeyUp);
+            this.onHit('Lava', this.onTouchLava);
         },
 
         onNewDirection: function(direction) {
@@ -203,6 +204,17 @@ function initComponents()
             if (e.key == Crafty.keys.Z) {
                 Crafty.viewport.scale(consts.scale * consts.zoom_level);
             }
+        },
+
+        onTouchLava: function() {
+            this.gravityConst(0);
+            this.resetMotion();
+            this.removeComponent('Multiway');
+
+            // TODO: death animation instead of walk-right animation
+
+            this.animate('walk_right');
+            
         }
     });
 
