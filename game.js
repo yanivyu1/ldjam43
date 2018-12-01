@@ -232,7 +232,7 @@ function initGame()
     Crafty.pixelart(true);
     Crafty.load(assets, function() {
         initComponents();
-        level.render(6);
+        level.render(0);
     });
 }
 
