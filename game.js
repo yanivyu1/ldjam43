@@ -50,22 +50,28 @@ var level = {
         }
     },
 
-    addFloor: function(tile_x, tile_y, tile_width)
+    addEntity: function(entity_type, tiles_x, tiles_y, tiles_width, tiles_height)
     {
-        Crafty.e('Floor')
-            .attr({x: tile_x * 32, y: tile_y * 32, w: tile_width * 32, h: 32});
+        Crafty.e(entity_type)
+            .attr({x: tiles_x * consts.tile_width,
+                   y: tiles_y * consts.tile_height,
+                   w: tiles_width * consts.tile_width,
+                   h: tiles_height * consts.tile_height});
     },
 
-    addWall: function(tile_x, tile_y, tile_width)
+    addFloor: function(tiles_x, tiles_y, tiles_width)
     {
-        Crafty.e('Wall')
-            .attr({x: tile_x * 32, y: tile_y * 32, w: tile_width * 32, h: 32});
+        this.addEntity('Floor', tiles_x, tiles_y, tiles_width, 1);
     },
-    addNPC: function(tile_x, tile_y)
+
+    addWall: function(tiles_x, tiles_y, tiles_width)
     {
-        Crafty.e('NPC')
-        .attr({x: tile_x * 32, y: tile_y * 32})
-        .bind('')
+        this.addEntity('Wall', tiles_x, tiles_y, tiles_width, 1);
+    },
+
+    addNPC: function(tiles_x, tiles_y)
+    {
+        this.addEntity('NPC', tiles_x, tiles_y, 1, 1);
     },
 
     characterMoved: function(evt)
