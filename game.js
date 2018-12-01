@@ -1,36 +1,28 @@
-var assets = {
-    "sprites": {
-        "assets/SpriteMap.png": {
-            tile: 32,
-            tileh: 32,
-            map: {
-                prophet_stand_right: [0, 0],
-                npc_stand_right: [0, 2],
-                tile_Wall0: [0, 8],
-                tile_Wall1: [1, 8],
-                tile_Wall2: [2, 8],
-                tile_Wall3: [3, 8],
-                tile_Wall4: [4, 8],
-                tile_Wall5: [5, 8],
-                tile_Wall6: [6, 8],
-                tile_Wall7: [7, 8],
-                tile_Wall8: [8, 8],
-                tile_Wall9: [9, 8],
-                tile_Wall10: [10, 8],
-                tile_Wall11: [11, 8],
-                tile_Wall12: [12, 8],
-                tile_Wall13: [13, 8],
-                tile_Wall14: [14, 8],
-                tile_Wall15: [15, 8],
-                tile_Wall16: [16, 8],
-                tile_Wall17: [17, 8],
-                tile_Wall18: [18, 8],
-                tile_Wall19: [19, 8]
-            }
+var assets = function() {
+    var sprite_map = {
+        prophet_stand_right: [0, 0],
+        npc_stand_right: [0, 2]
+    };
+
+    for (var row = 0; row < 10; row++) {
+        for (var col = 0; col < 20; col++) {
+            var wall_num = row * 20 + col;
+            var wall_pos = [col, row + 10];
+            sprite_map['tile_Wall' + wall_num] = wall_pos;
         }
-    },
-    "images": ["assets/bg-beach.png"]
-};
+    }
+
+    return {
+        "sprites": {
+            "assets/SpriteMap.png": {
+                tile: 32,
+                tileh: 32,
+                map: sprite_map
+            }
+        },
+        "images": ["assets/bg-beach.png"]
+    };
+}();
 
 var consts = {
     tile_width: 32,
@@ -54,16 +46,13 @@ function addReel(entity, anim_name, num_frames, first_frame_col, first_frame_row
 
     entity.reel(anim_name, 1000 * num_frames / consts.anim_fps, frames);
 }
+
 var level = {
     render: function(level) {
-        Crafty.log(stages);
         Crafty.e('2D, DOM, Image')
             .attr({x: 0, y: 0})
             .image('assets/bg-beach.png');
 
-        // var prophet = this.addProphet(1, 1);
-        // Crafty.viewport.follow(prophet, 0, 0);
-        // this.addNPC(8,15);
         for (var i = 0; i < consts.level_height - 1; i++) {
             this.addOuterWall(0, i, 1,'tile_wall0');
             this.addOuterWall(consts.level_width - 1, i, 1,'tile_wall0');
@@ -71,7 +60,6 @@ var level = {
         var objects = stages[0].stages[level].objects;
         for(var i=0;i<objects.length;i++){
             if(objects[i].type == 'Wall'){
-                Crafty.log(objects[i]);
                 this.addWall(objects[i].x, objects[i].y, 'tile_' + objects[i].type +''+objects[i].spriteindex);
             }else if (objects[i].type == 'Prophet') {
               var prophet = this.addProphet(objects[i].x, objects[i].y);
@@ -221,7 +209,6 @@ function initComponents()
 
         turnToBeleiver: function(evt)
         {
-            Crafty.log(evt);
             var hitData = this.hit('');
         }
     });
