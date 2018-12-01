@@ -263,7 +263,7 @@ function initComponents()
 
         onAnimationEnd: function(data) {
             if (data.id == 'dying') {
-                this.destroy();
+                //this.destroy();
             }
         }
     });
