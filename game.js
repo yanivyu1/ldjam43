@@ -16,7 +16,8 @@ var assets = {
                 tile_wall: [1, 4]
             }
         }
-    }
+    },
+    "images": ["assets/bg-beach.png"]
 };
 
 var consts = {
