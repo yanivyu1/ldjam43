@@ -5,8 +5,8 @@ rows = 20
 cols = 30
 reqs = []
 
-def floorindex(u, d, l, r, w, t):
-    ind = w * 20
+def wallindex(u, d, l, r, w, t):
+    ind = w * 40
     if u: ind += 1
     if d: ind += 2
     if l: ind += 4
@@ -22,7 +22,7 @@ def floorindex(u, d, l, r, w, t):
             ind += 4
     return ind
 
-def floorindex_xy(stg, y, x, w, obj):
+def wallindex_xy(stg, y, x, w, obj):
     uobj = obj
     if 0 < y: uobj = stg[y-1][x].strip()
     dobj = obj
@@ -31,7 +31,7 @@ def floorindex_xy(stg, y, x, w, obj):
     if 0 < x: lobj = stg[y][x-1].strip()
     robj = obj
     if cols - 1 > x: robj = stg[y][x+1].strip()
-    return floorindex(uobj == obj, dobj == obj, lobj == obj, robj == obj, w, (y * cols + x) % 25)
+    return wallindex(uobj == obj, dobj == obj, lobj == obj, robj == obj, w, (y * cols + x) % 25)
 
 def process_stage(stg, w):
     global reqs
@@ -49,11 +49,11 @@ def process_stage(stg, w):
             elif 'L' == obj:
                 objects3 += [[j, i, 'Lava']]
             elif 'X' == obj:
-                flind = floorindex_xy(stg, i, j, w, obj)
-                objects4 += [[j, i, 'Floor'+str(flind)]]
+                wlind = wallindex_xy(stg, i, j, w, obj)
+                objects4 += [[j, i, 'Wall', 'spriteindex', wlind]]
             elif 'Y' == obj:
-                flind = floorindex_xy(stg, i, j, w, obj)+10
-                objects4 += [[j, i, 'Floor'+str(flind)]]
+                wlind = wallindex_xy(stg, i, j, w, obj)+20
+                objects4 += [[j, i, 'Wall', 'spriteindex', wlind]]
             elif 0 < len(obj) and '0' == obj[0]:
                 objects3 += [[j, i, 'Counter']]
                 reqs += [int(obj[2:])]
