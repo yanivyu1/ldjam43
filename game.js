@@ -19,7 +19,8 @@ var consts = {
     level_height: 20,
     anim_fps: 12,
     scale: 1 / window.devicePixelRatio,
-    zoom_level: 2.5
+    zoom_level: 2.5,
+    prophet_speed: 200
 };
 
 function addReel(entity, anim_name, num_frames, first_frame_col, first_frame_row)
@@ -81,34 +82,12 @@ var level = {
 
     addProphet: function(tiles_x, tiles_y)
     {
-        return this.addEntity('Prophet', tiles_x, tiles_y, 1, 1)
-            .bind('Move', this.characterMoved);
+        return this.addEntity('Prophet', tiles_x, tiles_y, 1, 1);
     },
 
     addNPC: function(tiles_x, tiles_y)
     {
         this.addEntity('NPC', tiles_x, tiles_y, 1, 1);
-    },
-
-    characterMoved: function(evt)
-    {
-        if (this.fixing_position) return;
-        var hitDatas;
-
-        if (hitDatas = this.hit('move_blocking')) {
-            var hitData = hitDatas[0];
-            this.fixing_position = true;
-            this.x = evt._x;
-            if (this.vy < 0 && evt._y >= hitData.obj.y + hitData.obj.h &&
-                ((evt._x >= hitData.obj.x && evt._x < hitData.obj.x + hitData.obj.w)
-                 || (evt._x + consts.tile_width - 1 >= hitData.obj.x
-                     && evt._x + consts.tile_width - 1 < hitData.obj.x + hitData.obj.w)))
-            {
-                this.vy = 0;
-                this.y = evt._y;
-            }
-            this.fixing_position = false;
-        }
     }
 };
 
@@ -133,11 +112,12 @@ function initComponents()
             addReel(this, 'walk_right', 7, 1, 0);
             addReel(this, 'stand_left', 1, 0, 1);
             addReel(this, 'walk_left', 7, 1, 1);
-            this.twoway(200);
+            this.twoway(consts.prophet_speed);
             this.gravity('gravity_blocking');
             
             this.current_direction = 'right';
             this.bind('NewDirection', this.onNewDirection);
+            this.bind('Move', this.characterMoved);
         },
 
         onNewDirection: function(direction) {
@@ -156,6 +136,26 @@ function initComponents()
                 else {
                     this.animate('stand_left', -1);
                 }
+            }
+        },
+
+        characterMoved: function(evt) {
+            if (this.fixing_position) return;
+            var hitDatas;
+
+            if (hitDatas = this.hit('move_blocking')) {
+                var hitData = hitDatas[0];
+                this.fixing_position = true;
+                this.x = evt._x;
+                if (this.vy < 0 && evt._y >= hitData.obj.y + hitData.obj.h &&
+                    ((evt._x >= hitData.obj.x && evt._x < hitData.obj.x + hitData.obj.w)
+                    || (evt._x + consts.tile_width - 1 >= hitData.obj.x
+                        && evt._x + consts.tile_width - 1 < hitData.obj.x + hitData.obj.w)))
+                {
+                    this.vy = 0;
+                    this.y = evt._y;
+                }
+                this.fixing_position = false;
             }
         }
     });
