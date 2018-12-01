@@ -267,10 +267,13 @@ function initComponents()
         },
 
         onTouchLava: function() {
+            if (this.dying) return;
+
             this.dying = true;
             this.gravityConst(0);
             this.resetMotion();
             this.removeComponent('Multiway');
+            Crafty('Counter').increment();
         },
 
         onAnimationEnd: function(data) {
@@ -311,11 +314,29 @@ function initComponents()
 
         increment: function() {
             this.count++;
-            this.refreshText();
+
+            setTimeout(function() {
+                var counter = Crafty('Counter');
+                counter.refreshText();
+                counter.blowUp();
+            }, 150);
         },
 
         refreshText: function() {
             this.text('' + this.count + ' / ' + this.total);
+        },
+
+        blowUp: function() {
+            this.css({
+                'font-size': '16px',
+                transition: 'font-size 0.3s'
+            });
+            setTimeout(function() {
+                Crafty('Counter').css({
+                    'font-size': '10px',
+                    transition: 'font-size 0.3s'
+                });
+            }, 300);
         }
     });
 }
