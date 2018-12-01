@@ -1,0 +1,44 @@
+Prophet
+=======
+Row 0-1:
+  0-9 Idle
+  10-16 Walk
+  17 Jump
+  18 Fall
+  19-28 Converting
+Row 2:
+  0-32 Dying (lava)
+  
+Believer/Nonbeliever 1
+======================
+Row 3-4:
+  0-6 Idle nonbeliever
+  7-15 Converted
+  16-22 Idle believer
+  23-27 Walking believer
+  28-36 Converting
+Row 5:
+  0-20 Dying (lava)
+
+Row 6-8:
+  Reserved for believer 2
+
+Objects:
+Row 9:
+  0-9 Lava
+  10-19 DeepLava
+  20 Floor
+  21 Trap
+
+Walls
+=====
+Row 10:
+  Wall 0-39
+Row 11:
+  Wall 40-79
+Row 12:
+  Wall 80-119
+Row 13:
+  Wall 120-159
+Row 14:
+  Wall 160-199
