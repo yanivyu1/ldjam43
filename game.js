@@ -204,7 +204,7 @@ function initComponents()
 
         onKeyUp: function(e) {
             if (e.key == Crafty.keys.Z) {
-                Crafty.viewport.scale(consts.scale * consts.zoom_level);
+                Crafty.viewport.scale(consts.zoom_in_level);
             }else if(e.key == Crafty.keys.ENTER){
                 Crafty.enterScene('level');
             }else if (Crafty.keydown[Crafty.keys.SHIFT]) {
