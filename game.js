@@ -34,10 +34,11 @@ var consts = {
     scale: 1 / window.devicePixelRatio,
     full_screen_ratio: 0.95,
     zoom_level: 3,
-    prophet_walk_speed: 200,
-    prophet_jump_speed: 300,
+    prophet_walk_speed: 120,
+    prophet_jump_speed: 320,
     believer_jump_speed: 3000,
-    follow_x_gap_px: 16
+    follow_x_gap_px: 16,
+    wait_for_death: 1000
 };
 
 function addReel(entity, anim_name, num_frames, first_frame_col, first_frame_row)
@@ -52,13 +53,15 @@ function addReel(entity, anim_name, num_frames, first_frame_col, first_frame_row
 
 var level = {
     render: function(level) {
+        Crafty.e('KeyboardTrapper');
+
         Crafty.e('2D, DOM, Image')
             .attr({x: 0, y: 0})
             .image('assets/bg-beach.png');
 
         for (var i = 0; i < consts.level_height - 1; i++) {
-            this.addOuterWall(0, i, 1,'tile_wall0');
-            this.addOuterWall(consts.level_width, i, 1,'tile_wall0');
+            this.addOuterWall(0, i);
+            this.addOuterWall(consts.level_width, i);
         }
         var stage = worlds[0].stages[level];
         var objects = stage.objects;
@@ -71,7 +74,7 @@ var level = {
               Crafty.viewport.follow(prophet, 0, 0);
             }
             else if(objects[i].type == 'NPC') {
-                this.addNPC(objects[i].x, objects[i].y);
+                //this.addNPC(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Lava') {
                 this.addLava(objects[i].x, objects[i].y, 'shallow');
@@ -80,10 +83,9 @@ var level = {
                 this.addLava(objects[i].x, objects[i].y, 'deep');
             }
             else if (objects[i].type == 'Counter') {
-                var counter = this.addCounter(objects[i].x, objects[i].y);
-                counter.setTotal(stage.required);
+                this.addCounter(objects[i].x, objects[i].y)
+                    .setTotal(stage.required);
             }
-            else console.log(objects[i].type);
         }
 
         this.addUnbeliever(2, 13).text('1');
@@ -92,52 +94,44 @@ var level = {
         this.addUnbeliever(8, 13).text('4');
     },
 
-    addEntity: function(entity_type, tiles_x, tiles_y, tiles_width, tiles_height, tile_type)
+    addEntity: function(entity_type, tiles_x, tiles_y, tile_type)
     {
         return Crafty.e(entity_type, tile_type)
             .attr({x: tiles_x * consts.tile_width,
                    y: tiles_y * consts.tile_height,
-                   w: tiles_width * consts.tile_width,
-                   h: tiles_height * consts.tile_height});
+                   w: consts.tile_width,
+                   h: consts.tile_height});
     },
 
     addFloor: function(tiles_x, tiles_y, floorType)
     {
-        return this.addEntity('Floor', tiles_x, tiles_y, 1, 1, floorType);
+        return this.addEntity('Floor', tiles_x, tiles_y, floorType);
     },
 
     addWall: function(tiles_x, tiles_y, floorType)
     {
-        return this.addEntity('Wall', tiles_x, tiles_y, 1, 1, floorType);
+        return this.addEntity('Wall', tiles_x, tiles_y, floorType);
     },
 
-    addOuterWall: function(tiles_x, tiles_y, floorType)
+    addOuterWall: function(tiles_x, tiles_y)
     {
-        return Crafty.e('Wall', floorType)
-            .attr({x: tiles_x * consts.tile_width,
-                   y: tiles_y * consts.tile_height,
-                   w: 1,
-                   h: 32});
+        return this.addWall(tiles_x, tiles_y, null)
+            .attr({w: 1});
     },
 
     addLava: function(tiles_x, tiles_y, lava_type)
     {
-        return this.addEntity('Lava', tiles_x, tiles_y, 1, 1).setLavaType(lava_type);
+        return this.addEntity('Lava', tiles_x, tiles_y).setLavaType(lava_type);
     },
 
     addProphet: function(tiles_x, tiles_y)
     {
-        return this.addEntity('Prophet', tiles_x, tiles_y, 1, 1);
+        return this.addEntity('Prophet', tiles_x, tiles_y);
     },
 
     addUnbeliever: function(tiles_x, tiles_y)
     {
-        return this.addEntity('UnBeliever', tiles_x, tiles_y, 1, 1);
-    },
-
-    addNPC: function(tiles_x, tiles_y)
-    {
-        return this.addEntity('NPC', tiles_x, tiles_y, 1, 1);
+        return this.addEntity('UnBeliever', tiles_x, tiles_y);
     },
 
     addCounter: function(tiles_x, tiles_y)
@@ -150,6 +144,29 @@ var level = {
 
 function initComponents()
 {
+    Crafty.c('KeyboardTrapper', {
+        init: function() {
+            this.addComponent('Keyboard');
+
+            this.bind('KeyDown', this.onKeyDown);
+            this.bind('KeyUp', this.onKeyUp);
+        },
+
+        // Just an always-present component for trapping keyboard keys
+        onKeyDown: function(e) {
+            if (e.key == Crafty.keys.Z) {
+                var zoom_out_level = Math.min(window.innerWidth / 960, window.innerHeight / 640);
+                Crafty.viewport.scale(zoom_out_level);
+            }
+        },
+
+        onKeyUp: function(e) {
+            if (e.key == Crafty.keys.Z) {
+                Crafty.viewport.scale(consts.scale * consts.zoom_level);
+            }
+        }
+    });
+
     Crafty.c('Floor', {
         init: function() {
             this.addComponent('2D, DOM, gravity_blocking');
@@ -174,81 +191,141 @@ function initComponents()
         },
     });
 
+    // Character is a component that includes the semantics
+    // shared by all characters: Prophets, believers and non-believers.
+    // 1. It has animations for standing/walking/jumping/falling/dying.
+    // 2. It has gravity.
+    // 3. It has a direction (left/right) for animations.
+    // 4. It dies when it touches lava or when it touches a trap.
+    // NOTE: Due to technical reasons Character does not implement "blocked by wall".
+    // Properties: direction
+    // Functions: dir_animate (like animate, but adds the direction)
+    // Events: Death (fired when the death animation is over)
+    // Animations should be defined by derived components:
+    // stand, walk, jump, fall, dying_in_lava, dying_in_trap
+    // All should be defined with "_left" and "_right"
+    Crafty.c('Character', {
+        init: function() {
+            this.addComponent('2D, DOM, SpriteAnimation, Gravity, Collision');
+
+            this.gravity('gravity_blocking');
+            
+            this.direction = 'right';
+            this.dying = false;
+            this.death_anim = null;
+
+            this.bind('NewDirection', this.onNewDirection);
+            this.onHit('Lava', this.onTouchLava);
+            this.onHit('Trap', this.onTouchTrap);
+            this.bind('AnimationEnd', this.onAnimationEnd);
+        },
+
+        dir_animate: function(reelId, loopCount) {
+            dir_reel_id = reelId + '_' + this.direction;
+            this.animate(dir_reel_id, loopCount);
+            return dir_reel_id;
+        },
+
+        setDirectionFromX: function(x) {
+            if (x == 1) {
+                this.direction = 'right';
+            }
+            else if (x == -1) {
+                this.direction = 'left';
+            }
+            // else if (x == 0) keep the previous direction
+        },
+
+        onNewDirection: function(direction) {
+            if (this.dying) {
+                return;
+            }
+
+            this.setDirectionFromX(direction.x);
+
+            if (direction.y == 0) {
+                // On the ground
+                if (direction.x == 0) {
+                    this.dir_animate('stand', -1);
+                }
+                else {
+                    this.dir_animate('walk', -1);
+                }
+            }
+            else {
+                // In the air
+                if (direction.y == -1) {
+                    this.dir_animate('jump', -1);
+                }
+                else if (direction.y == 1) {
+                    this.dir_animate('fall', -1);
+                }
+            }
+        },
+
+        die: function(death_anim) {
+            if (this.dying) {
+                return;
+            }
+
+            this.dying = true;
+            this.removeComponent('Multiway'); // If we could walk, don't walk anymore
+            this.removeComponent('Gravity');  // Don't fall anymore
+            this.resetMotion();
+
+            Crafty('Counter').increment();
+
+            this.death_anim = this.dir_animate(death_anim, 1);
+        },
+
+        onTouchLava: function() {
+            this.die('dying_in_lava');
+        },
+
+        onTouchTrap: function() {
+            this.die('dying_in_trap');
+        },
+
+        onAnimationEnd: function(data) {
+            if (data.id == this.death_anim) {
+                var character = this;
+                setTimeout(function() {
+                    character.trigger('Death');
+                    character.destroy();
+                }, consts.wait_for_death);
+            }
+        }
+    });
+
     Crafty.c('Prophet', {
         init: function() {
-            this.addComponent('2D, DOM, prophet_stand_right, SpriteAnimation, Multiway, Jumper, Gravity, Collision, Keyboard');
+            this.addComponent('Character, prophet_stand_right, Multiway, Jumper');
             addReel(this, 'stand_right', 10, 0, 0);
             addReel(this, 'walk_right', 7, 11, 0);
             addReel(this, 'jump_right', 1, 17, 0);
             addReel(this, 'fall_right', 1, 18, 0);
+            addReel(this, 'dying_in_lava_right', 33, 0, 2);
+            addReel(this, 'dying_in_trap_right', 33, 0, 2);
             addReel(this, 'stand_left', 10, 0, 1);
             addReel(this, 'walk_left', 7, 11, 1);
             addReel(this, 'jump_left', 1, 17, 1);
             addReel(this, 'fall_left', 1, 18, 1);
-            addReel(this, 'dying', 33, 0, 2);
+            addReel(this, 'dying_in_lava_left', 33, 0, 2);
+            addReel(this, 'dying_in_trap_left', 33, 0, 2);
+            this.dir_animate('stand', -1);
             this.multiway({x: consts.prophet_walk_speed},
                 {RIGHT_ARROW: 0,
                  LEFT_ARROW: 180,
                  D: 0,
                  A: 180});
             this.jumper(consts.prophet_jump_speed, [Crafty.keys.UP_ARROW, Crafty.keys.W]);
-            this.gravity('gravity_blocking');
 
-            this.current_direction = 'right';
-            this.animate('stand_right', -1);
-
-            this.bind('NewDirection', this.onNewDirection);
             this.bind('Move', this.onMove);
-            this.bind('KeyDown', this.onKeyDown);
-            this.bind('KeyUp', this.onKeyUp);
-            this.onHit('Lava', this.onTouchLava);
-            this.bind('AnimationEnd', this.onAnimationEnd);
 
             this.onHit('UnBeliever', this.collisionUnBeliever);
 
             this.believers = [];
             this.believers_blocked_walls = [];
-        },
-
-        onNewDirection: function(direction) {
-            if (this.dying) {
-                this.animate('dying', 1);
-                return;
-            }
-
-            if (direction.y == 0) {
-                if (direction.x == 1) {
-                    this.current_direction = 'right';
-                    this.animate('walk_right', -1);
-                }
-                else if (direction.x == -1) {
-                    this.current_direction = 'left';
-                    this.animate('walk_left', -1);
-                }
-                else { // direction.x == 0
-                    if (this.current_direction == 'right') {
-                        this.animate('stand_right', -1);
-                    }
-                    else {
-                        this.animate('stand_left', -1);
-                    }
-                }
-            }
-            else {
-                if (direction.x == 1) {
-                    this.current_direction = 'right';
-                }
-                else if (direction.x == -1) {
-                    this.current_direction = 'left';
-                }
-
-                if (direction.y == -1) {
-                    this.animate('jump_' + this.current_direction, -1);
-                }
-                else if (direction.y == 1) {
-                    this.animate('fall_' + this.current_direction, -1);
-                }
-            }
         },
 
         onMove: function(evt) {
@@ -286,36 +363,6 @@ function initComponents()
         collisionUnBeliever: function(hitData) {
             var collidedUnbeliever = hitData[0].obj;
             this.believers.push(collidedUnbeliever.trulyBelieve(this.believers.length));
-        },
-
-
-        onKeyDown: function(e) {
-            if (e.key == Crafty.keys.Z) {
-                var zoom_out_level = Math.min(window.innerWidth / 960, window.innerHeight / 640);
-                Crafty.viewport.scale(zoom_out_level);
-            }
-        },
-
-        onKeyUp: function(e) {
-            if (e.key == Crafty.keys.Z) {
-                Crafty.viewport.scale(consts.scale * consts.zoom_level);
-            }
-        },
-
-        onTouchLava: function() {
-            if (this.dying) return;
-
-            this.dying = true;
-            this.gravityConst(0);
-            this.resetMotion();
-            this.removeComponent('Multiway');
-            Crafty('Counter').increment();
-        },
-
-        onAnimationEnd: function(data) {
-            if (data.id == 'dying') {
-                //this.destroy();
-            }
         }
     });
 
@@ -398,13 +445,6 @@ function initComponents()
             }
 
             return true;
-        }
-    });
-
-    Crafty.c('NPC', {
-        init: function() {
-            this.addComponent('2D, DOM, npc_stand_right, SpriteAnimation, Twoway, Gravity, Collision');
-            this.gravity("gravity_blocking");
         }
     });
 
