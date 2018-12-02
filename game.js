@@ -204,10 +204,10 @@ function initComponents()
                 if (e.key == Crafty.keys.S) {
                   var prophet = Crafty('Prophet');
                   Crafty.e('SkipLevelText')
-                      .attr({x:prophet-6, y:prophet.y - 42, w:75})
+                      .attr({x:prophet.x - 24, y:prophet.y - 60, w: 75})
                       .textAlign('center')
                       .textColor('black')
-                      .textFont({family: 'Alanden', size:'15px'})
+                      .textFont({family: 'Tribal', size:'15px', weight: 'bold'})
                       .text('You Pussy');
                     setTimeout(function(){
                         switchToNextLevel();
