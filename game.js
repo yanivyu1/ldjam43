@@ -395,6 +395,7 @@ function initComponents()
             this.bind('NewDirection', this.prophetNewDirection);
             this.bind('ConversionStarted', this.onConversionStarted);
             this.bind('ConversionEnded', this.onConversionEnded);
+            this.bind('Death', function() { console.log('died'); });
 
             this.believers = [];
             this.believers_blocked_walls = [];
@@ -540,8 +541,8 @@ function initComponents()
         },
 
         onProphetMoved: function(prophetX, idx) {
-            if (this.converting) {
-                // Don't move while converting
+            if (this.converting || this.dying) {
+                // Don't move while converting or dying
                 return false;
             }
 
