@@ -7,37 +7,44 @@ Row 0-1:
   18 Fall
   19-28 Converting
   29-37m Dying (trap)
-Row 2:
+Row 2-3:
   0-32 Dying (lava)
+Row 4-5:
+  0-3 Casting start
+  4-11 Casting loop
   
 Believer/Nonbeliever 1
 ======================
-Row 3-4:
+Row 6-7:
   0-6 Idle nonbeliever
   7-15 Converted
   16-22 Idle believer
   23-27 Walking believer
   28-36 Converting
   37 Falling
-Row 5:
+Row 8-9:
   0-20 Dying (lava)
-  21-27 Dying (trap, right)
-  28-24 Dying (trap, left)
+  21-27 Dying (trap)
+  28-35 Dying (lightning)
 
-Row 6-8:
-  Reserved for believer 2, currently a duplicated placeholder
+Believer/Nonbeliever 2
+======================
+Row 10-11:
+  Same as rows 6-7
+Row 12-13:
+  Same as rows 8-9
 
 Objects:
-Row 9:
-  0-9 Lava
-  10-19 DeepLava
-  20 Floor
-  21-26 Trap
-  --- Objects Below this line are placeholder images ---
+Row 14:
+  0-5 Lava
+  6-11 DeepLava
+  12 Floor
+  13-18 Trap
   27 MBlock
   28 WBlock
   29 Ice
   30 Deepice
+  --- Objects Below this line are placeholder images ---
   31 IceShrine
   32 LavaShrine
   33 Key1
@@ -50,13 +57,13 @@ Row 9:
 
 Walls
 =====
-Row 10:
+Row 15:
   Wall 0-39
-Row 11:
+Row 16:
   Wall 40-79
-Row 11:
+Row 17:
   Wall 80-119
-Row 11:
+Row 18:
   Wall 120-159
-Row 11:
+Row 19:
   Wall 160-199
