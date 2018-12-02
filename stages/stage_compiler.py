@@ -45,14 +45,37 @@ def process_stage(stg, w):
             if 'P' == obj:
                 objects1 += [[j, i, 'Prophet']]
             elif 'N' == obj:
-                objects2 += [[j, i, 'NPC']]
+                objects2 += [[j, i, 'NPC', 'facing', 'right']]
+            elif 'n' == obj:
+                objects2 += [[j, i, 'NPC', 'facing', 'left']]
             elif 'M' == obj:
-                objects2 += [[j, i, 'NPC2']]
+                objects2 += [[j, i, 'NPC2', 'facing', 'right']]
+            elif 'm' == obj:
+                objects2 += [[j, i, 'NPC2', 'facing', 'left']]
+            elif 'H' == obj:
+                objects3 += [[j, i, 'MBlock']]
+            elif 'F' == obj:
+                objects3 += [[j, i, 'WBlock']]
             elif 'L' == obj:
                 tp = 'Lava'
-                if 0 < i and 0 < len(stg[i-1][j].strip()):
-                    tp = 'Deeplava'
+                if 0 < i:
+                    uobj = stg[i-1][j].strip()
+                    if 0 == len(uobj) or '0' == uobj[0]:
+                        tp = 'Deeplava'
                 objects3 += [[j, i, tp]]
+            elif 'G' == obj:
+                objects3 += [[j, i, 'LavaGen']]
+            elif 'l' == obj:
+                tp = 'Ice'
+                if 0 < i:
+                    uobj = stg[i-1][j].strip()
+                    if 0 == len(uobj) or '0' == uobj[0]:
+                        tp = 'Deepice'
+                objects3 += [[j, i, tp]]
+            elif 'I' == obj:
+                objects3 += [[j, i, 'IceShrine']]
+            elif 'i' == obj:
+                objects3 += [[j, i, 'LavaShrine']]
             elif 'X' == obj:
                 wlind = wallindex_xy(stg, i, j, w, obj)
                 objects4 += [[j, i, 'Wall', 'spriteindex', wlind]]
