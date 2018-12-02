@@ -769,6 +769,12 @@ function initGame()
                 window.innerHeight * consts.full_screen_ratio,
                 document.getElementById('game'));
     Crafty.pixelart(true);
+    Crafty.viewport.bounds = {
+        min: {x:0, y:0},
+        max: {x: consts.level_width * consts.tile_width,
+              y: consts.level_height * consts.tile_height}
+            };
+    
     Crafty.load(assets, function() {
         initComponents();
         initScenes();
