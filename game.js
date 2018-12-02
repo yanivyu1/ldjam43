@@ -194,7 +194,16 @@ function initComponents()
 
             else if (Crafty.keydown[Crafty.keys.SHIFT]) {
                 if (e.key == Crafty.keys.S) {
-                    switchToNextLevel();
+                  var prophet = Crafty('Prophet');
+                  Crafty.e('SkipLevelText')
+                      .attr({x:prophet-6, y:prophet.y - 42, w:75})
+                      .textAlign('center')
+                      .textColor('black')
+                      .textFont({family: 'Alanden', size:'15px'})
+                      .text('You Pussy');
+                    setTimeout(function(){
+                        switchToNextLevel();
+                    }, consts.wait_for_death);
                 }
                 else if (e.key == Crafty.keys.P) {
                     switchToPrevLevel();
@@ -209,12 +218,18 @@ function initComponents()
                 Crafty.enterScene('level');
             }else if (Crafty.keydown[Crafty.keys.SHIFT]) {
                 if (e.key == Crafty.keys.R) {
-                    Crafty.enterScene('level');
+                    if(Crafty('Prophet').length > 0){
+                        Crafty('Prophet').die('dying_in_lava');
+                    }
                 }
             }
         }
     });
-
+    Crafty.c('SkipLevelText',{
+        init: function(){
+            this.addComponent('2D, DOM, Text');
+        }
+    });
     Crafty.c('Floor', {
         init: function() {
             this.addComponent('2D, DOM, tile_floor, gravity_blocking, Collision');
