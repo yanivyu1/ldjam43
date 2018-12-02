@@ -107,7 +107,7 @@ function initScenes()
         }
 
         Crafty.viewport.scale(consts.scale * consts.zoom_level);
-        
+
         Crafty.e('2D, DOM, Image')
             .attr({x: 0, y: 0})
             .image('assets/bg-beach.png');
@@ -141,6 +141,13 @@ function initScenes()
             }
         }
     });
+
+    Crafty.defineScene('intro', function(){
+        Crafty.e('2D, DOM, Image, Keyboard')
+            .attr({x: 0, y: 0})
+            .image('assets/Island-text.png');
+        Crafty.e('KeyboardTrapper');
+    });
 }
 
 function initComponents()
@@ -173,6 +180,12 @@ function initComponents()
         onKeyUp: function(e) {
             if (e.key == Crafty.keys.Z) {
                 Crafty.viewport.scale(consts.scale * consts.zoom_level);
+            }else if(e.key == Crafty.keys.ENTER){
+                Crafty.enterScene('level');
+            }else if (Crafty.keydown[Crafty.keys.SHIFT]) {
+                if (e.key == Crafty.keys.R) {
+                    Crafty.enterScene('level');
+                }
             }
         }
     });
@@ -219,7 +232,7 @@ function initComponents()
             this.addComponent('2D, DOM, SpriteAnimation, Gravity, Jumper, Collision');
 
             this.gravity('gravity_blocking');
-            
+
             this.direction = 'right';
             this.dying = false;
             this.disable_movement_animations = false;
@@ -253,7 +266,7 @@ function initComponents()
                 this.setNewDirection(direction);
             }
         },
-        
+
         setNewDirection: function(direction) {
             if (this.disable_movement_animations) {
                 return;
@@ -296,6 +309,7 @@ function initComponents()
             Crafty('Counter').increment();
 
             this.death_anim = this.dir_animate(death_anim, 1);
+
         },
 
         onTouchLava: function() {
@@ -310,11 +324,22 @@ function initComponents()
             if (data.id == this.death_anim) {
                 this.visible = false;
                 var character = this;
+                var prophet = Crafty('Prophet');
                 setTimeout(function() {
                     character.trigger('Death');
-                    character.destroy();
                 }, consts.wait_for_death);
+                if(character.getId() == Crafty('Prophet').getId()) {
+                    Crafty.enterScene('level');
+                }
+                character.destroy();
+                var trueBelievers = Crafty('TrueBeliever');
+                if(Crafty('Counter').count == Crafty('Counter').total && trueBelievers.length == 0 && prophet.length == 1){
+                    switchToNextLevel();
+                }else{
+                    Crafty.enterScene('level');
+                }
             }
+
         }
     });
 
@@ -355,7 +380,7 @@ function initComponents()
             this.onHit('UnBeliever', this.collisionUnBeliever);
             this.bind('AnimationEnd', this.onAnimationConcluded);
             this.bind('NewDirection', this.convertingPowersNewDirection);
-            
+
             this.can_convert = true;  // only if I'm standing on the ground
             this.converting = false;
             this.converting_anim = null;
@@ -432,7 +457,7 @@ function initComponents()
                  D: 0,
                  A: 180});
             this.jumper(consts.prophet_jump_speed,
-                [Crafty.keys.UP_ARROW, Crafty.keys.W]);            
+                [Crafty.keys.UP_ARROW, Crafty.keys.W]);
         },
 
         onMove: function(evt) {
@@ -646,6 +671,7 @@ function initComponents()
                 counter.refreshText();
                 counter.blowUp();
             }, 150);
+
         },
 
         refreshText: function() {
@@ -713,7 +739,7 @@ function initGame()
         initComponents();
         initScenes();
         createNonLevelEntities();
-        Crafty.enterScene('level');
+        Crafty.enterScene('intro');
     });
 }
 
