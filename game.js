@@ -219,7 +219,16 @@ function initComponents()
             }else if (Crafty.keydown[Crafty.keys.SHIFT]) {
                 if (e.key == Crafty.keys.R) {
                     if(Crafty('Prophet').length > 0){
-                        Crafty('Prophet').die('dying_in_lava');
+                      var prophet = Crafty('Prophet');
+                      Crafty.e('SkipLevelText')
+                          .attr({x:prophet-6, y:prophet.y - 42, w:200})
+                          .textAlign('center')
+                          .textColor('black')
+                          .textFont({family: 'Alanden', size:'15px'})
+                          .text('What a World... What a World...');
+                        setTimeout(function(){
+                            Crafty('Prophet').die('dying_in_lava');
+                        }, consts.wait_for_death);
                     }
                 }
             }
@@ -387,7 +396,7 @@ function initComponents()
                 this.removeComponent('Gravity');  // Don't fall anymore
                 this.resetMotion();
             }
-            
+
             if (!skip_counter) {
                 Crafty('Counter').increment();
             }
@@ -423,7 +432,7 @@ function initComponents()
                 var trueBelievers = Crafty('TrueBeliever');
                 if(Crafty('Counter').count == Crafty('Counter').total && trueBelievers.length == 0 && prophet.length == 1){
                     switchToNextLevel();
-                }else{
+                }else if(Crafty('Counter').count > Crafty('Counter').total || trueBelievers.length > 0){
                     Crafty.enterScene('level');
                 }
             }
