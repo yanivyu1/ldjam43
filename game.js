@@ -658,8 +658,8 @@ function initComponents()
             addReel(this, 'converting_left', 7, 28, 36);
             addReel(this, 'fall_left', 7, 37, 37);
             addReel(this, 'dying_in_lava_left', 9, 0, 20);
-            addReel(this, 'dying_in_trap_right', 9, 21, 27);
-            addReel(this, 'dying_in_zap_right', 9, 28, 35);
+            addReel(this, 'dying_in_trap_left', 9, 21, 27);
+            addReel(this, 'dying_in_zap_left', 9, 28, 35);
         }
     });
 
@@ -678,8 +678,8 @@ function initComponents()
             addReel(this, 'converting_left', 11, 28, 36);
             addReel(this, 'fall_left', 11, 37, 37);
             addReel(this, 'dying_in_lava_left', 13, 0, 20);
-            addReel(this, 'dying_in_trap_right', 13, 21, 27);
-            addReel(this, 'dying_in_zap_right', 13, 28, 35);
+            addReel(this, 'dying_in_trap_left', 13, 21, 27);
+            addReel(this, 'dying_in_zap_left', 13, 28, 35);
         }
     });
 
