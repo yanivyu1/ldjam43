@@ -6,6 +6,7 @@ Row 0-1:
   17 Jump
   18 Fall
   19-28 Converting
+  29-37m Dying (trap)
 Row 2:
   0-32 Dying (lava)
   
@@ -17,18 +18,35 @@ Row 3-4:
   16-22 Idle believer
   23-27 Walking believer
   28-36 Converting
+  37 Falling
 Row 5:
   0-20 Dying (lava)
+  21-27 Dying (trap, right)
+  28-24 Dying (trap, left)
 
 Row 6-8:
-  Reserved for believer 2
+  Reserved for believer 2, currently a duplicated placeholder
 
 Objects:
 Row 9:
   0-9 Lava
   10-19 DeepLava
   20 Floor
-  21 Trap
+  21-26 Trap
+  --- Objects Below this line are placeholder images ---
+  27 MDoor
+  28 WDoor
+  29 Ice
+  30 Deepice
+  31 IceShrine
+  32 LavaShrine
+  33 Key1
+  34 Door1
+  35 Key2
+  36 Door2
+  37 Key3
+  38 Door3
+  39 Amulet
 
 Walls
 =====
@@ -36,9 +54,9 @@ Row 10:
   Wall 0-39
 Row 11:
   Wall 40-79
-Row 12:
+Row 11:
   Wall 80-119
-Row 13:
+Row 11:
   Wall 120-159
-Row 14:
+Row 11:
   Wall 160-199
