@@ -46,14 +46,23 @@ def process_stage(stg, w):
                 objects1 += [[j, i, 'Prophet']]
             elif 'N' == obj:
                 objects2 += [[j, i, 'NPC']]
+            elif 'M' == obj:
+                objects2 += [[j, i, 'NPC2']]
             elif 'L' == obj:
-                objects3 += [[j, i, 'Lava']]
+                tp = 'Lava'
+                if 0 < i and 0 < len(stg[i-1][j].strip()):
+                    tp = 'Deeplava'
+                objects3 += [[j, i, tp]]
             elif 'X' == obj:
                 wlind = wallindex_xy(stg, i, j, w, obj)
                 objects4 += [[j, i, 'Wall', 'spriteindex', wlind]]
             elif 'Y' == obj:
-                wlind = wallindex_xy(stg, i, j, w, obj)+20
+                wlind = wallindex_xy(stg, i, j, w, obj) + 20
                 objects4 += [[j, i, 'Wall', 'spriteindex', wlind]]
+            elif '^' == obj:
+                objects3 += [[j, i, 'Floor']]
+            elif '~' == obj:
+                objects3 += [[j, i, 'Trap']]
             elif 0 < len(obj) and '0' == obj[0]:
                 objects3 += [[j, i, 'Counter']]
                 reqs += [int(obj[2:])]
