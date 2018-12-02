@@ -1,15 +1,15 @@
 var assets = function() {
     var sprite_map = {
         prophet_stand_right: [0, 0],
-        unbeliever_stand_right: [0, 3],
-        true_believer_stand_right: [16, 3],
-        tile_lava: [0, 9]
+        unbeliever_stand_right: [0, 6],
+        true_believer_stand_right: [16, 6],
+        tile_lava: [0, 14]
     };
 
     for (var row = 0; row < 5; row++) {
         for (var col = 0; col < 40; col++) {
             var wall_num = row * 40 + col;
-            var wall_pos = [col, row + 10];
+            var wall_pos = [col, row + 15];
             sprite_map['tile_Wall' + wall_num] = wall_pos;
         }
     }
@@ -178,8 +178,8 @@ function initComponents()
     Crafty.c('Lava', {
         init: function() {
             this.addComponent('2D, DOM, Lava, tile_lava, SpriteAnimation');
-            addReel(this, 'shallow', 9, 0, 9);
-            addReel(this, 'deep', 9, 10, 19);
+            addReel(this, 'shallow', 14, 0, 5);
+            addReel(this, 'deep', 14, 6, 11);
         },
 
         setLavaType: function(lava_type) {
@@ -382,13 +382,17 @@ function initComponents()
             addReel(this, 'converting_right', 0, 19, 28);
             addReel(this, 'dying_in_trap_right', 0, 29, 37);
             addReel(this, 'dying_in_lava_right', 2, 0, 32);
+            addReel(this, 'start_casting_right', 4, 0, 3);
+            addReel(this, 'casting_right', 4, 4, 11);
             addReel(this, 'stand_left', 1, 0, 9);
             addReel(this, 'walk_left', 1, 10, 16);
             addReel(this, 'jump_left', 1, 17, 17);
             addReel(this, 'fall_left', 1, 18, 18);
             addReel(this, 'converting_left', 1, 19, 28);
             addReel(this, 'dying_in_trap_left', 1, 29, 37);
-            addReel(this, 'dying_in_lava_left', 2, 0, 32);
+            addReel(this, 'dying_in_lava_left', 3, 0, 32);
+            addReel(this, 'start_casting_right', 5, 0, 3);
+            addReel(this, 'casting_right', 5, 4, 11);
             this.dir_animate('stand', -1);
             this.setupMovement();
 
@@ -474,12 +478,12 @@ function initComponents()
             // Unbelievers can't fall, but Gravity triggers a fall direction for new
             // entities before it figures out that they're on the ground.
             // So we have to make fall animations which are just copies of stand animations.
-            addReel(this, 'stand_right', 3, 0, 6);
-            addReel(this, 'fall_right', 3, 0, 6); // copy stand animation
-            addReel(this, 'being_converted_right', 3, 7, 15);
-            addReel(this, 'stand_left', 4, 0, 6);
-            addReel(this, 'fall_left', 4, 0, 6); // copy stand animation
-            addReel(this, 'being_converted_left', 4, 7, 15);
+            addReel(this, 'stand_right', 6, 0, 6);
+            addReel(this, 'fall_right', 6, 0, 6); // copy stand animation
+            addReel(this, 'being_converted_right', 6, 7, 15);
+            addReel(this, 'stand_left', 7, 0, 6);
+            addReel(this, 'fall_left', 7, 0, 6); // copy stand animation
+            addReel(this, 'being_converted_left', 7, 7, 15);
 
             this.direction = (Math.random() < 0.5 ? 'right' : 'left');
             this.dir_animate('stand', -1);
@@ -522,18 +526,20 @@ function initComponents()
     Crafty.c('TrueBeliever', {
         init: function() {
             this.addComponent('Character, HasConvertingPowers, NewDirectionWorkaround, true_believer_stand_right');
-            addReel(this, 'stand_right', 3, 16, 22);
-            addReel(this, 'walk_right', 3, 23, 27);
-            addReel(this, 'converting_right', 3, 28, 36);
-            addReel(this, 'fall_right', 3, 37, 37);
-            addReel(this, 'dying_in_trap_right', 5, 21, 27);
-            addReel(this, 'dying_in_lava_right', 5, 0, 20);
-            addReel(this, 'stand_left', 4, 16, 22);
-            addReel(this, 'walk_left', 4, 23, 27);
-            addReel(this, 'converting_left', 4, 28, 36);
-            addReel(this, 'fall_left', 4, 37, 37);
-            addReel(this, 'dying_in_trap_left', 5, 28, 34);
-            addReel(this, 'dying_in_lava_left', 5, 0, 20);
+            addReel(this, 'stand_right', 6, 16, 22);
+            addReel(this, 'walk_right', 6, 23, 27);
+            addReel(this, 'converting_right', 6, 28, 36);
+            addReel(this, 'fall_right', 6, 37, 37);
+            addReel(this, 'dying_in_lava_right', 8, 0, 20);
+            addReel(this, 'dying_in_trap_right', 8, 21, 27);
+            addReel(this, 'dying_in_zap_right', 8, 28, 35);
+            addReel(this, 'stand_left', 7, 16, 22);
+            addReel(this, 'walk_left', 7, 23, 27);
+            addReel(this, 'converting_left', 7, 28, 36);
+            addReel(this, 'fall_left', 7, 37, 37);
+            addReel(this, 'dying_in_lava_left', 9, 0, 20);
+            addReel(this, 'dying_in_trap_right', 9, 21, 27);
+            addReel(this, 'dying_in_zap_right', 9, 28, 35);
 
             this.jumper(consts.believer_jump_speed, []);
 
@@ -650,7 +656,7 @@ function initGame()
     Crafty.pixelart(true);
     Crafty.load(assets, function() {
         initComponents();
-        level.render(0);
+        level.render(8);
     });
 }
 

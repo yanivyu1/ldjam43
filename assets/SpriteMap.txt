@@ -34,8 +34,8 @@ Row 9:
   20 Floor
   21-26 Trap
   --- Objects Below this line are placeholder images ---
-  27 MDoor
-  28 WDoor
+  27 MBlock
+  28 WBlock
   29 Ice
   30 Deepice
   31 IceShrine
