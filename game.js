@@ -1,7 +1,7 @@
 var assets = function() {
     var sprite_map = {
         prophet_stand_right: [0, 0],
-        npc_stand_right: [0, 3],
+        unbeliever_stand_right: [0, 3],
         tile_lava: [0, 9]
     };
 
@@ -74,7 +74,7 @@ var level = {
               Crafty.viewport.follow(prophet, 0, 0);
             }
             else if(objects[i].type == 'NPC') {
-                //this.addNPC(objects[i].x, objects[i].y);
+                this.addUnbeliever(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Lava') {
                 this.addLava(objects[i].x, objects[i].y, 'shallow');
@@ -87,11 +87,6 @@ var level = {
                     .setTotal(stage.required);
             }
         }
-
-        this.addUnbeliever(2, 13).text('1');
-        this.addUnbeliever(5, 13).text('2');
-        this.addUnbeliever(14, 18).text('3');
-        this.addUnbeliever(8, 13).text('4');
     },
 
     addEntity: function(entity_type, tiles_x, tiles_y, tile_type)
@@ -206,7 +201,7 @@ function initComponents()
     // All should be defined with "_left" and "_right"
     Crafty.c('Character', {
         init: function() {
-            this.addComponent('2D, DOM, SpriteAnimation, Gravity, Collision');
+            this.addComponent('2D, DOM, SpriteAnimation, Gravity, Jumper, Collision');
 
             this.gravity('gravity_blocking');
             
@@ -299,7 +294,7 @@ function initComponents()
 
     Crafty.c('Prophet', {
         init: function() {
-            this.addComponent('Character, prophet_stand_right, Multiway, Jumper');
+            this.addComponent('Character, prophet_stand_right, Multiway');
             addReel(this, 'stand_right', 10, 0, 0);
             addReel(this, 'walk_right', 7, 11, 0);
             addReel(this, 'jump_right', 1, 17, 0);
@@ -362,29 +357,59 @@ function initComponents()
 
         collisionUnBeliever: function(hitData) {
             var collidedUnbeliever = hitData[0].obj;
-            this.believers.push(collidedUnbeliever.trulyBelieve(this.believers.length));
+            var prophet = this;
+            collidedUnbeliever.trulyBelieve(function(trueBeliever) {
+                prophet.believers.push(trueBeliever);
+            });
         }
     });
 
     Crafty.c('UnBeliever', {
         init: function() {
-            this.addComponent('2D, DOM, Text, SolidHitBox, Gravity, Jumper, Collision');
-            this.gravity('gravity_blocking');
+            this.addComponent('Character, unbeliever_stand_right');
+            // Unbelievers can't fall, but Gravity triggers a fall direction for new
+            // entities before it figures out that they're on the ground.
+            // So we have to make fall animations which are just copies of stand animations.
+            addReel(this, 'stand_right', 7, 0, 3);
+            addReel(this, 'fall_right', 7, 0, 3); // copy stand animation
+            addReel(this, 'converting_right', 8, 7, 3);
+            addReel(this, 'stand_left', 7, 0, 4);
+            addReel(this, 'fall_left', 7, 0, 4); // copy stand animation
+            addReel(this, 'converting_left', 8, 7, 4);
+
+            this.direction = (Math.random() < 0.5 ? 'right' : 'left');
+            this.dir_animate('stand', -1);
+
             this.jumper(consts.believer_jump_speed, []);
-            this.textColor('green');
+
+            this.converting = false;
+            this.converting_anim = null;
+            this.converting_cb = null;
+
+            this.bind('AnimationEnd', this.onAnimationFinished);
         },
 
-        // current_total_believers = BEFORE adding this one
-        trulyBelieve: function(current_total_believers) {
-            var trueBeliever = Crafty.e('TrueBeliever')
-                .attr({x: this.x,
-                       y: this.y,
-                       w: consts.tile_width,
-                       h: consts.tile_height,
-                       idx: current_total_believers
-                }).text(this._text);
-            this.destroy();
-            return trueBeliever;
+        trulyBelieve: function(callback) {
+            if (this.converting) {
+                return;
+            }
+
+            this.converting = true;
+            this.converting_cb = callback;
+            this.converting_anim = this.dir_animate('converting');
+        },
+
+        onAnimationFinished: function(data) {
+            if (data.id == this.converting_anim) {
+                var trueBeliever = Crafty.e('TrueBeliever')
+                    .attr({x: this.x,
+                           y: this.y,
+                           w: consts.tile_width,
+                           h: consts.tile_height
+                          });
+                this.destroy();
+                this.converting_cb(trueBeliever);
+            }
         }
     });
 
@@ -402,12 +427,14 @@ function initComponents()
         collisionUnBeliever: function(hitData) {
             var collidedUnbeliever = hitData[0].obj;
             var prophet = Crafty('Prophet');
-            prophet.believers.push(collidedUnbeliever.trulyBelieve(prophet.believers.length));
+            collidedUnbeliever.trulyBelieve(function(trueBeliever) {
+                prophet.believers.push(trueBeliever);
+            });
         },
 
         onProphetMoved: function(prophetX, idx) {
             if (this.blocked_by_wall) {
-                if (this.checkIfStillWallBlocked(prophetX, idx)) {
+                if (this.checkIfStillWallBlocked(prophetX)) {
                     // Don't move
                     return false;
                 }
@@ -437,7 +464,7 @@ function initComponents()
             return true;
         },
 
-        checkIfStillWallBlocked: function(prophetX, idx) {
+        checkIfStillWallBlocked: function(prophetX) {
             // Basically, check if the prophet is nearby to "reactivate" believer
             if (Math.abs(prophetX - this.x) <= (consts.tile_width / 2)) {
                 this.blocked_by_wall = false;
