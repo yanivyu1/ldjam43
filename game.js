@@ -208,6 +208,7 @@ function initComponents()
             
             this.direction = 'right';
             this.dying = false;
+            this.disable_movement_animations = false;
             this.death_anim = null;
 
             this.new_direction_workaround = false;
@@ -240,7 +241,7 @@ function initComponents()
         },
         
         setNewDirection: function(direction) {
-            if (this.dying) {
+            if (this.disable_movement_animations) {
                 return;
             }
 
@@ -272,7 +273,9 @@ function initComponents()
             }
 
             this.dying = true;
+            this.disable_movement_animations = true;
             this.removeComponent('Multiway'); // If we could walk, don't walk anymore
+            this.removeComponent('Jumper');   // Don't jump/fall anymore
             this.removeComponent('Gravity');  // Don't fall anymore
             this.resetMotion();
 
@@ -335,21 +338,36 @@ function initComponents()
     Crafty.c('HasConvertingPowers', {
         init: function() {
             this.onHit('UnBeliever', this.collisionUnBeliever);
+            this.bind('AnimationEnd', this.onAnimationConcluded);
 
+            this.converting = false;
             this.converting_anim = null;
         },
 
         collisionUnBeliever: function(hitData) {
-            this.trigger('ConversionStarted');
+            if (this.converting) {
+                return;
+            }
+
+            this.converting = true;
+            this.disable_movement_animations = true;
             this.converting_anim = this.dir_animate('converting', 1);
+            this.trigger('ConversionStarted');
 
             var collidedUnbeliever = hitData[0].obj;
             var prophet = Crafty('Prophet');
-            var character = this;
             collidedUnbeliever.trulyBelieve(function(trueBeliever) {
                 prophet.believers.push(trueBeliever);
-                character.trigger('ConversionEnded');
             });
+        },
+
+        onAnimationConcluded: function(data) {
+            if (data.id == this.converting_anim) {
+                this.converting = false;
+                this.disable_movement_animations = false;
+                this.dir_animate('stand', -1);
+                this.trigger('ConversionEnded');
+            }
         }
     });
 
@@ -371,18 +389,25 @@ function initComponents()
             addReel(this, 'dying_in_trap_left', 1, 29, 37);
             addReel(this, 'dying_in_lava_left', 2, 0, 32);
             this.dir_animate('stand', -1);
+            this.setupMovement();
+
+            this.bind('Move', this.onMove);
+            this.bind('NewDirection', this.prophetNewDirection);
+            this.bind('ConversionStarted', this.onConversionStarted);
+            this.bind('ConversionEnded', this.onConversionEnded);
+
+            this.believers = [];
+            this.believers_blocked_walls = [];
+        },
+
+        setupMovement: function() {
             this.multiway({x: consts.prophet_walk_speed},
                 {RIGHT_ARROW: 0,
                  LEFT_ARROW: 180,
                  D: 0,
                  A: 180});
-            this.jumper(consts.prophet_jump_speed, [Crafty.keys.UP_ARROW, Crafty.keys.W]);
-
-            this.bind('Move', this.onMove);
-            this.bind('NewDirection', this.prophetNewDirection);
-
-            this.believers = [];
-            this.believers_blocked_walls = [];
+            this.jumper(consts.prophet_jump_speed,
+                [Crafty.keys.UP_ARROW, Crafty.keys.W]);            
         },
 
         onMove: function(evt) {
@@ -426,6 +451,19 @@ function initComponents()
                     believer.setNewDirectionX(0);
                 }
             }
+        },
+
+        onConversionStarted: function() {
+            // Stop being able to walk and jump
+            this.removeComponent('Multiway');
+            this.removeComponent('Jumper');
+        },
+
+        onConversionEnded: function() {
+            // Resume being able to walk and jump
+            this.addComponent('Multiway');
+            this.addComponent('Jumper');
+            this.setupMovement();
         }
     });
 
@@ -447,25 +485,25 @@ function initComponents()
 
             this.jumper(consts.believer_jump_speed, []);
 
-            this.converting = false;
-            this.converting_anim = null;
-            this.converting_cb = null;
+            this.being_converted = false;
+            this.being_converted_anim = null;
+            this.being_converted_cb = null;
 
             this.bind('AnimationEnd', this.onAnimationFinished);
         },
 
         trulyBelieve: function(callback) {
-            if (this.converting) {
+            if (this.being_converted) {
                 return;
             }
 
-            this.converting = true;
-            this.converting_cb = callback;
-            this.converting_anim = this.dir_animate('being_converted');
+            this.being_converted = true;
+            this.being_converted_cb = callback;
+            this.being_converted_anim = this.dir_animate('being_converted');
         },
 
         onAnimationFinished: function(data) {
-            if (data.id == this.converting_anim) {
+            if (data.id == this.being_converted_anim) {
                 var trueBeliever = Crafty.e('TrueBeliever')
                     .attr({x: this.x,
                            y: this.y,
@@ -475,7 +513,7 @@ function initComponents()
                 trueBeliever.direction = this.direction;
                 trueBeliever.dir_animate('stand', -1);
                 this.destroy();
-                this.converting_cb(trueBeliever);
+                this.being_converted_cb(trueBeliever);
             }
         }
     });
@@ -502,6 +540,11 @@ function initComponents()
         },
 
         onProphetMoved: function(prophetX, idx) {
+            if (this.converting) {
+                // Don't move while converting
+                return false;
+            }
+
             if (this.blocked_by_wall) {
                 if (this.checkIfStillWallBlocked(prophetX)) {
                     // Don't move
