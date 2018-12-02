@@ -74,13 +74,14 @@ var level = {
             else if (objects[i].type == 'Lava') {
                 this.addLava(objects[i].x, objects[i].y, 'shallow');
             }
-            else if (objects[i].type == 'DeepLava') {
+            else if (objects[i].type == 'Deeplava') {
                 this.addLava(objects[i].x, objects[i].y, 'deep');
             }
             else if (objects[i].type == 'Counter') {
                 var counter = this.addCounter(objects[i].x, objects[i].y);
                 counter.setTotal(stage.required);
             }
+            else console.log(objects[i].type);
         }
     },
 
