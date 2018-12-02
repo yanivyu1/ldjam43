@@ -204,11 +204,11 @@ function initComponents()
                 if (e.key == Crafty.keys.S) {
                   var prophet = Crafty('Prophet');
                   Crafty.e('SkipLevelText')
-                      .attr({x:prophet-6, y:prophet.y - 42, w:75})
+                      .attr({x:prophet.x - 24, y:prophet.y - 60, w: 75})
                       .textAlign('center')
                       .textColor('black')
-                      .textFont({family: 'Alanden', size:'15px'})
-                      .text('You Pussy');
+                      .textFont({family: 'Tribal', size:'15px', weight: 'bold'})
+                      .text('Coward.');
                     setTimeout(function(){
                         switchToNextLevel();
                     }, consts.wait_for_death);
@@ -234,10 +234,10 @@ function initComponents()
                     if(Crafty('Prophet').length > 0){
                       var prophet = Crafty('Prophet');
                       Crafty.e('SkipLevelText')
-                          .attr({x:prophet-6, y:prophet.y - 42, w:200})
+                          .attr({x:prophet.x-6, y:prophet.y - 42, w:200})
                           .textAlign('center')
                           .textColor('black')
-                          .textFont({family: 'Alanden', size:'15px'})
+                          .textFont({family: 'Tribal', size:'15px'})
                           .text('What a World... What a World...');
                         setTimeout(function(){
                             Crafty('Prophet').die('dying_in_lava');
@@ -247,11 +247,13 @@ function initComponents()
             }
         }
     });
+    
     Crafty.c('SkipLevelText',{
         init: function(){
             this.addComponent('2D, DOM, Text');
         }
     });
+
     Crafty.c('Floor', {
         init: function() {
             this.addComponent('2D, DOM, tile_floor, gravity_blocking, Collision');

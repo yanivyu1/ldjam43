@@ -12,3 +12,8 @@ body {
     font-family: Alanden;
     src: url(assets/Alanden.ttf);
 }
+
+@font-face {
+    font-family: Tribal;
+    src: url(assets/Tribal_Schoolhouse.ttf);
+}
