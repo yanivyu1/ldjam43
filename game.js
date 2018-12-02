@@ -445,7 +445,7 @@ function initComponents()
                 var trueBelievers = Crafty('TrueBeliever');
                 if(Crafty('Counter').count == Crafty('Counter').total && trueBelievers.length == 0 && prophet.length == 1){
                     switchToNextLevel();
-                }else if(Crafty('Counter').count > Crafty('Counter').total || trueBelievers.length > 0){
+                }else if(Crafty('Counter').count > Crafty('Counter').total){
                     Crafty.enterScene('level');
                 }
             }
