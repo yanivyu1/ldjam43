@@ -340,13 +340,19 @@ function initComponents()
         init: function() {
             this.onHit('UnBeliever', this.collisionUnBeliever);
             this.bind('AnimationEnd', this.onAnimationConcluded);
-
+            this.bind('NewDirection', this.convertingPowersNewDirection);
+            
+            this.can_convert = true;  // only if I'm standing on the ground
             this.converting = false;
             this.converting_anim = null;
         },
 
+        convertingPowersNewDirection: function(direction) {
+            this.can_convert = (direction.y == 0);
+        },
+
         collisionUnBeliever: function(hitData) {
-            if (this.converting) {
+            if (this.converting || !this.can_convert) {
                 return;
             }
 
