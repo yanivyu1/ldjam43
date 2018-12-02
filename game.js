@@ -4,7 +4,8 @@ var assets = function() {
         unbeliever_stand_right: [0, 6],
         true_believer_stand_right: [16, 6],
         tile_lava: [0, 14],
-        tile_floor: [12, 14]
+        tile_floor: [12, 14],
+        tile_trap: [13, 14]
     };
 
     for (var row = 0; row < 5; row++) {
@@ -43,18 +44,24 @@ var consts = {
 };
 
 var game_state = {
-    cur_world: 0,
+    cur_world: 1,
     cur_level: 0
 };
 
 function addReel(entity, anim_name, row, first_col, last_col)
 {
     var frames = [];
-    for (var col = first_col; col <= last_col; col++) {
-        frames.push([col, row]);
+    if (first_col <= last_col) {
+        for (var col = first_col; col <= last_col; col++) {
+            frames.push([col, row]);
+        }
+    } else {
+        for (var col = first_col; col >= last_col; col--) {
+            frames.push([col, row]);
+        }
     }
 
-    entity.reel(anim_name, 1000 * (last_col - first_col + 1) / consts.anim_fps, frames);
+    entity.reel(anim_name, 1000 * (Math.abs(last_col - first_col) + 1) / consts.anim_fps, frames);
 }
 
 function initScenes()
@@ -87,6 +94,11 @@ function initScenes()
         function addLava(tiles_x, tiles_y, lava_type)
         {
             return addEntity('Lava', tiles_x, tiles_y).setLavaType(lava_type);
+        }
+
+        function addTrap(tiles_x, tiles_y)
+        {
+            return addEntity('Trap', tiles_x, tiles_y);
         }
 
         function addProphet(tiles_x, tiles_y)
@@ -143,6 +155,9 @@ function initScenes()
             }
             else if (objects[i].type == 'Deeplava') {
                 addLava(objects[i].x, objects[i].y, 'deep');
+            }
+            else if (objects[i].type == 'Trap') {
+                addTrap(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Counter') {
                 addCounter(objects[i].x, objects[i].y)
@@ -203,7 +218,7 @@ function initComponents()
 
     Crafty.c('Lava', {
         init: function() {
-            this.addComponent('2D, DOM, Lava, tile_lava, SpriteAnimation');
+            this.addComponent('2D, DOM, tile_lava, SpriteAnimation');
             addReel(this, 'shallow', 14, 0, 5);
             addReel(this, 'deep', 14, 6, 11);
         },
@@ -211,6 +226,39 @@ function initComponents()
         setLavaType: function(lava_type) {
             this.animate(lava_type, -1);
         },
+    });
+
+    Crafty.c('Trap', {
+        init: function() {
+            this.addComponent('2D, DOM, tile_trap, SpriteAnimation');
+            addReel(this, 'silent', 14, 13, 13);
+            addReel(this, 'deadly', 14, 13, 18);
+            addReel(this, 'reverse_deadly', 14, 18, 13);
+
+            this.animate('silent', -1);
+            this.bind('AnimationEnd', this.onAnimationCompleted);
+            this.is_killing = false;
+        },
+
+        activate: function() {
+            if (!this.is_killing) {
+                this.is_killing = true;
+                this.animate('deadly', 1);
+            }
+        },
+
+        onAnimationCompleted: function(data) {
+            if (data.id == 'deadly') {
+                var trap = this;
+                setTimeout(function() {
+                    trap.animate('reverse_deadly', 1);
+                }, 500);
+            }
+            else if (data.id == 'reverse_deadly') {
+                this.animate('silent', -1);
+                this.is_killing = false;
+            }
+        }
     });
 
     // Character is a component that includes the semantics
@@ -294,19 +342,28 @@ function initComponents()
             }
         },
 
-        die: function(death_anim) {
+        die: function(death_anim, allow_falling, skip_counter) {
             if (this.dying) {
                 return;
             }
 
             this.dying = true;
             this.disable_movement_animations = true;
+            prev_vy = this.vy;
             this.removeComponent('Multiway'); // If we could walk, don't walk anymore
-            this.removeComponent('Jumper');   // Don't jump/fall anymore
-            this.removeComponent('Gravity');  // Don't fall anymore
-            this.resetMotion();
-
-            Crafty('Counter').increment();
+            if (allow_falling) {
+                // work around bug(?) in Crafty - vy is reset even though we're falling
+                this.vy = prev_vy;
+            }
+            else {
+                this.removeComponent('Jumper');   // Don't jump/fall anymore
+                this.removeComponent('Gravity');  // Don't fall anymore
+                this.resetMotion();
+            }
+            
+            if (!skip_counter) {
+                Crafty('Counter').increment();
+            }
 
             this.death_anim = this.dir_animate(death_anim, 1);
         },
@@ -315,8 +372,12 @@ function initComponents()
             this.die('dying_in_lava');
         },
 
-        onTouchTrap: function() {
-            this.die('dying_in_trap');
+        onTouchTrap: function(hitData) {
+            if (!this.dying) {
+                var trap = hitData[0].obj;
+                trap.activate();
+                this.die('dying_in_trap', true, true);
+            }
         },
 
         onAnimationEnd: function(data) {
