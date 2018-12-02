@@ -281,16 +281,6 @@ function initComponents()
                 }
             }
             this.believers = this.believers.concat(believers_for_end_of_queue);
-            //
-            // idx = 0;
-            // for (believer in this.believers_blocked_walls) {
-            //     if (this.believers_blocked_walls[idx].checkIfStillWallBlocked(this.x, idx)) {
-            //         // Inded still blocked by a wall
-            //         idx += 1;
-            //     } else { // No longer blocked by a wall, and should be removed from this queue
-            //         this.believers.push(this.believers_blocked_walls.splice(idx, 1)[0]);
-            //     }
-            // }
         },
 
         collisionUnBeliever: function(hitData) {
@@ -341,10 +331,10 @@ function initComponents()
         trulyBelieve: function(current_total_believers) {
             var trueBeliever = Crafty.e('TrueBeliever')
                 .attr({x: this.x,
-                    y: this.y,
-                    w: consts.tile_width,
-                    h: consts.tile_height,
-                    idx: current_total_believers
+                       y: this.y,
+                       w: consts.tile_width,
+                       h: consts.tile_height,
+                       idx: current_total_believers
                 }).text(this._text);
             this.destroy();
             return trueBeliever;
@@ -369,6 +359,13 @@ function initComponents()
         },
 
         onProphetMoved: function(prophetX, idx) {
+            if (this.blocked_by_wall) {
+                if (this.checkIfStillWallBlocked(prophetX, idx)) {
+                    // Don't move
+                    return false;
+                }
+            }
+
             var actual_gap_x_px = (consts.follow_x_gap_px + consts.tile_width) * (idx + 1);
             var prev_x = this.x;
             var delta_x = 0;
@@ -389,10 +386,12 @@ function initComponents()
                 this.blocked_by_wall = true;
                 return false;
             }
+
             return true;
         },
 
         checkIfStillWallBlocked: function(prophetX, idx) {
+            // Basically, check if the prophet is nearby to "reactivate" believer
             if (Math.abs(prophetX - this.x) <= (consts.tile_width / 2)) {
                 this.blocked_by_wall = false;
                 return false;
@@ -406,12 +405,6 @@ function initComponents()
         init: function() {
             this.addComponent('2D, DOM, npc_stand_right, SpriteAnimation, Twoway, Gravity, Collision');
             this.gravity("gravity_blocking");
-            this.bind('hitOff',this.turnToBeleiver);
-        },
-
-        turnToBeleiver: function(evt)
-        {
-            var hitData = this.hit('');
         }
     });
 
