@@ -3,7 +3,8 @@ var assets = function() {
         prophet_stand_right: [0, 0],
         unbeliever_stand_right: [0, 6],
         true_believer_stand_right: [16, 6],
-        tile_lava: [0, 14]
+        tile_lava: [0, 14],
+        tile_floor: [12, 14]
     };
 
     for (var row = 0; row < 5; row++) {
@@ -34,7 +35,7 @@ var consts = {
     anim_fps: 12,
     scale: 1 / window.devicePixelRatio,
     full_screen_ratio: 0.95,
-    zoom_level: 3,
+    zoom_level: 2,
     prophet_walk_speed: 120,
     prophet_jump_speed: 320,
     believer_jump_speed: 3000,
@@ -69,9 +70,9 @@ function initScenes()
                     h: consts.tile_height});
         }
 
-        function addFloor(tiles_x, tiles_y, floorType)
+        function addFloor(tiles_x, tiles_y)
         {
-            return addEntity('Floor', tiles_x, tiles_y, floorType);
+            return addEntity('Floor', tiles_x, tiles_y);
         }
 
         function addWall(tiles_x, tiles_y, floorType)
@@ -122,9 +123,12 @@ function initScenes()
             if(objects[i].type == 'Wall') {
                 addWall(objects[i].x, objects[i].y, 'tile_' + objects[i].type +''+objects[i].spriteindex);
             }
+            else if (objects[i].type == 'Floor') {
+                addFloor(objects[i].x, objects[i].y);
+            }
             else if (objects[i].type == 'Prophet') {
-            var prophet = addProphet(objects[i].x, objects[i].y);
-            Crafty.viewport.follow(prophet, 0, 0);
+                var prophet = addProphet(objects[i].x, objects[i].y);
+                Crafty.viewport.follow(prophet, 0, 0);
             }
             else if(objects[i].type == 'NPC') {
                 addUnbeliever(objects[i].x, objects[i].y);
@@ -179,7 +183,9 @@ function initComponents()
 
     Crafty.c('Floor', {
         init: function() {
-            this.addComponent('2D, DOM, gravity_blocking');
+            this.addComponent('2D, DOM, tile_floor, gravity_blocking, Collision');
+            // No boundary, to work around "walk-onto bug"
+            this.offsetBoundary(0, 0, 0, -consts.tile_height);
         }
     });
 
@@ -219,6 +225,7 @@ function initComponents()
             this.addComponent('2D, DOM, SpriteAnimation, Gravity, Jumper, Collision');
 
             this.gravity('gravity_blocking');
+            this.offsetBoundary(-4, -4, -4, 0);
             
             this.direction = 'right';
             this.dying = false;
