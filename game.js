@@ -294,6 +294,7 @@ function initComponents()
 
         onAnimationEnd: function(data) {
             if (data.id == this.death_anim) {
+                this.visible = false;
                 var character = this;
                 setTimeout(function() {
                     character.trigger('Death');
@@ -395,7 +396,6 @@ function initComponents()
             this.bind('NewDirection', this.prophetNewDirection);
             this.bind('ConversionStarted', this.onConversionStarted);
             this.bind('ConversionEnded', this.onConversionEnded);
-            this.bind('Death', function() { console.log('died'); });
 
             this.believers = [];
             this.believers_blocked_walls = [];
