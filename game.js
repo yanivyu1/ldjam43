@@ -237,7 +237,7 @@ function initComponents()
                           .attr({x:prophet-6, y:prophet.y - 42, w:200})
                           .textAlign('center')
                           .textColor('black')
-                          .textFont({family: 'Alanden', size:'15px'})
+                          .textFont({family: 'Tribal', size:'15px'})
                           .text('What a World... What a World...');
                         setTimeout(function(){
                             Crafty('Prophet').die('dying_in_lava');
