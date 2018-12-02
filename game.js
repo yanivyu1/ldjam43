@@ -42,6 +42,11 @@ var consts = {
     wait_for_death: 1000
 };
 
+var game_state = {
+    cur_world: 0,
+    cur_level: 0
+};
+
 function addReel(entity, anim_name, row, first_col, last_col)
 {
     var frames = [];
@@ -52,91 +57,91 @@ function addReel(entity, anim_name, row, first_col, last_col)
     entity.reel(anim_name, 1000 * (last_col - first_col + 1) / consts.anim_fps, frames);
 }
 
-var level = {
-    render: function(level) {
-        Crafty.e('KeyboardTrapper');
+function initScenes()
+{
+    Crafty.defineScene('level', function() {
+        function addEntity(entity_type, tiles_x, tiles_y, tile_type)
+        {
+            return Crafty.e(entity_type, tile_type)
+                .attr({x: tiles_x * consts.tile_width,
+                    y: tiles_y * consts.tile_height,
+                    w: consts.tile_width,
+                    h: consts.tile_height});
+        }
 
+        function addFloor(tiles_x, tiles_y, floorType)
+        {
+            return addEntity('Floor', tiles_x, tiles_y, floorType);
+        }
+
+        function addWall(tiles_x, tiles_y, floorType)
+        {
+            return addEntity('Wall', tiles_x, tiles_y, floorType);
+        }
+
+        function addOuterWall(tiles_x, tiles_y)
+        {
+            return addWall(tiles_x, tiles_y, null).attr({w: 1});
+        }
+
+        function addLava(tiles_x, tiles_y, lava_type)
+        {
+            return addEntity('Lava', tiles_x, tiles_y).setLavaType(lava_type);
+        }
+
+        function addProphet(tiles_x, tiles_y)
+        {
+            return addEntity('Prophet', tiles_x, tiles_y);
+        }
+
+        function addUnbeliever(tiles_x, tiles_y)
+        {
+            return addEntity('UnBeliever', tiles_x, tiles_y);
+        }
+
+        function addCounter(tiles_x, tiles_y)
+        {
+            return Crafty.e('Counter')
+                .attr({x: tiles_x * consts.tile_width,
+                    y: tiles_y * consts.tile_height});
+        }
+
+        Crafty.viewport.scale(consts.scale * consts.zoom_level);
+        
         Crafty.e('2D, DOM, Image')
             .attr({x: 0, y: 0})
             .image('assets/bg-beach.png');
 
         for (var i = 0; i < consts.level_height - 1; i++) {
-            this.addOuterWall(0, i);
-            this.addOuterWall(consts.level_width, i);
+            addOuterWall(0, i);
+            addOuterWall(consts.level_width, i);
         }
-        var stage = worlds[0].stages[level];
+        var stage = worlds[game_state.cur_world].stages[game_state.cur_level];
         var objects = stage.objects;
         for(var i=0;i<objects.length;i++){
             if(objects[i].type == 'Wall') {
-                this.addWall(objects[i].x, objects[i].y, 'tile_' + objects[i].type +''+objects[i].spriteindex);
+                addWall(objects[i].x, objects[i].y, 'tile_' + objects[i].type +''+objects[i].spriteindex);
             }
             else if (objects[i].type == 'Prophet') {
-              var prophet = this.addProphet(objects[i].x, objects[i].y);
-              Crafty.viewport.follow(prophet, 0, 0);
+            var prophet = addProphet(objects[i].x, objects[i].y);
+            Crafty.viewport.follow(prophet, 0, 0);
             }
             else if(objects[i].type == 'NPC') {
-                this.addUnbeliever(objects[i].x, objects[i].y);
+                addUnbeliever(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Lava') {
-                this.addLava(objects[i].x, objects[i].y, 'shallow');
+                addLava(objects[i].x, objects[i].y, 'shallow');
             }
             else if (objects[i].type == 'Deeplava') {
-                this.addLava(objects[i].x, objects[i].y, 'deep');
+                addLava(objects[i].x, objects[i].y, 'deep');
             }
             else if (objects[i].type == 'Counter') {
-                this.addCounter(objects[i].x, objects[i].y)
+                addCounter(objects[i].x, objects[i].y)
                     .setTotal(stage.required);
             }
         }
-    },
-
-    addEntity: function(entity_type, tiles_x, tiles_y, tile_type)
-    {
-        return Crafty.e(entity_type, tile_type)
-            .attr({x: tiles_x * consts.tile_width,
-                   y: tiles_y * consts.tile_height,
-                   w: consts.tile_width,
-                   h: consts.tile_height});
-    },
-
-    addFloor: function(tiles_x, tiles_y, floorType)
-    {
-        return this.addEntity('Floor', tiles_x, tiles_y, floorType);
-    },
-
-    addWall: function(tiles_x, tiles_y, floorType)
-    {
-        return this.addEntity('Wall', tiles_x, tiles_y, floorType);
-    },
-
-    addOuterWall: function(tiles_x, tiles_y)
-    {
-        return this.addWall(tiles_x, tiles_y, null)
-            .attr({w: 1});
-    },
-
-    addLava: function(tiles_x, tiles_y, lava_type)
-    {
-        return this.addEntity('Lava', tiles_x, tiles_y).setLavaType(lava_type);
-    },
-
-    addProphet: function(tiles_x, tiles_y)
-    {
-        return this.addEntity('Prophet', tiles_x, tiles_y);
-    },
-
-    addUnbeliever: function(tiles_x, tiles_y)
-    {
-        return this.addEntity('UnBeliever', tiles_x, tiles_y);
-    },
-
-    addCounter: function(tiles_x, tiles_y)
-    {
-        return Crafty.e('Counter')
-            .attr({x: tiles_x * consts.tile_width,
-                   y: tiles_y * consts.tile_height});
-    }
-};
+    });
+}
 
 function initComponents()
 {
@@ -153,6 +158,15 @@ function initComponents()
             if (e.key == Crafty.keys.Z) {
                 var zoom_out_level = Math.min(window.innerWidth / 960, window.innerHeight / 640);
                 Crafty.viewport.scale(zoom_out_level);
+            }
+
+            else if (Crafty.keydown[Crafty.keys.SHIFT]) {
+                if (e.key == Crafty.keys.S) {
+                    switchToNextLevel();
+                }
+                else if (e.key == Crafty.keys.P) {
+                    switchToPrevLevel();
+                }
             }
         },
 
@@ -653,16 +667,53 @@ function initComponents()
     });
 }
 
+function switchToNextLevel()
+{
+    if (game_state.cur_level + 1 == worlds[game_state.cur_world].stages.length) {
+        if (game_state.cur_world + 1 == worlds.length) {
+            return;
+        }
+
+        game_state.cur_level = 0;
+        game_state.cur_world++;
+    } else {
+        game_state.cur_level++;
+    }
+    Crafty.enterScene('level');
+}
+
+function switchToPrevLevel()
+{
+    if (game_state.cur_level == 0) {
+        if (game_state.cur_world == 0) {
+            return;
+        }
+
+        game_state.cur_world--;
+        game_state.cur_level = worlds[game_state.cur_world].stages.length - 1;
+    } else {
+        game_state.cur_level--;
+    }
+    Crafty.enterScene('level');
+}
+
+function createNonLevelEntities()
+{
+    Crafty.e('KeyboardTrapper');
+}
+
 function initGame()
 {
     Crafty.init(window.innerWidth * consts.full_screen_ratio,
                 window.innerHeight * consts.full_screen_ratio,
                 document.getElementById('game'));
-    Crafty.viewport.scale(consts.scale * consts.zoom_level);
+    //Crafty.viewport.scale(consts.scale * consts.zoom_level);
     Crafty.pixelart(true);
     Crafty.load(assets, function() {
         initComponents();
-        level.render(8);
+        initScenes();
+        createNonLevelEntities();
+        Crafty.enterScene('level');
     });
 }
 
