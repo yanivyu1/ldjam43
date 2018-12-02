@@ -109,13 +109,8 @@ function initScenes()
                     y: tiles_y * consts.tile_height});
         }
 
-<<<<<<< HEAD
-        Crafty.viewport.scale(consts.scale * consts.zoom_level);
-
-=======
         Crafty.viewport.scale(consts.zoom_in_level);
-        
->>>>>>> master
+
         Crafty.e('2D, DOM, Image')
             .attr({x: 0, y: 0})
             .image('assets/bg-beach.png');
@@ -194,7 +189,6 @@ function initComponents()
 
         onKeyUp: function(e) {
             if (e.key == Crafty.keys.Z) {
-<<<<<<< HEAD
                 Crafty.viewport.scale(consts.scale * consts.zoom_level);
             }else if(e.key == Crafty.keys.ENTER){
                 Crafty.enterScene('level');
@@ -202,9 +196,6 @@ function initComponents()
                 if (e.key == Crafty.keys.R) {
                     Crafty.enterScene('level');
                 }
-=======
-                Crafty.viewport.scale(consts.zoom_in_level);
->>>>>>> master
             }
         }
     });
@@ -253,12 +244,7 @@ function initComponents()
             this.addComponent('2D, DOM, SpriteAnimation, Gravity, Jumper, Collision');
 
             this.gravity('gravity_blocking');
-<<<<<<< HEAD
-
-=======
             this.offsetBoundary(-4, -4, -4, 0);
-            
->>>>>>> master
             this.direction = 'right';
             this.dying = false;
             this.disable_movement_animations = false;
@@ -813,7 +799,7 @@ function initGame()
         max: {x: consts.level_width * consts.tile_width,
               y: consts.level_height * consts.tile_height}
             };
-    
+
     Crafty.load(assets, function() {
         initComponents();
         initScenes();
