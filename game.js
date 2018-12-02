@@ -234,7 +234,7 @@ function initComponents()
                     if(Crafty('Prophet').length > 0){
                       var prophet = Crafty('Prophet');
                       Crafty.e('SkipLevelText')
-                          .attr({x:prophet-6, y:prophet.y - 42, w:200})
+                          .attr({x:prophet.x-6, y:prophet.y - 42, w:200})
                           .textAlign('center')
                           .textColor('black')
                           .textFont({family: 'Tribal', size:'15px'})
