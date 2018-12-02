@@ -247,11 +247,13 @@ function initComponents()
             }
         }
     });
+    
     Crafty.c('SkipLevelText',{
         init: function(){
             this.addComponent('2D, DOM, Text');
         }
     });
+
     Crafty.c('Floor', {
         init: function() {
             this.addComponent('2D, DOM, tile_floor, gravity_blocking, Collision');
