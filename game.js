@@ -208,7 +208,7 @@ function initComponents()
                       .textAlign('center')
                       .textColor('black')
                       .textFont({family: 'Tribal', size:'15px', weight: 'bold'})
-                      .text('You Pussy');
+                      .text('You coward.');
                     setTimeout(function(){
                         switchToNextLevel();
                     }, consts.wait_for_death);
