@@ -24,7 +24,7 @@ var assets = function() {
                 map: sprite_map
             }
         },
-        "images": ["assets/bg-beach.png"]
+        "images": ["assets/bg-beach.png", 'assets/Island-text.png']
     };
 }();
 
@@ -44,8 +44,9 @@ var consts = {
 };
 
 var game_state = {
-    cur_world: 1,
-    cur_level: 0
+    cur_world: 0,
+    cur_level: 0,
+    scene_type: null
 };
 
 function addReel(entity, anim_name, row, first_col, last_col)
@@ -121,6 +122,7 @@ function initScenes()
                     y: tiles_y * consts.tile_height});
         }
 
+        game_state.scene_type = 'level';
         Crafty.viewport.scale(consts.zoom_in_level);
 
         Crafty.e('2D, DOM, Image')
@@ -166,11 +168,15 @@ function initScenes()
         }
     });
 
-    Crafty.defineScene('intro', function(){
-        Crafty.e('2D, DOM, Image, Keyboard')
+    Crafty.defineScene('intro', function() {
+        game_state.scene_type = 'intro';
+
+        Crafty.e('2D, DOM, Image')
             .attr({x: 0, y: 0})
             .image('assets/Island-text.png');
-        Crafty.e('KeyboardTrapper');
+
+        //Crafty.viewport.scale(1 / window.devicePixelRatio);
+        //Crafty.viewport.zoom(consts.zoom_in_level);
     });
 }
 
@@ -186,13 +192,15 @@ function initComponents()
 
         // Just an always-present component for trapping keyboard keys
         onKeyDown: function(e) {
-            if (e.key == Crafty.keys.Z) {
+            if (game_state.scene_type == 'level' && e.key == Crafty.keys.Z) {
                 var zoom_out_level = Math.min(window.innerWidth / 960, window.innerHeight / 640);
                 zoom_out_level *= consts.full_screen_ratio;
                 Crafty.viewport.scale(zoom_out_level);
             }
-
-            else if (Crafty.keydown[Crafty.keys.SHIFT]) {
+            else if (game_state.scene_type == 'intro' && e.key == Crafty.keys.ENTER) {
+                Crafty.enterScene('level');
+            }
+            else if (game_state.scene_type == 'level' && Crafty.keydown[Crafty.keys.SHIFT]) {
                 if (e.key == Crafty.keys.S) {
                   var prophet = Crafty('Prophet');
                   Crafty.e('SkipLevelText')
@@ -208,20 +216,17 @@ function initComponents()
                 else if (e.key == Crafty.keys.P) {
                     switchToPrevLevel();
                 }
+                else if (e.key == Crafty.keys.R) {
+                    if (Crafty('Prophet').length > 0) {
+                        Crafty('Prophet').die('dying_in_lava');
+                    }
+                }
             }
         },
 
         onKeyUp: function(e) {
-            if (e.key == Crafty.keys.Z) {
+            if (game_state.scene_type == 'level' && e.key == Crafty.keys.Z) {
                 Crafty.viewport.scale(consts.zoom_in_level);
-            }else if(e.key == Crafty.keys.ENTER){
-                Crafty.enterScene('level');
-            }else if (Crafty.keydown[Crafty.keys.SHIFT]) {
-                if (e.key == Crafty.keys.R) {
-                    if(Crafty('Prophet').length > 0){
-                        Crafty('Prophet').die('dying_in_lava');
-                    }
-                }
             }
         }
     });
