@@ -109,8 +109,6 @@ function initScenes()
                     y: tiles_y * consts.tile_height});
         }
 
-        Crafty.viewport.scale(consts.zoom_in_level);
-        
         Crafty.e('2D, DOM, Image')
             .attr({x: 0, y: 0})
             .image('assets/bg-beach.png');
@@ -165,9 +163,10 @@ function initComponents()
         // Just an always-present component for trapping keyboard keys
         onKeyDown: function(e) {
             if (e.key == Crafty.keys.Z) {
-                var zoom_out_level = Math.min(window.innerWidth / 960, window.innerHeight / 640);
-                zoom_out_level *= consts.full_screen_ratio;
-                Crafty.viewport.scale(zoom_out_level);
+                console.log('zooming out');
+                this.zoom_out_level = Math.min(window.innerWidth / 960, window.innerHeight / 640);
+                this.zoom_out_level *= consts.full_screen_ratio;
+                Crafty.viewport.zoom(this.zoom_out_level, 0, 0, 0);
             }
 
             else if (Crafty.keydown[Crafty.keys.SHIFT]) {
@@ -182,7 +181,8 @@ function initComponents()
 
         onKeyUp: function(e) {
             if (e.key == Crafty.keys.Z) {
-                Crafty.viewport.scale(consts.zoom_in_level);
+                console.log('zooming in');
+                Crafty.viewport.zoom(this.zoom_in_level, 0, 0, 0);
             }
         }
     });
@@ -763,18 +763,39 @@ function createNonLevelEntities()
     Crafty.e('KeyboardTrapper');
 }
 
+function setupViewport()
+{
+    Crafty.one('ViewportScroll', function() {
+        setTimeout(function() {
+            Crafty.viewport.zoom(2, 0, 0, 0);
+            setTimeout(function() {
+                var prophet = Crafty('Prophet');
+                if (prophet.length > 0) {
+                    Crafty.viewport.follow(prophet, 0, 0);
+                }
+            }, 20);
+        }, 20);
+    });
+
+    Crafty.viewport.bounds = {
+        min: {x: 0,
+              y: 0},
+        max: {x: consts.level_width * consts.tile_width,
+              y: consts.level_height * consts.tile_height}
+    };
+
+    Crafty.viewport.scale(1);
+}
+
 function initGame()
 {
     Crafty.init(window.innerWidth * consts.full_screen_ratio,
                 window.innerHeight * consts.full_screen_ratio,
                 document.getElementById('game'));
     Crafty.pixelart(true);
-    Crafty.viewport.bounds = {
-        min: {x:0, y:0},
-        max: {x: consts.level_width * consts.tile_width,
-              y: consts.level_height * consts.tile_height}
-            };
-    
+
+    setupViewport();
+
     Crafty.load(assets, function() {
         initComponents();
         initScenes();
