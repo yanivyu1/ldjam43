@@ -210,6 +210,7 @@ function initComponents()
             this.dying = false;
             this.death_anim = null;
 
+            this.new_direction_workaround = false;
             this.bind('NewDirection', this.onNewDirection);
             this.onHit('Lava', this.onTouchLava);
             this.onHit('Trap', this.onTouchTrap);
@@ -233,6 +234,12 @@ function initComponents()
         },
 
         onNewDirection: function(direction) {
+            if (!this.new_direction_workaround) {
+                this.setNewDirection(direction);
+            }
+        },
+        
+        setNewDirection: function(direction) {
             if (this.dying) {
                 return;
             }
@@ -293,6 +300,34 @@ function initComponents()
         }
     });
 
+    // NewDirectionWorkaround is needed for true believers, which move horizontally by
+    // "shifting" and vertically by gravity. Since horizontal movement is not controlled
+    // by the Motion component, the NewDirection event "direction.x" is always 0.
+    // Here, we allow external users to call setNewDirection with the correct direction.x.
+    Crafty.c('NewDirectionWorkaround', {
+        init: function() {
+            this.last_direction = {x: 0, y: 0};
+            this.new_direction_workaround = true;
+            this.bind('NewDirection', this.onNewDirectionWorkaround);
+        },
+
+        onNewDirectionWorkaround: function(direction) {
+            // direction.x is unreliable, only look at direction.y
+            if (this.last_direction.y != direction.y) {
+                this.last_direction.y = direction.y;
+                this.setNewDirection(this.last_direction);
+            }
+        },
+
+        setNewDirectionX: function(x) {
+            // x should be -1, 0 or 1
+            if (this.last_direction.x != x) {
+                this.last_direction.x = x;
+                this.setNewDirection(this.last_direction);
+            }
+        }
+    });
+
     // HasConvertingPowers is a base component for characters that can convert nonbelievers.
     // (Prophets and TrueBelievers share this)
     // Character should define animations: converting_right, converting_left
@@ -344,6 +379,7 @@ function initComponents()
             this.jumper(consts.prophet_jump_speed, [Crafty.keys.UP_ARROW, Crafty.keys.W]);
 
             this.bind('Move', this.onMove);
+            this.bind('NewDirection', this.prophetNewDirection);
 
             this.believers = [];
             this.believers_blocked_walls = [];
@@ -379,6 +415,17 @@ function initComponents()
                 }
             }
             this.believers = this.believers.concat(believers_for_end_of_queue);
+        },
+
+        prophetNewDirection: function(direction) {
+            // if we stopped on the x scale, let the believers know that we stopped
+            // (part of new direction workaround)
+            if (direction.x == 0) {
+                for (var idx in this.believers) {
+                    var believer = this.believers[idx];
+                    believer.setNewDirectionX(0);
+                }
+            }
         }
     });
 
@@ -435,7 +482,7 @@ function initComponents()
 
     Crafty.c('TrueBeliever', {
         init: function() {
-            this.addComponent('Character, HasConvertingPowers, true_believer_stand_right');
+            this.addComponent('Character, HasConvertingPowers, NewDirectionWorkaround, true_believer_stand_right');
             addReel(this, 'stand_right', 3, 16, 22);
             addReel(this, 'walk_right', 3, 23, 27);
             addReel(this, 'converting_right', 3, 28, 36);
@@ -476,10 +523,18 @@ function initComponents()
             }
 
             this.shift(delta_x, 0, 0, 0);
+            if (delta_x > 0) {
+                this.setNewDirectionX(1);
+            } else if (delta_x < 0) {
+                this.setNewDirectionX(-1);
+            } else {
+                this.setNewDirectionX(0);
+            }
 
             if (hitDatas = this.hit('move_blocking')) {
                 this.x = prev_x;
                 this.blocked_by_wall = true;
+                this.setNewDirectionX(0);
                 return false;
             }
 
