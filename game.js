@@ -33,9 +33,8 @@ var consts = {
     level_width: 30,
     level_height: 20,
     anim_fps: 12,
-    scale: 1 / window.devicePixelRatio,
     full_screen_ratio: 0.95,
-    zoom_level: 2,
+    zoom_in_level: 2,
     prophet_walk_speed: 120,
     prophet_jump_speed: 320,
     believer_jump_speed: 3000,
@@ -107,7 +106,7 @@ function initScenes()
                     y: tiles_y * consts.tile_height});
         }
 
-        Crafty.viewport.scale(consts.scale * consts.zoom_level);
+        Crafty.viewport.scale(consts.zoom_in_level);
         
         Crafty.e('2D, DOM, Image')
             .attr({x: 0, y: 0})
@@ -161,6 +160,7 @@ function initComponents()
         onKeyDown: function(e) {
             if (e.key == Crafty.keys.Z) {
                 var zoom_out_level = Math.min(window.innerWidth / 960, window.innerHeight / 640);
+                zoom_out_level *= consts.full_screen_ratio;
                 Crafty.viewport.scale(zoom_out_level);
             }
 
@@ -176,7 +176,7 @@ function initComponents()
 
         onKeyUp: function(e) {
             if (e.key == Crafty.keys.Z) {
-                Crafty.viewport.scale(consts.scale * consts.zoom_level);
+                Crafty.viewport.scale(consts.zoom_in_level);
             }
         }
     });
@@ -714,7 +714,6 @@ function initGame()
     Crafty.init(window.innerWidth * consts.full_screen_ratio,
                 window.innerHeight * consts.full_screen_ratio,
                 document.getElementById('game'));
-    //Crafty.viewport.scale(consts.scale * consts.zoom_level);
     Crafty.pixelart(true);
     Crafty.load(assets, function() {
         initComponents();
