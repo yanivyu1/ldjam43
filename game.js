@@ -2,6 +2,7 @@ var assets = function() {
     var sprite_map = {
         prophet_stand_right: [0, 0],
         unbeliever_stand_right: [0, 3],
+        true_believer_stand_right: [16, 3],
         tile_lava: [0, 9]
     };
 
@@ -41,14 +42,14 @@ var consts = {
     wait_for_death: 1000
 };
 
-function addReel(entity, anim_name, num_frames, first_frame_col, first_frame_row)
+function addReel(entity, anim_name, row, first_col, last_col)
 {
     var frames = [];
-    for (var col = first_frame_col; col < first_frame_col + num_frames; col++) {
-        frames.push([col, first_frame_row]);
+    for (var col = first_col; col <= last_col; col++) {
+        frames.push([col, row]);
     }
 
-    entity.reel(anim_name, 1000 * num_frames / consts.anim_fps, frames);
+    entity.reel(anim_name, 1000 * (last_col - first_col + 1) / consts.anim_fps, frames);
 }
 
 var level = {
@@ -177,8 +178,8 @@ function initComponents()
     Crafty.c('Lava', {
         init: function() {
             this.addComponent('2D, DOM, Lava, tile_lava, SpriteAnimation');
-            addReel(this, 'shallow', 10, 0, 9);
-            addReel(this, 'deep', 10, 10, 9);
+            addReel(this, 'shallow', 9, 0, 9);
+            addReel(this, 'deep', 9, 10, 19);
         },
 
         setLavaType: function(lava_type) {
@@ -292,21 +293,48 @@ function initComponents()
         }
     });
 
+    // HasConvertingPowers is a base component for characters that can convert nonbelievers.
+    // (Prophets and TrueBelievers share this)
+    // Character should define animations: converting_right, converting_left
+    // Events: ConversionStarted, ConversionEnded
+    Crafty.c('HasConvertingPowers', {
+        init: function() {
+            this.onHit('UnBeliever', this.collisionUnBeliever);
+
+            this.converting_anim = null;
+        },
+
+        collisionUnBeliever: function(hitData) {
+            this.trigger('ConversionStarted');
+            this.converting_anim = this.dir_animate('converting', 1);
+
+            var collidedUnbeliever = hitData[0].obj;
+            var prophet = Crafty('Prophet');
+            var character = this;
+            collidedUnbeliever.trulyBelieve(function(trueBeliever) {
+                prophet.believers.push(trueBeliever);
+                character.trigger('ConversionEnded');
+            });
+        }
+    });
+
     Crafty.c('Prophet', {
         init: function() {
-            this.addComponent('Character, prophet_stand_right, Multiway');
-            addReel(this, 'stand_right', 10, 0, 0);
-            addReel(this, 'walk_right', 7, 11, 0);
-            addReel(this, 'jump_right', 1, 17, 0);
-            addReel(this, 'fall_right', 1, 18, 0);
-            addReel(this, 'dying_in_lava_right', 33, 0, 2);
-            addReel(this, 'dying_in_trap_right', 33, 0, 2);
-            addReel(this, 'stand_left', 10, 0, 1);
-            addReel(this, 'walk_left', 7, 11, 1);
-            addReel(this, 'jump_left', 1, 17, 1);
-            addReel(this, 'fall_left', 1, 18, 1);
-            addReel(this, 'dying_in_lava_left', 33, 0, 2);
-            addReel(this, 'dying_in_trap_left', 33, 0, 2);
+            this.addComponent('Character, HasConvertingPowers, prophet_stand_right, Multiway');
+            addReel(this, 'stand_right', 0, 0, 9);
+            addReel(this, 'walk_right', 0, 10, 16);
+            addReel(this, 'jump_right', 0, 17, 17);
+            addReel(this, 'fall_right', 0, 18, 18);
+            addReel(this, 'converting_right', 0, 19, 28);
+            addReel(this, 'dying_in_trap_right', 0, 29, 37);
+            addReel(this, 'dying_in_lava_right', 2, 0, 32);
+            addReel(this, 'stand_left', 1, 0, 9);
+            addReel(this, 'walk_left', 1, 10, 16);
+            addReel(this, 'jump_left', 1, 17, 17);
+            addReel(this, 'fall_left', 1, 18, 18);
+            addReel(this, 'converting_left', 1, 19, 28);
+            addReel(this, 'dying_in_trap_left', 1, 29, 37);
+            addReel(this, 'dying_in_lava_left', 2, 0, 32);
             this.dir_animate('stand', -1);
             this.multiway({x: consts.prophet_walk_speed},
                 {RIGHT_ARROW: 0,
@@ -316,8 +344,6 @@ function initComponents()
             this.jumper(consts.prophet_jump_speed, [Crafty.keys.UP_ARROW, Crafty.keys.W]);
 
             this.bind('Move', this.onMove);
-
-            this.onHit('UnBeliever', this.collisionUnBeliever);
 
             this.believers = [];
             this.believers_blocked_walls = [];
@@ -353,14 +379,6 @@ function initComponents()
                 }
             }
             this.believers = this.believers.concat(believers_for_end_of_queue);
-        },
-
-        collisionUnBeliever: function(hitData) {
-            var collidedUnbeliever = hitData[0].obj;
-            var prophet = this;
-            collidedUnbeliever.trulyBelieve(function(trueBeliever) {
-                prophet.believers.push(trueBeliever);
-            });
         }
     });
 
@@ -370,12 +388,12 @@ function initComponents()
             // Unbelievers can't fall, but Gravity triggers a fall direction for new
             // entities before it figures out that they're on the ground.
             // So we have to make fall animations which are just copies of stand animations.
-            addReel(this, 'stand_right', 7, 0, 3);
-            addReel(this, 'fall_right', 7, 0, 3); // copy stand animation
-            addReel(this, 'converting_right', 8, 7, 3);
-            addReel(this, 'stand_left', 7, 0, 4);
-            addReel(this, 'fall_left', 7, 0, 4); // copy stand animation
-            addReel(this, 'converting_left', 8, 7, 4);
+            addReel(this, 'stand_right', 3, 0, 6);
+            addReel(this, 'fall_right', 3, 0, 6); // copy stand animation
+            addReel(this, 'being_converted_right', 3, 7, 15);
+            addReel(this, 'stand_left', 4, 0, 6);
+            addReel(this, 'fall_left', 4, 0, 6); // copy stand animation
+            addReel(this, 'being_converted_left', 4, 7, 15);
 
             this.direction = (Math.random() < 0.5 ? 'right' : 'left');
             this.dir_animate('stand', -1);
@@ -396,7 +414,7 @@ function initComponents()
 
             this.converting = true;
             this.converting_cb = callback;
-            this.converting_anim = this.dir_animate('converting');
+            this.converting_anim = this.dir_animate('being_converted');
         },
 
         onAnimationFinished: function(data) {
@@ -407,6 +425,8 @@ function initComponents()
                            w: consts.tile_width,
                            h: consts.tile_height
                           });
+                trueBeliever.direction = this.direction;
+                trueBeliever.dir_animate('stand', -1);
                 this.destroy();
                 this.converting_cb(trueBeliever);
             }
@@ -415,21 +435,23 @@ function initComponents()
 
     Crafty.c('TrueBeliever', {
         init: function() {
-            this.addComponent('2D, DOM, SolidHitBox, Text, Gravity, Jumper, Collision');
-            this.gravity('gravity_blocking');
+            this.addComponent('Character, HasConvertingPowers, true_believer_stand_right');
+            addReel(this, 'stand_right', 3, 16, 22);
+            addReel(this, 'walk_right', 3, 23, 27);
+            addReel(this, 'converting_right', 3, 28, 36);
+            addReel(this, 'fall_right', 3, 37, 37);
+            addReel(this, 'dying_in_trap_right', 5, 21, 27);
+            addReel(this, 'dying_in_lava_right', 5, 0, 20);
+            addReel(this, 'stand_left', 4, 16, 22);
+            addReel(this, 'walk_left', 4, 23, 27);
+            addReel(this, 'converting_left', 4, 28, 36);
+            addReel(this, 'fall_left', 4, 37, 37);
+            addReel(this, 'dying_in_trap_left', 5, 28, 34);
+            addReel(this, 'dying_in_lava_left', 5, 0, 20);
+
             this.jumper(consts.believer_jump_speed, []);
-            this.textColor('red');
-            this.onHit('UnBeliever', this.collisionUnBeliever);
 
             this.blocked_by_wall = false;
-        },
-
-        collisionUnBeliever: function(hitData) {
-            var collidedUnbeliever = hitData[0].obj;
-            var prophet = Crafty('Prophet');
-            collidedUnbeliever.trulyBelieve(function(trueBeliever) {
-                prophet.believers.push(trueBeliever);
-            });
         },
 
         onProphetMoved: function(prophetX, idx) {
