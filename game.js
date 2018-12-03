@@ -48,11 +48,21 @@ var assets = function() {
             'assets/bg-world5.png'
         ],
         "audio": {
+            // Background music
             'bg-music-0': ['music/beach_please.mp3'],
             'bg-music-1': ['music/Village.mp3'],
             'bg-music-2': ['music/forest.mp3'],
             'bg-music-3': ['music/Temple.mp3'],
-            'bg-music-4': ['music/Volcano.mp3']
+            'bg-music-4': ['music/Volcano.mp3'],
+            // SFX - believers
+            "Male-trap": ["sound_fx/stab_male.mp3"],
+            "Female-trap": ["sound_fx/stab_female.mp3"],
+            "Male-lava": ["sound_fx/true_believer_ascends_to_hevan.mp3"],
+            "Female-lava": ["sound_fx/female_true_believer_ascends_to_hevan.mp3"],
+            "Male-converted": ["sound_fx/converted_male.mp3"],
+            "Female-converted": ["sound_fx/converted_female.mp3"],
+            // SFX - prophet
+            "Prophet-lava": ["sound_fx/prophet_fired.mp3"],
         }
     };
 }();
@@ -300,7 +310,7 @@ function initScenes()
                 Crafty.audio.stop(prev_music_id);
             }
 
-            Crafty.audio.play('bg-music-' + game_state.cur_world, -1, 0.7);
+            Crafty.audio.play('bg-music-' + game_state.cur_world, -1, 0.5);
             game_state.playing_music_for_world = game_state.cur_world;
         }
 
@@ -816,6 +826,9 @@ function initComponents()
 
             this.nextCharacter = null;
             this.prevCharacter = null;
+
+            // Male, female or prophet
+            this.type = null;
         },
 
         insertBelieverAfterThis: function(believer) {
@@ -915,7 +928,10 @@ function initComponents()
             this.trigger('Dying');
         },
 
-        onTouchLava: function() {
+        onTouchLava: function(hitData, isFirstTouch) {
+            if (this.typeStr && isFirstTouch) {
+                Crafty.audio.play(this.typeStr + '-lava');
+            }
             this.die('dying_in_lava', false, false);
         },
 
@@ -1047,6 +1063,8 @@ function initComponents()
 
             this.num_dying_believers = 0;
             this.winning = false;
+
+            this.typeStr = 'Prophet';
         },
 
         setupMovement: function() {
@@ -1119,6 +1137,9 @@ function initComponents()
                 return;
             }
 
+            if (this.typeStr) {
+                Crafty.audio.play(this.typeStr + '-converted');
+            }
             this.being_converted = true;
             this.being_converted_cb = callback;
             this.being_converted_anim = this.dir_animate('being_converted');
@@ -1140,6 +1161,7 @@ function initComponents()
         }
     });
 
+    // Male unbeliever
     Crafty.c('Unbeliever1', {
         init: function() {
             this.addComponent('Unbeliever');
@@ -1154,9 +1176,12 @@ function initComponents()
             addReel(this, 'being_converted_left', 7, 7, 15);
 
             this.believer_type = 1;
+
+            this.typeStr = 'Male';
         }
     });
 
+    // Female unbelievers
     Crafty.c('Unbeliever2', {
         init: function() {
             this.addComponent('Unbeliever');
@@ -1171,6 +1196,8 @@ function initComponents()
             addReel(this, 'being_converted_left', 11, 7, 15);
 
             this.believer_type = 2;
+
+            this.typeStr = 'Female';
         }
     });
 
@@ -1204,11 +1231,16 @@ function initComponents()
             var actual_speed = consts.believer_walk_speed * data.dt * 0.0001;
             var prev_x = this.x;
 
-            if (this.x < prevCharX - consts.follow_x_gap_px - consts.tile_width) {
+            actual_gap = consts.follow_x_gap_px + consts.tile_width;
+            if (Crafty.s('Keyboard').isKeyDown('DOWN_ARROW')) {
+                actual_gap = actual_speed;
+            }
+
+            if (this.x < prevCharX - actual_gap) {
                 this.shift(actual_speed, 0, 0, 0);
                 // TODO(yoni): fix animations
                 this.setNewDirectionX(1);
-            } else if (this.x > prevCharX + consts.follow_x_gap_px + consts.tile_width) {
+            } else if (this.x > prevCharX + actual_gap) {
                 this.shift(-1 * actual_speed, 0, 0, 0);
                 this.setNewDirectionX(-1);
             } else {
@@ -1277,6 +1309,8 @@ function initComponents()
             addReel(this, 'dying_in_lava_left', 9, 0, 20);
             addReel(this, 'dying_in_trap_left', 9, 21, 27);
             addReel(this, 'dying_in_zap_left', 9, 28, 35);
+
+            this.typeStr = 'Male';
         }
     });
 
@@ -1297,6 +1331,8 @@ function initComponents()
             addReel(this, 'dying_in_lava_left', 13, 0, 20);
             addReel(this, 'dying_in_trap_left', 13, 21, 27);
             addReel(this, 'dying_in_zap_left', 13, 28, 35);
+
+            this.typeStr = 'Female';
         }
     });
 
@@ -1358,8 +1394,6 @@ function switchToNextLevel()
 
         game_state.cur_level = 0;
         game_state.cur_world++;
-
-        // TODO(geran): Stop music, add new music
     } else {
         game_state.cur_level++;
     }
