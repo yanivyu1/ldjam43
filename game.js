@@ -85,7 +85,8 @@ var consts = {
     wait_for_death: 2000,
     wait_for_skip: 500,
     prophet_text_timeout: 5000,
-    title_text_timeout: 5000
+    title_text_timeout: 5000,
+    ice_lava_flood_fill_timeout: 250
 };
 
 var game_state = {
@@ -126,6 +127,40 @@ function addReel(entity, anim_name, row, first_col, last_col)
     entity.reel(anim_name, 1000 * (Math.abs(last_col - first_col) + 1) / consts.anim_fps, frames);
 }
 
+function addEntity(entity_type, tiles_x, tiles_y, tile_type)
+{
+    return Crafty.e(entity_type, tile_type)
+        .attr({x: tiles_x * consts.tile_width,
+            y: tiles_y * consts.tile_height,
+            w: consts.tile_width,
+            h: consts.tile_height});
+}
+
+function addInvisiblePlatform(tiles_x, tiles_y)
+{
+    return addEntity('InvisiblePlatform', tiles_x, tiles_y).attr({h: 0});
+}
+
+function addLava(tiles_x, tiles_y, lava_type)
+{
+    return addEntity('Lava', tiles_x, tiles_y).setLavaType(lava_type);
+}
+
+function addIce(tiles_x, tiles_y, ice_type)
+{
+    return addEntity('Ice', tiles_x, tiles_y).setIceType(ice_type);
+}
+
+function addLavaGen(tiles_x, tiles_y)
+{
+    return addEntity('LavaGen', tiles_x, tiles_y);
+}
+
+function addIceGen(tiles_x, tiles_y)
+{
+    return addEntity('IceGen', tiles_x, tiles_y);
+}
+
 function initScenes()
 {
     Crafty.defineScene('level', function() {
@@ -134,15 +169,6 @@ function initScenes()
             Crafty.e('2D, DOM, Image')
                 .attr({x: 0, y: 0})
                 .image('assets/gfx/bg-world' + world_id + '.png');
-        }
-
-        function addEntity(entity_type, tiles_x, tiles_y, tile_type)
-        {
-            return Crafty.e(entity_type, tile_type)
-                .attr({x: tiles_x * consts.tile_width,
-                    y: tiles_y * consts.tile_height,
-                    w: consts.tile_width,
-                    h: consts.tile_height});
         }
 
         function addFloor(tiles_x, tiles_y)
@@ -160,11 +186,6 @@ function initScenes()
             return addEntity('OuterWall', tiles_x, tiles_y).attr({w: 1});
         }
 
-        function addInvisiblePlatform(tiles_x, tiles_y)
-        {
-            return addEntity('InvisiblePlatform', tiles_x, tiles_y).attr({h: 0});
-        }
-
         function addMInvisiblePlatform(tiles_x, tiles_y)
         {
             return addEntity('MInvisiblePlatform', tiles_x, tiles_y).attr({h: 0});
@@ -173,11 +194,6 @@ function initScenes()
         function addWInvisiblePlatform(tiles_x, tiles_y)
         {
             return addEntity('WInvisiblePlatform', tiles_x, tiles_y).attr({h: 0});
-        }
-
-        function addLava(tiles_x, tiles_y, lava_type)
-        {
-            return addEntity('Lava', tiles_x, tiles_y).setLavaType(lava_type);
         }
 
         function addTrap(tiles_x, tiles_y)
@@ -200,19 +216,9 @@ function initScenes()
             return addEntity('WBlock', tiles_x, tiles_y);
         }
 
-        function addIce(tiles_x, tiles_y, ice_type)
-        {
-            return addEntity('Ice', tiles_x, tiles_y).setIceType(ice_type);
-        }
-
         function addIceShrine(tiles_x, tiles_y)
         {
             return addEntity('IceShrine', tiles_x, tiles_y);
-        }
-
-        function addLavaGen(tiles_x, tiles_y)
-        {
-            return addEntity('LavaGen', tiles_x, tiles_y);
         }
 
         function addLavaShrine(tiles_x, tiles_y)
@@ -392,6 +398,9 @@ function initScenes()
             else if (objects[i].type == 'LavaGen') {
                 addLavaGen(objects[i].x, objects[i].y);
             }
+            else if (objects[i].type == 'IceGen') {
+                addIceGen(objects[i].x, objects[i].y);
+            }
             else if (objects[i].type == 'IceShrine') {
                 addIceShrine(objects[i].x, objects[i].y);
             }
@@ -492,6 +501,162 @@ var zoomer = {
     reset: function() {
         this.in_shift_zoom = false;
         this.zoomIn();
+    }
+};
+
+var LavaAndIceManager = {
+    level_map: null,  // [x][y] -> {type: 'lava' or 'ice', obj: obj} or null
+    lava_gens: null,  // list of {x, y, obj} of lava gens
+    ice_gens: null,   // list of {x, y, obj} of ice gens
+    generation: 0,
+
+    reset: function() {
+        this.level_map = new Array(consts.level_width);
+        for (var i = 0; i < consts.level_width; i++) {
+            this.level_map[i] = new Array(consts.level_height);
+        }
+
+        this.lava_gens = [];
+        this.ice_gens = [];
+        this.generation++;
+    },
+
+    fillNeighbors: function(x, y, neighbor_list) {
+        if (x > 0) neighbor_list.push({x: x - 1, y: y});
+        if (y > 0) neighbor_list.push({x: x, y: y - 1});
+        if (x < consts.level_width - 1) neighbor_list.push({x: x + 1, y: y});
+        if (y < consts.level_height - 1) neighbor_list.push({x: x, y: y + 1});
+    },
+
+    registerLava: function(x, y, obj) {
+        this.level_map[x][y] = {type: 'lava', obj: obj};
+    },
+
+    registerIce: function(x, y, obj) {
+        this.level_map[x][y] = {type: 'ice', obj: obj};
+    },
+
+    registerLavaGen: function(x, y, obj) {
+        this.lava_gens.push({x: x, y: y, obj: obj});
+    },
+
+    registerIceGen: function(x, y, obj) {
+        this.ice_gens.push({x: x, y: y, obj: obj});
+    },
+
+    replaceLavaWithIce: function(x, y, lava_obj) {
+        var ice_obj = addIce(x, y, lava_obj.lava_type);
+        this.level_map[x][y] = {type: 'ice', obj: ice_obj};
+        lava_obj.destroy();
+    },
+
+    replaceIceWithLava: function(x, y, ice_obj) {
+        var lava_obj = addLava(x, y, ice_obj.ice_type);
+        this.level_map[x][y] = {type: 'lava', obj: lava_obj};
+        ice_obj.destroyPlatformIfExists();
+        ice_obj.destroy();
+    },
+
+    replaceLavaGenWithIceGen: function(x, y, lava_gen_obj) {
+        var ice_gen_obj = addIceGen(x, y);
+        this.ice_gens.push({x: x, y: y, obj: ice_gen_obj});
+        lava_gen_obj.destroy();
+        // this.lava_gens is going to be cleared anyway 
+    },
+
+    replaceIceGenWithLavaGen: function(x, y, ice_gen_obj) {
+        var lava_gen_obj = addLavaGen(x, y);
+        this.lava_gens.push({x: x, y: y, obj: lava_gen_obj});
+        ice_gen_obj.destroy();
+        // this.ice_gens is going to be cleared anyway 
+    },
+
+    onFloodFillIceToLava: function(generation, current_positions) {
+        if (this.generation != generation) {
+            return;
+        }
+
+        var next_positions = [];
+
+        for (var idx in current_positions) {
+            var pos = current_positions[idx];
+            var thing = this.level_map[pos.x][pos.y];
+            if (thing == null) continue;
+            if (thing.type != 'ice') continue;
+            this.replaceIceWithLava(pos.x, pos.y, thing.obj);
+
+            this.fillNeighbors(pos.x, pos.y, next_positions);
+        }
+
+        if (next_positions.length > 0) {
+            setTimeout(function() {
+                LavaAndIceManager.onFloodFillIceToLava(generation, next_positions);
+            }, consts.ice_lava_flood_fill_timeout);
+        }
+    },
+
+    onFloodFillLavaToIce: function(generation, current_positions) {
+        if (this.generation != generation) {
+            return;
+        }
+
+        var next_positions = [];
+
+        for (var idx in current_positions) {
+            var pos = current_positions[idx];
+            var thing = this.level_map[pos.x][pos.y];
+            if (thing == null) continue;
+            if (thing.type != 'lava') continue;
+            this.replaceLavaWithIce(pos.x, pos.y, thing.obj);
+
+            this.fillNeighbors(pos.x, pos.y, next_positions);
+        }
+
+        if (next_positions.length > 0) {
+            setTimeout(function() {
+                LavaAndIceManager.onFloodFillLavaToIce(generation, next_positions);
+            }, consts.ice_lava_flood_fill_timeout);
+        }
+    },
+
+    iceShrineTouched: function() {
+        // Go through all the lava gens and turn them into ice gens
+        var initial_positions = [];
+        for (var idx in this.lava_gens) {
+            var lava_gen_info = this.lava_gens[idx];
+            this.replaceLavaGenWithIceGen(lava_gen_info.x, lava_gen_info.y, lava_gen_info.obj);
+            this.fillNeighbors(lava_gen_info.x, lava_gen_info.y, initial_positions);
+        }
+
+        // No more lava gens!
+        this.lava_gens = [];
+
+        // Start flood-filling
+        if (initial_positions.length > 0) {
+            setTimeout(function() {
+                LavaAndIceManager.onFloodFillLavaToIce(LavaAndIceManager.generation, initial_positions);
+            }, consts.ice_lava_flood_fill_timeout);
+        }
+    },
+
+    lavaShrineTouched: function() {
+        // Go through all the ice gens and turn them into lava gens
+        var initial_positions = [];
+        for (var idx in this.ice_gens) {
+            var ice_gen_info = this.ice_gens[idx];
+            this.replaceIceGenWithLavaGen(ice_gen_info.x, ice_gen_info.y, ice_gen_info.obj);
+            this.fillNeighbors(ice_gen_info.x, ice_gen_info.y, initial_positions);
+        }
+
+        // No more ice gens!
+        this.ice_gens = [];
+
+        // Start flood-filling
+        if (initial_positions.length > 0) {
+            setTimeout(function() {
+                LavaAndIceManager.onFloodFillIceToLava(LavaAndIceManager.generation, initial_positions);
+            }, consts.ice_lava_flood_fill_timeout);
+        }
     }
 };
 
@@ -688,6 +853,7 @@ function initComponents()
 
         setLavaType: function(lava_type) {
             this.animate(lava_type, -1);
+            this.lava_type = lava_type;
         },
     });
 
@@ -765,27 +931,40 @@ function initComponents()
 
     Crafty.c('Ice', {
         init: function() {
-            this.addComponent('Wall, tile_ice');
-            //addReel(this, 'shallow', 14, 21, 21);
-            //addReel(this, 'deep', 14, 22, 22);
+            this.addComponent('2D, DOM, tile_ice, SpriteAnimation, move_blocking_for_m, move_blocking_for_w');
+            addReel(this, 'shallow', 14, 21, 21);
+            addReel(this, 'deep', 14, 22, 22);
+            this.ice_type = null;
+            this.associated_platform = null;
         },
 
         setIceType: function(ice_type) {
-            //this.animate(ice_type, -1);
+            this.animate(ice_type, -1);
+            this.ice_type = ice_type;
+
+            if (ice_type == 'shallow') {
+                this.associated_platform = addInvisiblePlatform(this.x / consts.tile_width, this.y / consts.tile_height);
+            }
         },
+
+        destroyPlatformIfExists: function() {
+            if (this.associated_platform != null) {
+                this.associated_platform.destroy();
+            }
+        }
     });
 
     Crafty.c('LavaGen', {
         init: function() {
-            // TODO: Actually implement this
             this.addComponent('Lava');
+            this.setLavaType('deep');
         }
     });
 
     Crafty.c('IceGen', {
         init: function() {
-            // TODO: Actually implement this
             this.addComponent('Ice');
+            this.setIceType('deep');
         }
     });
 
@@ -1134,6 +1313,8 @@ function initComponents()
             this.bind('ConversionEnded', this.onConversionEnded);
             this.bind('Dying', this.onProphetDying);
             this.bind('Died', this.onProphetDied);
+            this.onHit('IceShrine', LavaAndIceManager.iceShrineTouched);
+            this.onHit('LavaShrine', LavaAndIceManager.lavaShrineTouched);
 
             this.num_dying_believers = 0;
             this.winning = false;
