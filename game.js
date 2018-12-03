@@ -258,7 +258,7 @@ function initComponents()
                     switchToPrevLevel();
                 }
                 else if (e.key == Crafty.keys.R) {
-                    Crafty('Prophet').die('dying_in_lava');
+                    Crafty('Prophet').die('dying_in_lava', false, true);
                     Crafty('ProphetText').refreshText(texts.restart_level);
                 }
             }
@@ -489,7 +489,7 @@ function initComponents()
         },
 
         onTouchLava: function() {
-            this.die('dying_in_lava');
+            this.die('dying_in_lava', false, false);
         },
 
         onTouchTrap: function(hitData) {
