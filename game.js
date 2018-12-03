@@ -48,7 +48,7 @@ var consts = {
     prophet_walk_speed: 120,
     prophet_jump_speed: 320,
     believer_jump_speed: 3000,
-    believer_walk_speed: 666,
+    believer_walk_speed: 777,
     follow_x_gap_px: 16,
     wait_for_death: 2000,
     wait_for_skip: 500,
@@ -872,11 +872,6 @@ function initComponents()
 
             this.nextCharacter = null;
             this.prevCharacter = null;
-        },
-
-        _checkIfInGap: function(prophetX) {
-            actual_gap = (consts.follow_x_gap_px + consts.tile_width) * (this.prophetQueueIdx + 1);
-            return (this.x >= prophetX - actual_gap && this.x <= prophetX + actual_gap);
         },
 
         beforeEnterFrame: function(data) {
