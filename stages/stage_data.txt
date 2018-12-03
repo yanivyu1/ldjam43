@@ -603,8 +603,8 @@ Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	X	X	X	l	l	l	l	l	l	l	l	l	Y	Y	Y	Y	Y	Y
 																													
 																													
 									X																				
-								^	X																				
 									X																				
+								^	X																				
 									X	K2	X																		
 									X	Y	X																		
 				X	X	X			X	Y	X																		
@@ -648,9 +648,9 @@ X	X	Y
 		^			X	Y	X	X	Y	X	X	Y	X	D3	X	Y	X	X	Y	X	X	Y	X						
 					X	Y	X							D2							X	Y	X						
 					X	Y	X							D1							X	Y	X						^
-				^	X	Y	X			Y	Y	Y		D3		Y	Y	Y			X	Y	X						
-^					X	Y	X			Y	Y	Y		D2		Y	Y	Y			X	Y	X						
-					X	Y	X			Y	Y	Y	Y	D1	Y	Y	Y	Y			X	Y	X			^			
+				^	X	Y	X			Y	Y	Y				Y	Y	Y			X	Y	X						
+^					X	Y	X			Y	Y	Y				Y	Y	Y			X	Y	X						
+					X	Y	X			Y	Y	Y	Y		Y	Y	Y	Y			X	Y	X			^			
 					X	Y	X			Y	Y	L	L	0/4	L	L	Y	Y			X	Y	X						
 ^					X	Y	X				Y	Y	L		L	Y	Y				X	Y	X						
 				^	X	Y	X					X	L	L	L	X					X	Y	X	^					
