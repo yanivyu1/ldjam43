@@ -31,7 +31,14 @@ var assets = function() {
             'assets/bg-world3.png',
             'assets/bg-world4.png',
             'assets/bg-world5.png'
-        ]
+        ],
+        "audio": {
+            'bg-music-0': ['music/beach_please.mp3'],
+            'bg-music-1': ['music/Village.mp3'],
+            'bg-music-2': ['music/forest.mp3'],
+            'bg-music-3': ['music/Temple.mp3'],
+            'bg-music-4': ['music/Volcano.mp3']
+        }
     };
 }();
 
@@ -59,6 +66,7 @@ var consts = {
 var game_state = {
     cur_world: 0,
     cur_level: 0,
+    playing_music_for_world: -1,
     scene_type: null,
     zoom_out_level: null
 };
@@ -197,6 +205,16 @@ function initScenes()
         }
 
         addBackground(worlds[game_state.cur_world].world);
+
+        if (game_state.playing_music_for_world != game_state.cur_world) {
+            prev_music_id = 'bg-music-' + game_state.playing_music_for_world;
+            if (game_state.playing_music_for_world > -1 && Crafty.audio.isPlaying(prev_music_id)) {
+                Crafty.audio.stop(prev_music_id);
+            }
+
+            Crafty.audio.play('bg-music-' + game_state.cur_world, -1, 0.7);
+            game_state.playing_music_for_world = game_state.cur_world;
+        }
 
         var stage = worlds[game_state.cur_world].stages[game_state.cur_level];
         var objects = stage.objects;
@@ -1058,6 +1076,8 @@ function switchToNextLevel()
 
         game_state.cur_level = 0;
         game_state.cur_world++;
+
+        // TODO(geran): Stop music, add new music
     } else {
         game_state.cur_level++;
     }
