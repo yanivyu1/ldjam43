@@ -121,8 +121,6 @@ function initScenes()
     Crafty.defineScene('level', function() {
         function addBackground(world_id)
         {
-            console.log(world_id);
-            console.log('assets/bg-world' + world_id + '.png');
             Crafty.e('2D, DOM, Image')
                 .attr({x: 0, y: 0})
                 .image('assets/bg-world' + world_id + '.png');
