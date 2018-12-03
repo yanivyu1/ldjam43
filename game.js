@@ -40,19 +40,29 @@ var assets = function() {
             }
         },
         "images": [
-            'assets/bg-intro.png',
-            'assets/bg-world1.png',
-            'assets/bg-world2.png',
-            'assets/bg-world3.png',
-            'assets/bg-world4.png',
-            'assets/bg-world5.png'
+            'assets/gfx/bg-intro.png',
+            'assets/gfx/bg-world1.png',
+            'assets/gfx/bg-world2.png',
+            'assets/gfx/bg-world3.png',
+            'assets/gfx/bg-world4.png',
+            'assets/gfx/bg-world5.png'
         ],
         "audio": {
-            'bg-music-0': ['music/beach_please.mp3'],
-            'bg-music-1': ['music/Village.mp3'],
-            'bg-music-2': ['music/forest.mp3'],
-            'bg-music-3': ['music/Temple.mp3'],
-            'bg-music-4': ['music/Volcano.mp3']
+            // Background music
+            'bg-world1': ['assets/music/bg-world1.mp3'],
+            'bg-world2': ['assets/music/bg-world2.mp3'],
+            'bg-world3': ['assets/music/bg-world3.mp3'],
+            'bg-world4': ['assets/music/bg-world4.mp3'],
+            'bg-world5': ['assets/music/bg-world5.mp3'],
+            // SFX - believers
+            "Male-trap": ["assets/sound_fx/stab_male.mp3"],
+            "Female-trap": ["assets/sound_fx/stab_female.mp3"],
+            "Male-lava": ["assets/sound_fx/true_believer_ascends_to_hevan.mp3"],
+            "Female-lava": ["assets/sound_fx/female_true_believer_ascends_to_hevan.mp3"],
+            "Male-converted": ["assets/sound_fx/converted_male.mp3"],
+            "Female-converted": ["assets/sound_fx/converted_female.mp3"],
+            // SFX - prophet
+            "Prophet-lava": ["assets/sound_fx/prophet_fired.mp3"],
         }
     };
 }();
@@ -66,7 +76,7 @@ var consts = {
     pixel_height: 640, // 32 * 20
     anim_fps: 12,
     full_screen_ratio: 0.9,
-    zoom_in_level: 2,
+    zoom_in_level: 1.5,
     prophet_walk_speed: 120,
     prophet_jump_speed: 265,
     believer_jump_speed: 3000,
@@ -81,7 +91,7 @@ var consts = {
 var game_state = {
     cur_world: 0,
     cur_level: 0,
-    playing_music_for_world: -1,
+    playing_music_for_world: null,
     scene_type: null,
     zoom_out_level: null
 };
@@ -121,11 +131,9 @@ function initScenes()
     Crafty.defineScene('level', function() {
         function addBackground(world_id)
         {
-            console.log(world_id);
-            console.log('assets/bg-world' + world_id + '.png');
             Crafty.e('2D, DOM, Image')
                 .attr({x: 0, y: 0})
-                .image('assets/bg-world' + world_id + '.png');
+                .image('assets/gfx/bg-world' + world_id + '.png');
         }
 
         function addEntity(entity_type, tiles_x, tiles_y, tile_type)
@@ -155,6 +163,16 @@ function initScenes()
         function addInvisiblePlatform(tiles_x, tiles_y)
         {
             return addEntity('InvisiblePlatform', tiles_x, tiles_y).attr({h: 0});
+        }
+
+        function addMInvisiblePlatform(tiles_x, tiles_y)
+        {
+            return addEntity('MInvisiblePlatform', tiles_x, tiles_y).attr({h: 0});
+        }
+
+        function addWInvisiblePlatform(tiles_x, tiles_y)
+        {
+            return addEntity('WInvisiblePlatform', tiles_x, tiles_y).attr({h: 0});
         }
 
         function addLava(tiles_x, tiles_y, lava_type)
@@ -287,23 +305,24 @@ function initScenes()
         }
 
         game_state.scene_type = 'level';
-        Crafty.viewport.scale(consts.zoom_in_level);
+        zoomer.reset();
 
         for (var i = 0; i < consts.level_height - 1; i++) {
             addOuterWall(0, i);
             addOuterWall(consts.level_width, i);
         }
 
-        addBackground(worlds[game_state.cur_world].world);
+        var world_id = worlds[game_state.cur_world].world;
+        addBackground(world_id);
 
-        if (game_state.playing_music_for_world != game_state.cur_world) {
-            prev_music_id = 'bg-music-' + game_state.playing_music_for_world;
-            if (game_state.playing_music_for_world > -1 && Crafty.audio.isPlaying(prev_music_id)) {
+        if (game_state.playing_music_for_world != world_id) {
+            prev_music_id = 'bg-world' + game_state.playing_music_for_world;
+            if (game_state.playing_music_for_world != null && Crafty.audio.isPlaying(prev_music_id)) {
                 Crafty.audio.stop(prev_music_id);
             }
 
-            Crafty.audio.play('bg-music-' + game_state.cur_world, -1, 0.7);
-            game_state.playing_music_for_world = game_state.cur_world;
+            Crafty.audio.play('bg-world' + world_id, -1, 0.5);
+            game_state.playing_music_for_world = world_id;
         }
 
         var stage = worlds[game_state.cur_world].stages[game_state.cur_level];
@@ -317,6 +336,12 @@ function initScenes()
             }
             else if (objects[i].type == 'InvisiblePlatform') {
                 addInvisiblePlatform(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'MInvisiblePlatform') {
+                addMInvisiblePlatform(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'WInvisiblePlatform') {
+                addWInvisiblePlatform(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Prophet') {
                 var prophet = addProphet(objects[i].x, objects[i].y);
@@ -408,7 +433,7 @@ function initScenes()
         game_state.scene_type = 'intro';
 
         Crafty.e('2D, DOM, Image')
-              .image('assets/bg-intro.png')
+              .image('assets/gfx/bg-intro.png')
               .addComponent('FullScreenImage');
     });
 
@@ -430,6 +455,45 @@ function initScenes()
         });
     });
 }
+
+var zoomer = {
+    in_shift_zoom: false,
+
+    handleZoomPress: function(down, shift) {
+        if (down && shift && !this.in_shift_zoom) {
+            // enter shift-zoom
+            this.in_shift_zoom = true;
+            this.zoomOut();
+        }
+        else if (down && shift && this.in_shift_zoom) {
+            // exit shift-zoom
+            this.in_shift_zoom = false;
+            this.zoomIn();
+        }
+        else if (down && !shift && !this.in_shift_zoom) {
+            // enter non-shift-zoom
+            this.zoomOut();
+        }
+        else if (!down && !this.in_shift_zoom) {
+            // exit either non-shift-zoom or shift-zoom
+            this.in_shift_zoom = false;
+            this.zoomIn();
+        }
+    },
+
+    zoomOut: function() {
+        Crafty.viewport.scale(game_state.zoom_out_level);
+    },
+
+    zoomIn: function() {
+        Crafty.viewport.scale(consts.zoom_in_level);
+    },
+
+    reset: function() {
+        this.in_shift_zoom = false;
+        this.zoomIn();
+    }
+};
 
 function initComponents()
 {
@@ -456,7 +520,7 @@ function initComponents()
         // Just an always-present component for trapping keyboard keys
         onKeyDown: function(e) {
             if (game_state.scene_type == 'level' && e.key == Crafty.keys.Z) {
-                Crafty.viewport.scale(game_state.zoom_out_level);
+                zoomer.handleZoomPress(true, Crafty.keydown[Crafty.keys.SHIFT]);
             }
             else if (game_state.scene_type == 'intro' && e.key == Crafty.keys.ENTER) {
                 Crafty.enterScene('level'); // TODO cutscene
@@ -480,7 +544,7 @@ function initComponents()
 
         onKeyUp: function(e) {
             if (game_state.scene_type == 'level' && e.key == Crafty.keys.Z) {
-                Crafty.viewport.scale(consts.zoom_in_level);
+                zoomer.handleZoomPress(false, false);
             }
         }
     });
@@ -587,19 +651,31 @@ function initComponents()
 
     Crafty.c('Wall', {
         init: function() {
-            this.addComponent('2D, DOM, move_blocking');
+            this.addComponent('2D, DOM, move_blocking_for_m, move_blocking_for_w');
         }
     });
 
     Crafty.c('InvisiblePlatform', {
         init: function() {
-            this.addComponent('2D, DOM, gravity_blocking');
+            this.addComponent('2D, DOM, gravity_blocking_for_m, gravity_blocking_for_w');
+        }
+    });
+
+    Crafty.c('MInvisiblePlatform', {
+        init: function() {
+            this.addComponent('2D, DOM, gravity_blocking_for_w');
+        }
+    });
+
+    Crafty.c('WInvisiblePlatform', {
+        init: function() {
+            this.addComponent('2D, DOM, gravity_blocking_for_m');
         }
     });
 
     Crafty.c('OuterWall', {
         init: function() {
-            this.addComponent('2D, DOM, move_blocking');
+            this.addComponent('2D, DOM, move_blocking_for_m, move_blocking_for_w');
         }
     });
 
@@ -677,15 +753,13 @@ function initComponents()
 
     Crafty.c('MBlock', {
         init: function() {
-            // TODO: Actually implement this
-            this.addComponent('Wall, tile_mblock');
+            this.addComponent('2D, DOM, tile_mblock, move_blocking_for_w');
         }
     });
 
     Crafty.c('WBlock', {
         init: function() {
-            // TODO: Actually implement this
-            this.addComponent('Wall, tile_wblock');
+            this.addComponent('2D, DOM, tile_wblock, move_blocking_for_m');
         }
     });
 
@@ -803,7 +877,6 @@ function initComponents()
         init: function() {
             this.addComponent('2D, DOM, SpriteAnimation, Gravity, Jumper, Collision');
 
-            this.gravity('gravity_blocking');
             this.offsetBoundary(-5, -5, -5, 0);
             this.direction = 'right';
             this.dying = false;
@@ -818,6 +891,17 @@ function initComponents()
 
             this.nextCharacter = null;
             this.prevCharacter = null;
+
+            // Male, female or prophet
+            this.type = null;
+
+            this.gender = null; // "m" or "w"
+        },
+
+        setGender: function(gender) {
+            // gender = "m" or "w"
+            this.gender = gender;
+            this.gravity('gravity_blocking_for_' + gender);
         },
 
         insertBelieverAfterThis: function(believer) {
@@ -917,7 +1001,10 @@ function initComponents()
             this.trigger('Dying');
         },
 
-        onTouchLava: function() {
+        onTouchLava: function(hitData, isFirstTouch) {
+            if (this.typeStr && isFirstTouch) {
+                Crafty.audio.play(this.typeStr + '-lava');
+            }
             this.die('dying_in_lava', false, false);
         },
 
@@ -1019,6 +1106,7 @@ function initComponents()
     Crafty.c('Prophet', {
         init: function() {
             this.addComponent('Character, HasConvertingPowers, prophet_stand_right, Multiway');
+            this.setGender('m');
             addReel(this, 'stand_right', 0, 0, 9);
             addReel(this, 'walk_right', 0, 10, 16);
             addReel(this, 'jump_right', 0, 17, 17);
@@ -1040,8 +1128,12 @@ function initComponents()
             this.dir_animate('stand', -1);
             this.setupMovement();
 
+<<<<<<< HEAD
             this.onHit('move_blocking', this.onHitMoveBlocking);
             // this.onHit('jump_through', this.onHitGravityBlocking);
+=======
+            this.onHit('move_blocking_for_' + this.gender, this.onHitMoveBlocking);
+>>>>>>> 2220708a789dc7d0caee86de7eba4bdd2ff9666d
             this.bind('NewDirection', this.prophetNewDirection);
             this.bind('ConversionStarted', this.onConversionStarted);
             this.bind('ConversionEnded', this.onConversionEnded);
@@ -1050,6 +1142,8 @@ function initComponents()
 
             this.num_dying_believers = 0;
             this.winning = false;
+
+            this.typeStr = 'Prophet';
         },
 
         setupMovement: function() {
@@ -1065,8 +1159,12 @@ function initComponents()
         onHitMoveBlocking: function(hitData) {
             // Black magic.
             this.x -= this.dx;
+<<<<<<< HEAD
             this.x = Math.round(this.x);
             if (this.hit('move_blocking') && this.vy < 0) {
+=======
+            if (this.hit('move_blocking_for_' + this.gender) && this.vy < 0) { // Still touching block, and jumping
+>>>>>>> 2220708a789dc7d0caee86de7eba4bdd2ff9666d
                 this.y -= this.dy;
                 this.y = Math.floor(this.y) - 1;
                 this.vy = 0;
@@ -1118,6 +1216,7 @@ function initComponents()
     Crafty.c('Unbeliever', {
         init: function() {
             this.addComponent('Character, unbeliever_stand_right');
+            this.offsetBoundary(-3, 0, -3, 0);
 
             this.jumper(consts.believer_jump_speed, []);
 
@@ -1133,6 +1232,9 @@ function initComponents()
                 return;
             }
 
+            if (this.typeStr) {
+                Crafty.audio.play(this.typeStr + '-converted');
+            }
             this.being_converted = true;
             this.being_converted_cb = callback;
             this.being_converted_anim = this.dir_animate('being_converted');
@@ -1154,9 +1256,11 @@ function initComponents()
         }
     });
 
+    // Male unbeliever
     Crafty.c('Unbeliever1', {
         init: function() {
             this.addComponent('Unbeliever');
+            this.setGender('m');
             // Unbelievers can't fall, but Gravity triggers a fall direction for new
             // entities before it figures out that they're on the ground.
             // So we have to make fall animations which are just copies of stand animations.
@@ -1168,12 +1272,16 @@ function initComponents()
             addReel(this, 'being_converted_left', 7, 7, 15);
 
             this.believer_type = 1;
+
+            this.typeStr = 'Male';
         }
     });
 
+    // Female unbelievers
     Crafty.c('Unbeliever2', {
         init: function() {
             this.addComponent('Unbeliever');
+            this.setGender('w');
             // Unbelievers can't fall, but Gravity triggers a fall direction for new
             // entities before it figures out that they're on the ground.
             // So we have to make fall animations which are just copies of stand animations.
@@ -1185,6 +1293,8 @@ function initComponents()
             addReel(this, 'being_converted_left', 11, 7, 15);
 
             this.believer_type = 2;
+
+            this.typeStr = 'Female';
         }
     });
 
@@ -1218,18 +1328,23 @@ function initComponents()
             var actual_speed = consts.believer_walk_speed * data.dt * 0.0001;
             var prev_x = this.x;
 
-            if (this.x < prevCharX - consts.follow_x_gap_px - consts.tile_width) {
+            actual_gap = consts.follow_x_gap_px + consts.tile_width;
+            if (Crafty.s('Keyboard').isKeyDown('DOWN_ARROW')) {
+                actual_gap = actual_speed;
+            }
+
+            if (this.x < prevCharX - actual_gap) {
                 this.shift(actual_speed, 0, 0, 0);
                 // TODO(yoni): fix animations
                 this.setNewDirectionX(1);
-            } else if (this.x > prevCharX + consts.follow_x_gap_px + consts.tile_width) {
+            } else if (this.x > prevCharX + actual_gap) {
                 this.shift(-1 * actual_speed, 0, 0, 0);
                 this.setNewDirectionX(-1);
             } else {
                 this.setNewDirectionX(0);
             }
 
-            if (hitDatas = this.hit('move_blocking')) {
+            if (hitDatas = this.hit('move_blocking_for_' + this.gender)) {
                 this.x = prev_x;
                 this.setNewDirectionX(0);
             }
@@ -1277,6 +1392,7 @@ function initComponents()
     Crafty.c('TrueBeliever1', {
         init: function() {
             this.addComponent('TrueBeliever');
+            this.setGender('m');
             addReel(this, 'stand_right', 6, 16, 22);
             addReel(this, 'walk_right', 6, 23, 27);
             addReel(this, 'converting_right', 6, 28, 36);
@@ -1291,12 +1407,15 @@ function initComponents()
             addReel(this, 'dying_in_lava_left', 9, 0, 20);
             addReel(this, 'dying_in_trap_left', 9, 21, 27);
             addReel(this, 'dying_in_zap_left', 9, 28, 35);
+
+            this.typeStr = 'Male';
         }
     });
 
     Crafty.c('TrueBeliever2', {
         init: function() {
             this.addComponent('TrueBeliever');
+            this.setGender('w');
             addReel(this, 'stand_right', 10, 16, 22);
             addReel(this, 'walk_right', 10, 23, 27);
             addReel(this, 'converting_right', 10, 28, 36);
@@ -1311,6 +1430,8 @@ function initComponents()
             addReel(this, 'dying_in_lava_left', 13, 0, 20);
             addReel(this, 'dying_in_trap_left', 13, 21, 27);
             addReel(this, 'dying_in_zap_left', 13, 28, 35);
+
+            this.typeStr = 'Female';
         }
     });
 
@@ -1372,8 +1493,6 @@ function switchToNextLevel()
 
         game_state.cur_level = 0;
         game_state.cur_world++;
-
-        // TODO(geran): Stop music, add new music
     } else {
         game_state.cur_level++;
     }
