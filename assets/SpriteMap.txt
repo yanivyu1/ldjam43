@@ -67,9 +67,9 @@ Row 14:
   24 IceShrine
   25 LavaShrine
   26 Key1
-  37 Door1
-  38 Key2
-  39 Door2
+  27 Door1
+  28 Key2
+  29 Door2
   30 Key3
   31 Door3
   32 Switch
