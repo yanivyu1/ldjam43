@@ -56,7 +56,9 @@ var game_state = {
 var texts = {
     win: 'win text, please ignore',
     lose: 'lose text, please ignore',
-    oops: 'oops text, please ignore'
+    oops: 'oops text, please ignore',
+    restart_level: 'Try, try again...',
+    skip_level: 'Coward.'
 };
 
 function addReel(entity, anim_name, row, first_col, last_col)
@@ -247,7 +249,7 @@ function initComponents()
             }
             else if (game_state.scene_type == 'level' && Crafty.keydown[Crafty.keys.SHIFT]) {
                 if (e.key == Crafty.keys.S) {
-                    Crafty('ProphetText').refreshText('Coward.');
+                    Crafty('ProphetText').refreshText(texts.skip_level);
                     setTimeout(function() {
                         switchToNextLevel();
                     }, consts.wait_for_skip);
@@ -256,8 +258,8 @@ function initComponents()
                     switchToPrevLevel();
                 }
                 else if (e.key == Crafty.keys.R) {
-                    Crafty('ProphetText').refreshText('Try, try again...');
                     Crafty('Prophet').die('dying_in_lava');
+                    Crafty('ProphetText').refreshText(texts.restart_level);
                 }
             }
         },
