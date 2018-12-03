@@ -10,6 +10,10 @@ def is_ignored(item):
     return item.lower().endswith('.txt')
 
 
+def ignore(src, names):
+    return [n for n in names if is_ignored(n)]
+
+
 def copytree_workaround(src, dst):
     for item in os.listdir(src):
         s = os.path.join(src, item)
@@ -19,11 +23,11 @@ def copytree_workaround(src, dst):
 
 
 def copytree(dir_name, to_target=False):
-    target_dir = TARGET if to_target else os.path.join(TARGET, dir_name)
-    if not os.path.isdir(target_dir):
-        os.makedirs(target_dir)
-    copytree_workaround(os.path.join(BASE, dir_name), target_dir)
-
+    if to_target:
+        copytree_workaround(os.path.join(BASE, dir_name), TARGET)
+    else:
+        shutil.copytree(os.path.join(BASE, dir_name), os.path.join(TARGET, dir_name),
+                        ignore=ignore)
 
 def copy(fn):
     shutil.copy(os.path.join(BASE, fn), os.path.join(TARGET, fn))
