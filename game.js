@@ -66,7 +66,7 @@ var texts = {
 var zorders = {
     // higher = closer to the user's eyeballs
     default: 0,   // Crafty default
-    floating_text: 1
+    text: 1
 };
 
 function addReel(entity, anim_name, row, first_col, last_col)
