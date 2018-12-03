@@ -621,7 +621,7 @@ function initComponents()
                 [Crafty.keys.UP_ARROW, Crafty.keys.W]);
         },
 
-        onHitMoveBlocking: function(hitDatas) {
+        onHitMoveBlocking: function() {
             // Black magic.
             this.x -= this.dx;
             if (this.hit('move_blocking') && this.vy < 0) { // Still touching block, and jumping
