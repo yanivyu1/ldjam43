@@ -165,6 +165,16 @@ function initScenes()
             return addEntity('InvisiblePlatform', tiles_x, tiles_y).attr({h: 0});
         }
 
+        function addMInvisiblePlatform(tiles_x, tiles_y)
+        {
+            return addEntity('MInvisiblePlatform', tiles_x, tiles_y).attr({h: 0});
+        }
+
+        function addWInvisiblePlatform(tiles_x, tiles_y)
+        {
+            return addEntity('WInvisiblePlatform', tiles_x, tiles_y).attr({h: 0});
+        }
+
         function addLava(tiles_x, tiles_y, lava_type)
         {
             return addEntity('Lava', tiles_x, tiles_y).setLavaType(lava_type);
@@ -326,6 +336,12 @@ function initScenes()
             }
             else if (objects[i].type == 'InvisiblePlatform') {
                 addInvisiblePlatform(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'MInvisiblePlatform') {
+                addMInvisiblePlatform(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'WInvisiblePlatform') {
+                addWInvisiblePlatform(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Prophet') {
                 var prophet = addProphet(objects[i].x, objects[i].y);
@@ -635,19 +651,31 @@ function initComponents()
 
     Crafty.c('Wall', {
         init: function() {
-            this.addComponent('2D, DOM, move_blocking');
+            this.addComponent('2D, DOM, move_blocking_for_m, move_blocking_for_w');
         }
     });
 
     Crafty.c('InvisiblePlatform', {
         init: function() {
-            this.addComponent('2D, DOM, gravity_blocking');
+            this.addComponent('2D, DOM, gravity_blocking_for_m, gravity_blocking_for_w');
+        }
+    });
+
+    Crafty.c('MInvisiblePlatform', {
+        init: function() {
+            this.addComponent('2D, DOM, gravity_blocking_for_w');
+        }
+    });
+
+    Crafty.c('WInvisiblePlatform', {
+        init: function() {
+            this.addComponent('2D, DOM, gravity_blocking_for_m');
         }
     });
 
     Crafty.c('OuterWall', {
         init: function() {
-            this.addComponent('2D, DOM, move_blocking');
+            this.addComponent('2D, DOM, move_blocking_for_m, move_blocking_for_w');
         }
     });
 
@@ -725,15 +753,13 @@ function initComponents()
     
     Crafty.c('MBlock', {
         init: function() {
-            // TODO: Actually implement this
-            this.addComponent('Wall, tile_mblock');
+            this.addComponent('2D, DOM, tile_mblock, move_blocking_for_w');
         }
     });
     
     Crafty.c('WBlock', {
         init: function() {
-            // TODO: Actually implement this
-            this.addComponent('Wall, tile_wblock');
+            this.addComponent('2D, DOM, tile_wblock, move_blocking_for_m');
         }
     });
 
@@ -851,7 +877,6 @@ function initComponents()
         init: function() {
             this.addComponent('2D, DOM, SpriteAnimation, Gravity, Jumper, Collision');
 
-            this.gravity('gravity_blocking');
             this.offsetBoundary(-5, -5, -5, 0);
             this.direction = 'right';
             this.dying = false;
@@ -869,6 +894,14 @@ function initComponents()
 
             // Male, female or prophet
             this.type = null;
+
+            this.gender = null; // "m" or "w"
+        },
+
+        setGender: function(gender) {
+            // gender = "m" or "w"
+            this.gender = gender;
+            this.gravity('gravity_blocking_for_' + gender);
         },
 
         insertBelieverAfterThis: function(believer) {
@@ -1073,6 +1106,7 @@ function initComponents()
     Crafty.c('Prophet', {
         init: function() {
             this.addComponent('Character, HasConvertingPowers, prophet_stand_right, Multiway');
+            this.setGender('m');
             addReel(this, 'stand_right', 0, 0, 9);
             addReel(this, 'walk_right', 0, 10, 16);
             addReel(this, 'jump_right', 0, 17, 17);
@@ -1094,7 +1128,7 @@ function initComponents()
             this.dir_animate('stand', -1);
             this.setupMovement();
 
-            this.onHit('move_blocking', this.onHitMoveBlocking);
+            this.onHit('move_blocking_for_' + this.gender, this.onHitMoveBlocking);
             this.bind('NewDirection', this.prophetNewDirection);
             this.bind('ConversionStarted', this.onConversionStarted);
             this.bind('ConversionEnded', this.onConversionEnded);
@@ -1120,7 +1154,7 @@ function initComponents()
         onHitMoveBlocking: function() {
             // Black magic.
             this.x -= this.dx;
-            if (this.hit('move_blocking') && this.vy < 0) { // Still touching block, and jumping
+            if (this.hit('move_blocking_for_' + this.gender) && this.vy < 0) { // Still touching block, and jumping
                 this.y -= this.dy;
                 this.vy = 0;
             }
@@ -1206,6 +1240,7 @@ function initComponents()
     Crafty.c('Unbeliever1', {
         init: function() {
             this.addComponent('Unbeliever');
+            this.setGender('m');
             // Unbelievers can't fall, but Gravity triggers a fall direction for new
             // entities before it figures out that they're on the ground.
             // So we have to make fall animations which are just copies of stand animations.
@@ -1226,6 +1261,7 @@ function initComponents()
     Crafty.c('Unbeliever2', {
         init: function() {
             this.addComponent('Unbeliever');
+            this.setGender('w');
             // Unbelievers can't fall, but Gravity triggers a fall direction for new
             // entities before it figures out that they're on the ground.
             // So we have to make fall animations which are just copies of stand animations.
@@ -1288,7 +1324,7 @@ function initComponents()
                 this.setNewDirectionX(0);
             }
 
-            if (hitDatas = this.hit('move_blocking')) {
+            if (hitDatas = this.hit('move_blocking_for_' + this.gender)) {
                 this.x = prev_x;
                 this.setNewDirectionX(0);
             }
@@ -1336,6 +1372,7 @@ function initComponents()
     Crafty.c('TrueBeliever1', {
         init: function() {
             this.addComponent('TrueBeliever');
+            this.setGender('m');
             addReel(this, 'stand_right', 6, 16, 22);
             addReel(this, 'walk_right', 6, 23, 27);
             addReel(this, 'converting_right', 6, 28, 36);
@@ -1358,6 +1395,7 @@ function initComponents()
     Crafty.c('TrueBeliever2', {
         init: function() {
             this.addComponent('TrueBeliever');
+            this.setGender('w');
             addReel(this, 'stand_right', 10, 16, 22);
             addReel(this, 'walk_right', 10, 23, 27);
             addReel(this, 'converting_right', 10, 28, 36);
