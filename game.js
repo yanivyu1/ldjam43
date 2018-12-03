@@ -1233,11 +1233,16 @@ function initComponents()
             var actual_speed = consts.believer_walk_speed * data.dt * 0.0001;
             var prev_x = this.x;
 
-            if (this.x < prevCharX - consts.follow_x_gap_px - consts.tile_width) {
+            actual_gap = consts.follow_x_gap_px + consts.tile_width;
+            if (Crafty.s('Keyboard').isKeyDown('DOWN_ARROW')) {
+                actual_gap = actual_speed;
+            }
+
+            if (this.x < prevCharX - actual_gap) {
                 this.shift(actual_speed, 0, 0, 0);
                 // TODO(yoni): fix animations
                 this.setNewDirectionX(1);
-            } else if (this.x > prevCharX + consts.follow_x_gap_px + consts.tile_width) {
+            } else if (this.x > prevCharX + actual_gap) {
                 this.shift(-1 * actual_speed, 0, 0, 0);
                 this.setNewDirectionX(-1);
             } else {
