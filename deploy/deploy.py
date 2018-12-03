@@ -1,7 +1,7 @@
 import os
 import shutil
 
-BASE = os.path.dirname(os.path.dirname(os.path.normpath(__file__)))
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TARGET = os.path.join(BASE, 'deploy', 'stuff')
 UGLIFY_CMDLINE = f"uglifyjs {os.path.join(BASE, 'game.js')} -c -m -o {os.path.join(TARGET, 'game.min.js')}"
 
