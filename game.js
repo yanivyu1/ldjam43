@@ -1122,6 +1122,7 @@ function initComponents()
     Crafty.c('Unbeliever', {
         init: function() {
             this.addComponent('Character, unbeliever_stand_right');
+            this.offsetBoundary(-3, 0, -3, 0);
 
             this.jumper(consts.believer_jump_speed, []);
 
