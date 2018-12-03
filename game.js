@@ -219,6 +219,14 @@ function initScenes()
             return addEntity('Trap', tiles_x, tiles_y);
         }
 
+        function addEnemy(tiles_x, tiles_y, facing)
+        {
+            var enemy = addEntity('Enemy', tiles_x, tiles_y);
+            enemy.direction = facing;
+            enemy.dir_animate('stand', -1);
+            return enemy;
+        }
+
         function addGate(tiles_x, tiles_y, gate_type)
         {
             return addEntity('Gate', tiles_x, tiles_y).setGateType(gate_type);
@@ -391,6 +399,9 @@ function initScenes()
             }
             else if (objects[i].type == 'Trap') {
                 addTrap(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'Enemy') {
+                addEnemy(objects[i].x, objects[i].y, objects[i].facing);
             }
             else if (objects[i].type == 'DGate') {
                 addGate(objects[i].x, objects[i].y, 'down');
@@ -952,6 +963,45 @@ function initComponents()
         }
     });
 
+    Crafty.c('Enemy', {
+        init: function() {
+            this.addComponent('2D, DOM, enemy_stand_right, SpriteAnimation, DirectionalAnimation');
+            addReel(this, 'stand_right', 4, 12, 18);
+            addReel(this, 'stand_left', 5, 12, 18);
+            addReel(this, 'attack_right', 4, 19, 27);
+            addReel(this, 'attack_left', 5, 19, 27);
+            addReel(this, 'dying_right', 4, 28, 34);
+            addReel(this, 'dying_left', 5, 28, 34);
+            this.z = zorders.enemies;
+
+            this.bind('AnimationEnd', this.onAnimationFinalized);
+
+            this.attacking = false;
+            this.dying = false;
+        },
+
+        onAnimationFinalized: function(data) {
+            if (data.id == 'dying_right' || data.id == 'dying_left') {
+                this.destroy();
+            }
+            else {
+                this.dir_animate('stand', -1);
+            }
+        },
+
+        attack: function() {
+            if (this.attacking) return;
+            this.attacking = true;
+            this.dir_animate('attack', 1);
+        },
+
+        die: function() {
+            if (this.dying) return;
+            this.dying = true;
+            this.dir_animate('dying', 1);
+        }
+    });
+
     Crafty.c('Gate', {
         init: function() {
             // TODO: Actually implement this
@@ -1189,75 +1239,13 @@ function initComponents()
         }
     });
 
-    // Character is a component that includes the semantics
-    // shared by all characters: Prophets, believers and non-believers.
-    // 1. It has animations for standing/walking/jumping/falling/dying.
-    // 2. It has gravity.
-    // 3. It has a direction (left/right) for animations.
-    // 4. It dies when it touches lava or when it touches a trap.
-    // NOTE: Due to technical reasons Character does not implement "blocked by wall".
-    // Properties: direction
-    // Functions: dir_animate (like animate, but adds the direction)
-    // Events: Dying (fired when starting to die, after the counter is updated)
-    //         Died (fired when the death animation is over)
-    // Animations should be defined by derived components:
-    // stand, walk, jump, fall, dying_in_lava, dying_in_trap
-    // All should be defined with "_left" and "_right"
-    Crafty.c('Character', {
+    Crafty.c('DirectionalAnimation', {
         init: function() {
-            this.addComponent('2D, DOM, SpriteAnimation, Gravity, Jumper, Collision');
-
-            this.offsetBoundary(-5, -5, -5, 0);
             this.direction = 'right';
-            this.dying = false;
-            this.disable_movement_animations = false;
-            this.death_anim = null;
-
             this.new_direction_workaround = false;
+            this.disable_movement_animations = false;
+
             this.bind('NewDirection', this.onNewDirection);
-            this.onHit('Lava', this.onTouchLava);
-            this.onHit('Trap', this.onTouchTrap);
-            this.bind('AnimationEnd', this.onAnimationEnd);
-
-            this.onHit('Item', this.onHitItem);
-
-            this.nextCharacter = null;
-            this.prevCharacter = null;
-
-            // Male, female or prophet
-            this.type = null;
-
-            this.gender = null; // "m" or "w"
-        },
-
-        onHitItem: function(hitDatas) {
-            itemType = hitDatas[0].obj.itemType;
-            Crafty('Prophet').addCollectible(itemType);
-            hitDatas[0].obj.destroy();
-        },
-
-        setGender: function(gender) {
-            // gender = "m" or "w" or "p" for prophet
-            this.gender = gender;
-            this.gravity('gravity_blocking_for_' + gender);
-        },
-
-        insertBelieverAfterThis: function(believer) {
-            believer.prevCharacter = this;
-            if (this.nextCharacter) {
-                this.nextCharacter.prevCharacter = believer;
-                believer.nextCharacter = this.nextCharacter;
-            }
-            this.nextCharacter = believer;
-        },
-
-        removeThisFromCharacterQueue: function() {
-            if (this.nextCharacter) {
-                this.prevCharacter.nextCharacter = this.nextCharacter;
-                this.nextCharacter.prevCharacter = this.prevCharacter;
-            } else {
-                this.prevCharacter.nextCharacter = null;
-            }
         },
 
         dir_animate: function(reelId, loopCount) {
@@ -1307,6 +1295,74 @@ function initComponents()
                     this.dir_animate('fall', -1);
                 }
             }
+        }
+    });
+
+    // Character is a component that includes the semantics
+    // shared by all characters: Prophets, believers and non-believers.
+    // 1. It has animations for standing/walking/jumping/falling/dying.
+    // 2. It has gravity.
+    // 3. It has a direction (left/right) for animations.
+    // 4. It dies when it touches lava or when it touches a trap.
+    // NOTE: Due to technical reasons Character does not implement "blocked by wall".
+    // Properties: direction
+    // Functions: dir_animate (like animate, but adds the direction)
+    // Events: Dying (fired when starting to die, after the counter is updated)
+    //         Died (fired when the death animation is over)
+    // Animations should be defined by derived components:
+    // stand, walk, jump, fall, dying_in_lava, dying_in_trap
+    // All should be defined with "_left" and "_right"
+    Crafty.c('Character', {
+        init: function() {
+            this.addComponent('2D, DOM, SpriteAnimation, Gravity, Jumper, Collision, DirectionalAnimation');
+
+            this.offsetBoundary(-5, -5, -5, 0);
+            this.dying = false;
+            this.death_anim = null;
+
+            this.onHit('Lava', this.onTouchLava);
+            this.onHit('Trap', this.onTouchTrap);
+            this.bind('AnimationEnd', this.onAnimationEnd);
+
+            this.onHit('Item', this.onHitItem);
+
+            this.nextCharacter = null;
+            this.prevCharacter = null;
+
+            // Male, female or prophet
+            this.type = null;
+
+            this.gender = null; // "m" or "w"
+        },
+
+        onHitItem: function(hitDatas) {
+            itemType = hitDatas[0].obj.itemType;
+            Crafty('Prophet').addCollectible(itemType);
+            hitDatas[0].obj.destroy();
+        },
+
+        setGender: function(gender) {
+            // gender = "m" or "w" or "p" for prophet
+            this.gender = gender;
+            this.gravity('gravity_blocking_for_' + gender);
+        },
+
+        insertBelieverAfterThis: function(believer) {
+            believer.prevCharacter = this;
+            if (this.nextCharacter) {
+                this.nextCharacter.prevCharacter = believer;
+                believer.nextCharacter = this.nextCharacter;
+            }
+            this.nextCharacter = believer;
+        },
+
+        removeThisFromCharacterQueue: function() {
+            if (this.nextCharacter) {
+                this.prevCharacter.nextCharacter = this.nextCharacter;
+                this.nextCharacter.prevCharacter = this.prevCharacter;
+            } else {
+                this.prevCharacter.nextCharacter = null;
+            }
         },
 
         die: function(death_anim, allow_falling, skip_counter) {
@@ -1316,6 +1372,7 @@ function initComponents()
             this.disableControl();
             this.dying = true;
             this.disable_movement_animations = true;
+            this.vx = 0;
             prev_vy = this.vy;
             if (this.has('TrueBeliever')) {
                 this.removeThisFromCharacterQueue();
@@ -1414,15 +1471,22 @@ function initComponents()
             this.can_convert = (direction.y == 0);
         },
 
-        collisionUnbeliever: function(hitData) {
+        startConvertingAnimation: function() {
             if (this.converting || !this.can_convert) {
-                return;
+                return false;
             }
 
             this.converting = true;
             this.disable_movement_animations = true;
             this.converting_anim = this.dir_animate('converting', 1);
             this.trigger('ConversionStarted');
+            return true;
+        },
+
+        collisionUnbeliever: function(hitData) {
+            if (!this.startConvertingAnimation()) {
+                return;
+            }
 
             var collidedUnbeliever = hitData[0].obj;
             var self = this;
@@ -1477,6 +1541,7 @@ function initComponents()
             this.onHit('IceShrine', function() { LavaAndIceManager.iceShrineTouched(); });
             this.onHit('LavaShrine', function() { LavaAndIceManager.lavaShrineTouched(); });
             this.bind('CheckLanding', this.onCheckLanding);
+            this.onHit('Enemy', this.onHitEnemy);
 
             this.bind('Move', this.onMove);
 
@@ -1628,6 +1693,19 @@ function initComponents()
         onProphetDied: function() {
             restartLevel();
         },
+
+        onHitEnemy: function(hitDatas) {
+            var enemy = hitDatas[0].obj;
+            if (this.x < enemy.x) {
+                enemy.direction = 'left';
+            }
+            else {
+                enemy.direction = 'right';
+            }
+
+            enemy.attack();
+            this.die('dying_in_trap', true, true);
+        }
     });
 
     Crafty.c('Unbeliever', {
@@ -1725,10 +1803,25 @@ function initComponents()
             this.bind('Dying', this.onTrueBelieverDying);
             this.bind('Died', this.onTrueBelieverDied);
 
+            this.onHit('Enemy', this.onHitEnemy);
+
             this.bind('EnterFrame', this.beforeEnterFrame);
 
             this.nextCharacter = null;
             this.prevCharacter = null;
+        },
+
+        onHitEnemy: function(hitDatas) {
+            var enemy = hitDatas[0].obj;
+            if (this.x < enemy.x) {
+                enemy.direction = 'left';
+            }
+            else {
+                enemy.direction = 'right';
+            }
+
+            enemy.die();
+            this.startConvertingAnimation();
         },
 
         beforeEnterFrame: function(data) {
