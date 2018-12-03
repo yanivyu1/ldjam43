@@ -295,7 +295,7 @@ function initScenes()
         }
 
         game_state.scene_type = 'level';
-        Crafty.viewport.scale(consts.zoom_in_level);
+        zoomer.reset();
 
         for (var i = 0; i < consts.level_height - 1; i++) {
             addOuterWall(0, i);
@@ -440,6 +440,45 @@ function initScenes()
     });
 }
 
+var zoomer = {
+    in_shift_zoom: false,
+
+    handleZoomPress: function(down, shift) {
+        if (down && shift && !this.in_shift_zoom) {
+            // enter shift-zoom
+            this.in_shift_zoom = true;
+            this.zoomOut();
+        }
+        else if (down && shift && this.in_shift_zoom) {
+            // exit shift-zoom
+            this.in_shift_zoom = false;
+            this.zoomIn();
+        }
+        else if (down && !shift && !this.in_shift_zoom) {
+            // enter non-shift-zoom
+            this.zoomOut();
+        }
+        else if (!down && !this.in_shift_zoom) {
+            // exit either non-shift-zoom or shift-zoom
+            this.in_shift_zoom = false;
+            this.zoomIn();
+        }
+    },
+
+    zoomOut: function() {
+        Crafty.viewport.scale(game_state.zoom_out_level);
+    },
+
+    zoomIn: function() {
+        Crafty.viewport.scale(consts.zoom_in_level);
+    },
+
+    reset: function() {
+        this.in_shift_zoom = false;
+        this.zoomIn();
+    }
+};
+
 function initComponents()
 {
     Crafty.c('FullScreenImage', {
@@ -465,7 +504,7 @@ function initComponents()
         // Just an always-present component for trapping keyboard keys
         onKeyDown: function(e) {
             if (game_state.scene_type == 'level' && e.key == Crafty.keys.Z) {
-                Crafty.viewport.scale(game_state.zoom_out_level);
+                zoomer.handleZoomPress(true, Crafty.keydown[Crafty.keys.SHIFT]);
             }
             else if (game_state.scene_type == 'intro' && e.key == Crafty.keys.ENTER) {
                 Crafty.enterScene('level'); // TODO cutscene
@@ -489,7 +528,7 @@ function initComponents()
 
         onKeyUp: function(e) {
             if (game_state.scene_type == 'level' && e.key == Crafty.keys.Z) {
-                Crafty.viewport.scale(consts.zoom_in_level);
+                zoomer.handleZoomPress(false, false);
             }
         }
     });
