@@ -428,19 +428,28 @@ function initScenes()
                 addKey1(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Door1') {
-                addDoor1(objects[i].x, objects[i].y);
+                addShallowDoor(objects[i].x, objects[i].y, 'Door1');
+            }
+            else if (objects[i].type == 'DeepDoor1') {
+                addDeepDoor(objects[i].x, objects[i].y, 'Door1');
             }
             else if (objects[i].type == 'Key2') {
                 addKey2(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Door2') {
-                addDoor2(objects[i].x, objects[i].y);
+                addShallowDoor(objects[i].x, objects[i].y, 'Door2');
+            }
+            else if (objects[i].type == 'DeepDoor2') {
+                addDeepDoor(objects[i].x, objects[i].y, 'Door2');
             }
             else if (objects[i].type == 'Key3') {
                 addKey3(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Door3') {
-                addDoor3(objects[i].x, objects[i].y);
+                addShallowDoor(objects[i].x, objects[i].y, 'Door3');
+            }
+            else if (objects[i].type == 'DeepDoor3') {
+                addDeepDoor(objects[i].x, objects[i].y, 'Door3');
             }
             else if (objects[i].type == 'Switch') {
                 addSwitch(objects[i].x, objects[i].y);
@@ -1490,7 +1499,9 @@ function initComponents()
         _handleDoor: function(door) {
             if (this.findAndRemoveItem(door.requiredKey)) {
                 door.destroy();
-                door.invisiblePlatform.destroy();
+                if (door.invisiblePlatform != null) {
+                    door.invisiblePlatform.destroy();
+                }
                 return true;
             } else { // Block movement - copied from onHitMoveBlocking
                 // Black magic.
