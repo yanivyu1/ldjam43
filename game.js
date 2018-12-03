@@ -280,7 +280,7 @@ function initComponents()
                 Crafty.enterScene('level'); // TODO cutscene
             }
             else if (game_state.scene_type == 'level' && Crafty.keydown[Crafty.keys.SHIFT]) {
-                if (e.key == Crafty.keys.S) {
+                if (e.key == Crafty.keys.N) {
                     Crafty('ProphetText').refreshText(texts.skip_level);
                     setTimeout(function() {
                         switchToNextLevel();
