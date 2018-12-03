@@ -42,7 +42,7 @@ var consts = {
     prophet_jump_speed: 320,
     believer_jump_speed: 3000,
     follow_x_gap_px: 16,
-    wait_for_death: 1000
+    wait_for_death: 2000
 };
 
 var game_state = {
@@ -234,7 +234,7 @@ function initComponents()
                 Crafty.viewport.scale(game_state.zoom_out_level);
             }
             else if (game_state.scene_type == 'intro' && e.key == Crafty.keys.ENTER) {
-                Crafty.enterScene('level');
+                restartLevel();
             }
             else if (game_state.scene_type == 'level' && Crafty.keydown[Crafty.keys.SHIFT]) {
                 if (e.key == Crafty.keys.S) {
@@ -253,9 +253,7 @@ function initComponents()
                     switchToPrevLevel();
                 }
                 else if (e.key == Crafty.keys.R) {
-                    if (Crafty('Prophet').length > 0) {
-                        Crafty('Prophet').die('dying_in_lava');
-                    }
+                    Crafty('Prophet').die('dying_in_lava');
                 }
             }
         },
@@ -264,7 +262,7 @@ function initComponents()
             if (game_state.scene_type == 'level' && e.key == Crafty.keys.Z) {
                 Crafty.viewport.scale(consts.zoom_in_level);
             }else if(e.key == Crafty.keys.ENTER){
-                Crafty.enterScene('level');
+                restartLevel();
             }else if (Crafty.keydown[Crafty.keys.SHIFT]) {
                 if (e.key == Crafty.keys.R) {
                     if(Crafty('Prophet').length > 0){
@@ -368,7 +366,8 @@ function initComponents()
     // NOTE: Due to technical reasons Character does not implement "blocked by wall".
     // Properties: direction
     // Functions: dir_animate (like animate, but adds the direction)
-    // Events: Death (fired when the death animation is over)
+    // Events: Dying (fired when starting to die)
+    //         Died (fired when the death animation is over)
     // Animations should be defined by derived components:
     // stand, walk, jump, fall, dying_in_lava, dying_in_trap
     // All should be defined with "_left" and "_right"
@@ -445,6 +444,7 @@ function initComponents()
             }
 
             this.dying = true;
+            this.trigger('Dying');
             this.disable_movement_animations = true;
             prev_vy = this.vy;
             this.removeComponent('Multiway'); // If we could walk, don't walk anymore
@@ -484,22 +484,10 @@ function initComponents()
             if (data.id == this.death_anim) {
                 this.visible = false;
                 var character = this;
-                var prophet = Crafty('Prophet');
                 setTimeout(function() {
-                    character.trigger('Death');
+                    character.trigger('Died');
                 }, consts.wait_for_death);
-                if(character.getId() == Crafty('Prophet').getId()) {
-                    Crafty.enterScene('level');
-                }
-                character.destroy();
-                var trueBelievers = Crafty('TrueBeliever');
-                if(Crafty('Counter').count == Crafty('Counter').total && trueBelievers.length == 0 && prophet.length == 1){
-                    switchToNextLevel();
-                }else if(Crafty('Counter').count > Crafty('Counter').total){
-                    Crafty.enterScene('level');
-                }
             }
-
         }
     });
 
@@ -606,6 +594,7 @@ function initComponents()
             this.bind('NewDirection', this.prophetNewDirection);
             this.bind('ConversionStarted', this.onConversionStarted);
             this.bind('ConversionEnded', this.onConversionEnded);
+            this.bind('Died', this.onProphetDied);
 
             this.believers = [];
             this.believers_blocked_walls = [];
@@ -666,6 +655,10 @@ function initComponents()
             this.addComponent('Multiway');
             this.addComponent('Jumper');
             this.setupMovement();
+        },
+
+        onProphetDied: function() {
+            restartLevel();
         }
     });
 
@@ -747,6 +740,8 @@ function initComponents()
             this.addComponent('Character, HasConvertingPowers, NewDirectionWorkaround, true_believer_stand_right');
 
             this.jumper(consts.believer_jump_speed, []);
+            this.bind('Dying', this.onTrueBelieverDying);
+            this.bind('Died', this.onTrueBelieverDied);
 
             this.blocked_by_wall = false;
         },
@@ -804,6 +799,29 @@ function initComponents()
             }
 
             return true;
+        },
+
+        onTrueBelieverDying: function() {
+            var win_lose = checkWinLoseConditions();
+
+            if (win_lose == 'win') {
+                // text
+            }
+            else if (win_lose == 'lose') {
+                // text
+            }
+        },
+
+        onTrueBelieverDied: function() {
+            this.destroy();
+            var win_lose = checkWinLoseConditions();
+
+            if (win_lose == 'win') {
+                switchToNextLevel();
+            }
+            else if (win_lose == 'lose') {
+                restartLevel();
+            }
         }
     });
 
@@ -921,6 +939,34 @@ function switchToPrevLevel()
         game_state.cur_level--;
     }
     Crafty.enterScene('level');
+}
+
+function restartLevel()
+{
+    Crafty.enterScene('level');
+}
+
+function checkWinLoseConditions()
+{
+    var prophet = Crafty('Prophet');
+    var trueBelievers = Crafty('TrueBeliever');
+    var counter = Crafty('Counter');
+
+    // Win condition: Count reached total, and no remaining believers
+    // Caveat: If the prophet is dying, we don't win, and basically do nothing.
+    // When the prophet finishes dying, it will restart the level.
+    if (counter.count == counter.total && trueBelievers.length == 0 && !prophet.dying) {
+        return 'win';
+    }
+
+    // Lose condition, besides the prophet dying (treated by the prophet itself):
+    // Counter is too high.
+    if (counter.count > counter.total) {
+        return 'lose';
+    }
+
+    // Neither win nor lose
+    return null;
 }
 
 function createNonLevelEntities()
