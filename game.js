@@ -42,7 +42,8 @@ var consts = {
     prophet_jump_speed: 320,
     believer_jump_speed: 3000,
     follow_x_gap_px: 16,
-    wait_for_death: 2000
+    wait_for_death: 2000,
+    wait_for_skip: 1000
 };
 
 var game_state = {
@@ -126,8 +127,9 @@ function initScenes()
         function addCounter(tiles_x, tiles_y)
         {
             return Crafty.e('Counter')
-                .attr({x: tiles_x * consts.tile_width,
-                    y: tiles_y * consts.tile_height});
+                .attr({x: (tiles_x - 1) * consts.tile_width,
+                       y: tiles_y * consts.tile_height,
+                       w: consts.tile_width * 3});
         }
 
         game_state.scene_type = 'level';
@@ -155,6 +157,7 @@ function initScenes()
             else if (objects[i].type == 'Prophet') {
                 var prophet = addProphet(objects[i].x, objects[i].y);
                 Crafty.viewport.follow(prophet, 0, 0);
+                Crafty.e('ProphetText');
             }
             else if (objects[i].type == 'NPC') {
                 addUnbeliever(objects[i].x, objects[i].y, objects[i].facing, 1);
@@ -234,25 +237,20 @@ function initComponents()
                 Crafty.viewport.scale(game_state.zoom_out_level);
             }
             else if (game_state.scene_type == 'intro' && e.key == Crafty.keys.ENTER) {
-                restartLevel();
+                Crafty.enterScene('level'); // TODO cutscene
             }
             else if (game_state.scene_type == 'level' && Crafty.keydown[Crafty.keys.SHIFT]) {
                 if (e.key == Crafty.keys.S) {
-                  var prophet = Crafty('Prophet');
-                  Crafty.e('SkipLevelText')
-                      .attr({x:prophet.x - 24, y:prophet.y - 60, w: 75})
-                      .textAlign('center')
-                      .textColor('black')
-                      .textFont({family: 'Tribal', size:'15px', weight: 'bold'})
-                      .text('Coward.');
-                    setTimeout(function(){
+                    Crafty('ProphetText').refreshText('Coward.');
+                    setTimeout(function() {
                         switchToNextLevel();
-                    }, consts.wait_for_death);
+                    }, consts.wait_for_skip);
                 }
                 else if (e.key == Crafty.keys.P) {
                     switchToPrevLevel();
                 }
                 else if (e.key == Crafty.keys.R) {
+                    Crafty('ProphetText').refreshText('Try, try again...');
                     Crafty('Prophet').die('dying_in_lava');
                 }
             }
@@ -261,30 +259,40 @@ function initComponents()
         onKeyUp: function(e) {
             if (game_state.scene_type == 'level' && e.key == Crafty.keys.Z) {
                 Crafty.viewport.scale(consts.zoom_in_level);
-            }else if(e.key == Crafty.keys.ENTER){
-                restartLevel();
-            }else if (Crafty.keydown[Crafty.keys.SHIFT]) {
-                if (e.key == Crafty.keys.R) {
-                    if(Crafty('Prophet').length > 0){
-                      var prophet = Crafty('Prophet');
-                      Crafty.e('SkipLevelText')
-                          .attr({x:prophet.x-6, y:prophet.y - 42, w:200})
-                          .textAlign('center')
-                          .textColor('black')
-                          .textFont({family: 'Tribal', size:'15px'})
-                          .text('What a World... What a World...');
-                        setTimeout(function(){
-                            Crafty('Prophet').die('dying_in_lava');
-                        }, consts.wait_for_death);
-                    }
-                }
             }
         }
     });
-    
-    Crafty.c('SkipLevelText',{
+
+    Crafty.c('FloatingOverProphet', {
         init: function() {
-            this.addComponent('2D, DOM, Text');
+            this.bind('UpdateFrame', this.positionOverProphet);
+        },
+
+        positionOverProphet: function() {
+            var prophet = Crafty('Prophet');
+            this.attr({
+                x: prophet.x + (prophet.w - this.w) / 2,
+                y: prophet.y - this.h - consts.tile_height / 2
+            });
+        }
+    });
+    
+    Crafty.c('ProphetText', {
+        init: function() {
+            this._size = '10px';
+            this._guess_size = 15;
+
+            this.addComponent('2D, DOM, Text, FloatingOverProphet');
+            this.textAlign('center');
+            this.textColor('black');
+            this.textFont({family: 'Tribal', size: this._size, weight: 'bold'});
+        },
+
+        refreshText: function(text) {
+            // Guess the width and height... Too much width is fine since we center it.
+            this.attr({w: this._guess_size * text.length, h: this._guess_size});
+            this.text(text);
+            this.positionOverProphet();
         }
     });
 
@@ -366,7 +374,7 @@ function initComponents()
     // NOTE: Due to technical reasons Character does not implement "blocked by wall".
     // Properties: direction
     // Functions: dir_animate (like animate, but adds the direction)
-    // Events: Dying (fired when starting to die)
+    // Events: Dying (fired when starting to die, after the counter is updated)
     //         Died (fired when the death animation is over)
     // Animations should be defined by derived components:
     // stand, walk, jump, fall, dying_in_lava, dying_in_trap
@@ -444,7 +452,6 @@ function initComponents()
             }
 
             this.dying = true;
-            this.trigger('Dying');
             this.disable_movement_animations = true;
             prev_vy = this.vy;
             this.removeComponent('Multiway'); // If we could walk, don't walk anymore
@@ -463,7 +470,7 @@ function initComponents()
             }
 
             this.death_anim = this.dir_animate(death_anim, 1);
-
+            this.trigger('Dying');
         },
 
         onTouchLava: function() {
@@ -594,10 +601,13 @@ function initComponents()
             this.bind('NewDirection', this.prophetNewDirection);
             this.bind('ConversionStarted', this.onConversionStarted);
             this.bind('ConversionEnded', this.onConversionEnded);
+            this.bind('Dying', this.onProphetDying);
             this.bind('Died', this.onProphetDied);
 
             this.believers = [];
             this.believers_blocked_walls = [];
+            this.num_dying_believers = 0;
+            this.winning = false;
         },
 
         setupMovement: function() {
@@ -655,6 +665,12 @@ function initComponents()
             this.addComponent('Multiway');
             this.addComponent('Jumper');
             this.setupMovement();
+        },
+
+        onProphetDying: function() {
+            if (this.winning) {
+                Crafty('ProphetText').refreshText('oops text, please ignore');
+            }
         },
 
         onProphetDied: function() {
@@ -802,19 +818,24 @@ function initComponents()
         },
 
         onTrueBelieverDying: function() {
-            var win_lose = checkWinLoseConditions();
+            var prophet = Crafty('Prophet');
+            prophet.num_dying_believers++;
+            var win_lose = checkWinLoseConditions(true);
 
             if (win_lose == 'win') {
-                // text
+                Crafty('ProphetText').refreshText('win text, please ignore');
+                prophet.winning = true;
+                
             }
             else if (win_lose == 'lose') {
-                // text
+                Crafty('ProphetText').refreshText('lose text, please ignore');
             }
         },
 
         onTrueBelieverDied: function() {
+            Crafty('Prophet').num_dying_believers--;
             this.destroy();
-            var win_lose = checkWinLoseConditions();
+            var win_lose = checkWinLoseConditions(false);
 
             if (win_lose == 'win') {
                 switchToNextLevel();
@@ -868,7 +889,6 @@ function initComponents()
     Crafty.c('Counter', {
         init: function() {
             this.addComponent('2D, DOM, Text');
-            this.attr({w: consts.tile_width});
             this.textAlign('center');
             this.textColor('black');
             this.textFont({family: 'Alanden'});
@@ -946,16 +966,26 @@ function restartLevel()
     Crafty.enterScene('level');
 }
 
-function checkWinLoseConditions()
+function checkWinLoseConditions(allow_dying_believers)
 {
     var prophet = Crafty('Prophet');
     var trueBelievers = Crafty('TrueBeliever');
     var counter = Crafty('Counter');
+    var num_believers = trueBelievers.length;
+
+    if (prophet.dying) {
+        // Prophet died, possibly after a win condition.
+        // Fail after he finishes dying (the prophet will restart).
+        return null;
+    }
+
+    // Dismiss dying believers
+    if (allow_dying_believers) {
+        num_believers -= prophet.num_dying_believers;
+    }
 
     // Win condition: Count reached total, and no remaining believers
-    // Caveat: If the prophet is dying, we don't win, and basically do nothing.
-    // When the prophet finishes dying, it will restart the level.
-    if (counter.count == counter.total && trueBelievers.length == 0 && !prophet.dying) {
+    if (counter.count == counter.total && num_believers == 0) {
         return 'win';
     }
 
