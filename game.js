@@ -78,11 +78,7 @@ var consts = {
     full_screen_ratio: 0.9,
     zoom_in_level: 2,
     prophet_walk_speed: 120,
-<<<<<<< HEAD
-    prophet_jump_speed: 310,
-=======
     prophet_jump_speed: 305,
->>>>>>> 23e59c24e57eb446548210825b5b7cd5e961dbca
     believer_jump_speed: 3000,
     believer_walk_speed: 777,
     follow_x_gap_px: 16,
