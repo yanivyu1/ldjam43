@@ -92,6 +92,11 @@ function initScenes()
             return addEntity('OuterWall', tiles_x, tiles_y).attr({w: 1});
         }
 
+        function addInvisiblePlatform(tiles_x, tiles_y)
+        {
+            return addEntity('InvisiblePlatform', tiles_x, tiles_y).attr({h: 1});
+        }
+
         function addLava(tiles_x, tiles_y, lava_type)
         {
             return addEntity('Lava', tiles_x, tiles_y).setLavaType(lava_type);
@@ -138,9 +143,11 @@ function initScenes()
         for(var i=0;i<objects.length;i++){
             if(objects[i].type == 'Wall') {
                 addWall(objects[i].x, objects[i].y, 'tile_' + objects[i].type +''+objects[i].spriteindex);
+                addInvisiblePlatform(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Floor') {
                 addFloor(objects[i].x, objects[i].y);
+                addInvisiblePlatform(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Prophet') {
                 var prophet = addProphet(objects[i].x, objects[i].y);
@@ -249,22 +256,26 @@ function initComponents()
     });
     
     Crafty.c('SkipLevelText',{
-        init: function(){
+        init: function() {
             this.addComponent('2D, DOM, Text');
         }
     });
 
     Crafty.c('Floor', {
         init: function() {
-            this.addComponent('2D, DOM, tile_floor, gravity_blocking, Collision');
-            // No boundary, to work around "walk-onto bug"
-            this.offsetBoundary(0, 0, 0, -consts.tile_height);
+            this.addComponent('2D, DOM, tile_floor');
         }
     });
 
     Crafty.c('Wall', {
         init: function() {
-            this.addComponent('2D, DOM, gravity_blocking, move_blocking');
+            this.addComponent('2D, DOM, move_blocking');
+        }
+    });
+
+    Crafty.c('InvisiblePlatform', {
+        init: function() {
+            this.addComponent('2D, DOM, gravity_blocking');
         }
     });
 
@@ -337,7 +348,7 @@ function initComponents()
             this.addComponent('2D, DOM, SpriteAnimation, Gravity, Jumper, Collision');
 
             this.gravity('gravity_blocking');
-            this.offsetBoundary(-4, -4, -4, 0);
+            this.offsetBoundary(-5, -5, -5, 0);
             this.direction = 'right';
             this.dying = false;
             this.disable_movement_animations = false;
@@ -561,6 +572,7 @@ function initComponents()
             this.dir_animate('stand', -1);
             this.setupMovement();
 
+            this.onHit('move_blocking', this.onHitMoveBlocking);
             this.bind('Move', this.onMove);
             this.bind('NewDirection', this.prophetNewDirection);
             this.bind('ConversionStarted', this.onConversionStarted);
@@ -580,25 +592,16 @@ function initComponents()
                 [Crafty.keys.UP_ARROW, Crafty.keys.W]);
         },
 
-        onMove: function(evt) {
-            if (this.fixing_position) return;
-            var hitDatas;
-
-            if (hitDatas = this.hit('move_blocking')) {
-                var hitData = hitDatas[0];
-                this.fixing_position = true;
-                this.x = evt._x;
-                if (this.vy < 0 && evt._y >= hitData.obj.y + hitData.obj.h &&
-                    ((evt._x >= hitData.obj.x && evt._x < hitData.obj.x + hitData.obj.w)
-                    || (evt._x + consts.tile_width - 1 >= hitData.obj.x
-                        && evt._x + consts.tile_width - 1 < hitData.obj.x + hitData.obj.w)))
-                {
-                    this.vy = 0;
-                    this.y = evt._y;
-                }
-                this.fixing_position = false;
+        onHitMoveBlocking: function(hitDatas) {
+            // Black magic.
+            this.x -= this.dx;
+            if (this.hit('move_blocking') && this.vy < 0) { // Still touching block, and jumping
+                this.y -= this.dy;
+                this.vy = 0;
             }
+        },
 
+        onMove: function() {
             var idx = 0;
             var believers_for_end_of_queue = [];
             for (believer in this.believers) {
