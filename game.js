@@ -85,7 +85,8 @@ var consts = {
     wait_for_death: 2000,
     wait_for_skip: 500,
     prophet_text_timeout: 5000,
-    title_text_timeout: 5000
+    title_text_timeout: 5000,
+    inventory_gap: 4
 };
 
 var game_state = {
@@ -803,10 +804,50 @@ function initComponents()
         }
     });
 
+    Crafty.c('Item', {
+        init: function() {
+            this.addComponent('Floor');
+        }
+    });
+
     Crafty.c('Key1', {
         init: function() {
             // TODO: Actually implement this
-            this.addComponent('Floor, tile_key1');
+            this.addComponent('Item, tile_key1');
+        }
+    });
+
+    Crafty.c('CollectedItem', {
+        init: function() {
+            this.addComponent('2D');
+
+            this.prevCollectible = null;
+            this.nextCollectible = null;
+            this.itemType = null;
+        },
+
+        removeThis: function() {
+            if (this.nextCollectible != null) {
+                this.nextCollectible.prevCollectible = this.prevCollectible;
+            }
+
+            this.prevCollectible = this.nextCollectible;
+        },
+
+        // direction is -1 or +1, NOT ZERO
+        doMove: function(prevX, prevY, direction) {
+            this.y = prevY;
+            this.x = prevX - (direction * (consts.tile_width + consts.inventory_gap));
+
+            if (this.nextCollectible) {
+                this.nextCollectible.doMove(this.x, this.y, direction);
+            }
+        }
+    });
+
+    Crafty.c('CollectedKey1', {
+        init: function() {
+            this.addComponent('CollectedItem, tile_key1');
         }
     });
 
@@ -820,7 +861,13 @@ function initComponents()
     Crafty.c('Key2', {
         init: function() {
             // TODO: Actually implement this
-            this.addComponent('Floor, tile_key2');
+            this.addComponent('Item, tile_key2');
+        }
+    });
+
+    Crafty.c('CollectedKey2', {
+        init: function() {
+            this.addComponent('CollectedItem, tile_key2');
         }
     });
 
@@ -834,7 +881,13 @@ function initComponents()
     Crafty.c('Key3', {
         init: function() {
             // TODO: Actually implement this
-            this.addComponent('Floor, tile_key3');
+            this.addComponent('Item, tile_key3');
+        }
+    });
+
+    Crafty.c('CollectedKey3', {
+        init: function() {
+            this.addComponent('CollectedItem, tile_key3');
         }
     });
 
@@ -855,7 +908,13 @@ function initComponents()
     Crafty.c('Amulet', {
         init: function() {
             // TODO: Actually implement this
-            this.addComponent('Floor, tile_amulet');
+            this.addComponent('Item, tile_amulet');
+        }
+    })
+
+    Crafty.c('CollectedAmulet', {
+        init: function() {
+            this.addComponent('CollectedItem, tile_amulet');
         }
     });
 
@@ -1135,10 +1194,16 @@ function initComponents()
             this.bind('Dying', this.onProphetDying);
             this.bind('Died', this.onProphetDied);
 
+            this.onHit('Item', this.onHitItem);
+
+            this.bind('Move', this.onMove);
+
             this.num_dying_believers = 0;
             this.winning = false;
 
             this.typeStr = 'Prophet';
+
+            this.nextCollectible = null;
         },
 
         setupMovement: function() {
@@ -1149,6 +1214,47 @@ function initComponents()
                  A: 180});
             this.jumper(consts.prophet_jump_speed,
                 [Crafty.keys.UP_ARROW, Crafty.keys.W]);
+        },
+
+        onMove: function() {
+            if (this.nextCollectible) {
+                direction = -1;
+                if (this.vx >= 0) {
+                    direction = 1;
+                }
+                this.nextCollectible.doMove(this.x, this.y, direction);
+            }
+        },
+
+        addCollectible: function(itemType) {
+            var x = this;
+            var preceding_x = x.x;
+            while (x.nextCollectible != null) {
+                x = x.nextCollectible;
+                preceding_x = x.x;
+            }
+
+            var new_x = preceding_x + consts.tile_width + consts.inventory_gap;
+            if (Math.sign(this.vx) >= 0) {
+                new_x = preceding_x - consts.tile_width - consts.inventory_gap;
+            }
+            var collectible = Crafty.e('Collectible' + itemType)
+                .attr({
+                    x: new_x,
+                    y: this.y,
+                    w: consts.tile_width,
+                    h: consts.tile_height,
+                    itemType: itemType
+                });
+
+            x.nextCollectible = collectible;
+            collectible.prevCollectible = x;
+        },
+
+        onHitItem: function(hitDatas) {
+            itemType = hitDatas[0].obj.itemType;
+            this.addCollectible(itemType);
+            hitDatas[0].obj.destroy();
         },
 
         onHitMoveBlocking: function(hitData) {
