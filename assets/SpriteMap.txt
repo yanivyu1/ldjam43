@@ -73,10 +73,9 @@ Row 14:
   30 Key3
   31 Door3
   32 Switch
-  --- Objects Below this line are placeholder images ---
   33 Amulet
   34-36 Lightning1-3
-  
+  37-39 Target
 
 Walls
 =====

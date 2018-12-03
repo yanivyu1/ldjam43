@@ -78,7 +78,11 @@ var consts = {
     full_screen_ratio: 0.9,
     zoom_in_level: 2,
     prophet_walk_speed: 120,
+<<<<<<< HEAD
     prophet_jump_speed: 310,
+=======
+    prophet_jump_speed: 305,
+>>>>>>> 23e59c24e57eb446548210825b5b7cd5e961dbca
     believer_jump_speed: 3000,
     believer_walk_speed: 777,
     follow_x_gap_px: 16,
@@ -656,7 +660,7 @@ function initComponents()
 
     Crafty.c('Floor', {
         init: function() {
-            this.addComponent('2D, DOM, tile_floor, jump_through');
+            this.addComponent('2D, DOM, tile_floor');
         }
     });
 
@@ -1175,13 +1179,6 @@ function initComponents()
                 this.y = Math.floor(this.y) - 1;
             }
         },
-
-        // onHitGravityBlocking: function(hitData) {
-        //     // Black magic.
-        //     if(this.hit('jump_through') && this.vy < 0) {
-        //         this.y = Math.floor(this.y) - 1;
-        //     }
-        // },
 
         prophetNewDirection: function(direction) {
             // if we stopped on the x scale, let the believers know that we stopped
