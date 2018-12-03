@@ -803,7 +803,7 @@ function initComponents()
 
         checkDestroy: function() {
             if (this.key_down && this.timeout) {
-                this.destroy();
+                //this.destroy();
             }
         }
     });
