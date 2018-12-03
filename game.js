@@ -49,6 +49,7 @@ var assets = function() {
         ],
         "audio": {
             // Background music
+            'bg-intro': ['assets/music/bg-intro.mp3'],
             'bg-world1': ['assets/music/bg-world1.mp3'],
             'bg-world2': ['assets/music/bg-world2.mp3'],
             'bg-world3': ['assets/music/bg-world3.mp3'],
@@ -474,6 +475,8 @@ function initScenes()
         Crafty.e('2D, DOM, Image')
               .image('assets/gfx/bg-intro.png')
               .addComponent('FullScreenImage');
+        Crafty.audio.stop();
+        Crafty.audio.play('bg-intro');
     });
 
     Crafty.defineScene('loading', function() {
