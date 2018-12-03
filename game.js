@@ -24,7 +24,14 @@ var assets = function() {
                 map: sprite_map
             }
         },
-        "images": ["assets/bg-beach.png", 'assets/Island-text.png']
+        "images": [
+            'assets/bg-intro.png',
+            'assets/bg-world1.png',
+            'assets/bg-world2.png',
+            'assets/bg-world3.png',
+            'assets/bg-world4.png',
+            'assets/bg-world5.png'
+        ]
     };
 }();
 
@@ -88,6 +95,15 @@ function addReel(entity, anim_name, row, first_col, last_col)
 function initScenes()
 {
     Crafty.defineScene('level', function() {
+        function addBackground(world_id)
+        {
+            console.log(world_id);
+            console.log('assets/bg-world' + world_id + '.png');
+            Crafty.e('2D, DOM, Image')
+                .attr({x: 0, y: 0})
+                .image('assets/bg-world' + world_id + '.png');
+        }
+
         function addEntity(entity_type, tiles_x, tiles_y, tile_type)
         {
             return Crafty.e(entity_type, tile_type)
@@ -174,14 +190,13 @@ function initScenes()
         game_state.scene_type = 'level';
         Crafty.viewport.scale(consts.zoom_in_level);
 
-        Crafty.e('2D, DOM, Image')
-            .attr({x: 0, y: 0})
-            .image('assets/bg-beach.png');
-
         for (var i = 0; i < consts.level_height - 1; i++) {
             addOuterWall(0, i);
             addOuterWall(consts.level_width, i);
         }
+
+        addBackground(worlds[game_state.cur_world].world);
+
         var stage = worlds[game_state.cur_world].stages[game_state.cur_level];
         var objects = stage.objects;
         for(var i=0;i<objects.length;i++){
@@ -227,7 +242,7 @@ function initScenes()
         game_state.scene_type = 'intro';
 
         Crafty.e('2D, DOM, Image')
-              .image('assets/Island-text.png')
+              .image('assets/bg-intro.png')
               .addComponent('FullScreenImage');
     });
 
