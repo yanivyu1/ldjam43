@@ -59,6 +59,9 @@ var assets = function() {
             "Female-trap": ["sound_fx/stab_female.mp3"],
             "Male-lava": ["sound_fx/true_believer_ascends_to_hevan.mp3"],
             "Female-lava": ["sound_fx/female_true_believer_ascends_to_hevan.mp3"],
+            "Male-converted": ["sound_fx/converted_male.mp3"],
+            "Female-converted": ["sound_fx/converted_female.mp3"],
+            // SFX - prophet
             "Prophet-lava": ["sound_fx/prophet_fired.mp3"],
         }
     };
@@ -309,7 +312,7 @@ function initScenes()
                 Crafty.audio.stop(prev_music_id);
             }
 
-            Crafty.audio.play('bg-music-' + game_state.cur_world, -1, 0.7);
+            Crafty.audio.play('bg-music-' + game_state.cur_world, -1, 0.5);
             game_state.playing_music_for_world = game_state.cur_world;
         }
 
@@ -1063,7 +1066,7 @@ function initComponents()
             this.num_dying_believers = 0;
             this.winning = false;
 
-            this.typeStr = 'prophet';
+            this.typeStr = 'Prophet';
         },
 
         setupMovement: function() {
@@ -1136,6 +1139,9 @@ function initComponents()
                 return;
             }
 
+            if (this.typeStr) {
+                Crafty.audio.play(this.typeStr + '-converted');
+            }
             this.being_converted = true;
             this.being_converted_cb = callback;
             this.being_converted_anim = this.dir_animate('being_converted');
