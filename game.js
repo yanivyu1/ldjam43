@@ -33,11 +33,18 @@ var assets = function() {
             'assets/bg-world5.png'
         ],
         "audio": {
+            // Background music
             'bg-music-0': ['music/beach_please.mp3'],
             'bg-music-1': ['music/Village.mp3'],
             'bg-music-2': ['music/forest.mp3'],
             'bg-music-3': ['music/Temple.mp3'],
-            'bg-music-4': ['music/Volcano.mp3']
+            'bg-music-4': ['music/Volcano.mp3'],
+            // SFX - believers
+            "Male-trap": ["sound_fx/stab_male.mp3"],
+            "Female-trap": ["sound_fx/stab_female.mp3"],
+            "Male-lava": ["sound_fx/true_believer_ascends_to_hevan.mp3"],
+            "Female-lava": ["sound_fx/true_believer_ascends_to_hevan.mp3"],
+            "Prophet-lava": ["sound_fx/prophet_fired.mp3"],
         }
     };
 }();
@@ -534,6 +541,9 @@ function initComponents()
 
             this.nextCharacter = null;
             this.prevCharacter = null;
+
+            // Male, female or prophet
+            this.type = null;
         },
 
         insertBelieverAfterThis: function(believer) {
@@ -634,6 +644,9 @@ function initComponents()
         },
 
         onTouchLava: function() {
+            if (this.typeStr) {
+                Crafty.audio.play(this.typeStr + '-lava');
+            }
             this.die('dying_in_lava', false, false);
         },
 
@@ -765,6 +778,8 @@ function initComponents()
 
             this.num_dying_believers = 0;
             this.winning = false;
+
+            this.typeStr = 'prophet';
         },
 
         setupMovement: function() {
@@ -858,6 +873,7 @@ function initComponents()
         }
     });
 
+    // Male unbeliever
     Crafty.c('Unbeliever1', {
         init: function() {
             this.addComponent('Unbeliever');
@@ -872,9 +888,12 @@ function initComponents()
             addReel(this, 'being_converted_left', 7, 7, 15);
 
             this.believer_type = 1;
+
+            this.typeStr = 'Male';
         }
     });
 
+    // Female unbelievers
     Crafty.c('Unbeliever2', {
         init: function() {
             this.addComponent('Unbeliever');
@@ -889,6 +908,8 @@ function initComponents()
             addReel(this, 'being_converted_left', 11, 7, 15);
 
             this.believer_type = 2;
+
+            this.typeStr = 'Female';
         }
     });
 
@@ -995,6 +1016,8 @@ function initComponents()
             addReel(this, 'dying_in_lava_left', 9, 0, 20);
             addReel(this, 'dying_in_trap_left', 9, 21, 27);
             addReel(this, 'dying_in_zap_left', 9, 28, 35);
+
+            this.typeStr = 'Male';
         }
     });
 
@@ -1015,6 +1038,8 @@ function initComponents()
             addReel(this, 'dying_in_lava_left', 13, 0, 20);
             addReel(this, 'dying_in_trap_left', 13, 21, 27);
             addReel(this, 'dying_in_zap_left', 13, 28, 35);
+
+            this.typeStr = 'Female';
         }
     });
 
@@ -1076,8 +1101,6 @@ function switchToNextLevel()
 
         game_state.cur_level = 0;
         game_state.cur_world++;
-
-        // TODO(geran): Stop music, add new music
     } else {
         game_state.cur_level++;
     }
