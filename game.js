@@ -114,7 +114,7 @@ function initScenes()
 
         function addInvisiblePlatform(tiles_x, tiles_y)
         {
-            return addEntity('InvisiblePlatform', tiles_x, tiles_y).attr({h: 1});
+            return addEntity('InvisiblePlatform', tiles_x, tiles_y).attr({h: 0});
         }
 
         function addLava(tiles_x, tiles_y, lava_type)
@@ -187,10 +187,11 @@ function initScenes()
         for(var i=0;i<objects.length;i++){
             if(objects[i].type == 'Wall') {
                 addWall(objects[i].x, objects[i].y, 'tile_' + objects[i].type +''+objects[i].spriteindex);
-                addInvisiblePlatform(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Floor') {
                 addFloor(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'InvisiblePlatform') {
                 addInvisiblePlatform(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Prophet') {
