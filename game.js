@@ -53,6 +53,12 @@ var game_state = {
     zoom_out_level: null
 };
 
+var texts = {
+    win: 'win text, please ignore',
+    lose: 'lose text, please ignore',
+    oops: 'oops text, please ignore'
+};
+
 function addReel(entity, anim_name, row, first_col, last_col)
 {
     var frames = [];
@@ -194,7 +200,7 @@ function initScenes()
         Crafty.e('2D, DOM, Text')
             .text('Loading...')
             .textColor('white')
-            .textFont({family: 'Tribal', size:'15px', weight: 'bold'})
+            .textFont({family: 'Tribal', size:'50px', weight: 'bold'})
             .textAlign('center')
             .attr({x: 0, y: game_state.crafty_height / 3, w: game_state.crafty_width});
 
@@ -668,9 +674,7 @@ function initComponents()
         },
 
         onProphetDying: function() {
-            if (this.winning) {
-                Crafty('ProphetText').refreshText('oops text, please ignore');
-            }
+            Crafty('ProphetText').refreshText(this.winning ? texts.oops : texts.lose);
         },
 
         onProphetDied: function() {
@@ -823,12 +827,12 @@ function initComponents()
             var win_lose = checkWinLoseConditions(true);
 
             if (win_lose == 'win') {
-                Crafty('ProphetText').refreshText('win text, please ignore');
+                Crafty('ProphetText').refreshText(texts.win);
                 prophet.winning = true;
                 
             }
             else if (win_lose == 'lose') {
-                Crafty('ProphetText').refreshText('lose text, please ignore');
+                Crafty('ProphetText').refreshText(texts.lose);
             }
         },
 
