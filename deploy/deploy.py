@@ -6,12 +6,23 @@ TARGET = os.path.join(BASE, 'deploy', 'stuff')
 UGLIFY_CMDLINE = f"uglifyjs {os.path.join(BASE, 'game.js')} -c -m -o {os.path.join(TARGET, 'game.min.js')}"
 
 
-def ignore(src, names):
-    return [n for n in names if n.lower().endswith('.txt')]
+def is_ignored(item):
+    return item.lower().endswith('.txt')
 
 
-def copytree(dir_name):
-    shutil.copytree(os.path.join(BASE, dir_name), os.path.join(TARGET, dir_name), ignore=ignore)
+def copytree_workaround(src, dst):
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if not is_ignored(item):
+            shutil.copy2(s, d)
+
+
+def copytree(dir_name, to_target=False):
+    target_dir = TARGET if to_target else os.path.join(TARGET, dir_name)
+    if not os.path.isdir(target_dir):
+        os.makedirs(target_dir)
+    copytree_workaround(os.path.join(BASE, dir_name), target_dir)
 
 
 def copy(fn):
@@ -24,8 +35,7 @@ def deploy():
     os.makedirs(TARGET)
     copytree('assets')
     copytree('lib')
-    # copy('index.html')
-    # copy('game.js')
+    copytree('website', to_target=True)
 
     # game.min.js
     os.system(UGLIFY_CMDLINE)

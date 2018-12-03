@@ -1,0 +1,228 @@
+/* css reset */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+/*ol, ul {
+    list-style: none;
+}*/
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* my stuff now */
+
+body {
+    font-family: 'Lucida Sans', sans-serif;
+    line-height: 1.5;
+    font-size: 16px;
+}
+
+@font-face {
+    font-family: Alanden;
+    src: url(assets/Alanden.ttf);
+    src: url(assets/Alanden.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: Tribal;
+    src: url(assets/Tribal_Schoolhouse.ttf);
+    src: url(assets/Tribal_Schoolhouse.ttf) format('truetype');
+}
+
+.section {
+    margin: 40px auto;
+    width: 960px;
+    border: 3px solid black;
+    padding: 20px;
+    background-color: #eee;
+}
+
+h1 {
+    font-family: Tribal, 'Lucida Sans', sans-serif;
+    font-size: 36px;
+    text-align: center;
+    margin-bottom: 20px;
+    letter-spacing: 5px;
+}
+
+.quote {
+    font-family: Georgia;
+    font-style: italic;
+    font-size: 0.9em;
+    float: left;
+    padding-left: 15px;
+    width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+}
+
+.bigquote {
+    font-style: italic;
+    font-size: 1.2em;
+    padding-left: 15px;
+    width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    line-height: 1.5em;
+}
+
+.bigquotestart {
+    font-size: 700%;
+    float: left;
+    padding-left: 140px;
+    margin-top: -30px;
+    margin-bottom: -100px;
+    margin-left: 30px;
+    margin-right: auto;
+}
+
+.bigquoteend {
+    font-size: 700%;
+    float: left;
+    margin-top: 290px;
+    margin-bottom: -100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.notsobigquotestart {
+    font-size: 200%;
+    position: relative;
+    top: 7px;
+}
+
+.notsobigquoteend {
+    font-size: 200%;
+    vertical-align: bottom;
+    position: relative;
+    top: 12px;
+    left: -2px;
+}
+
+.clear {
+    clear: both;
+}
+
+p {
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.bold {
+    font-weight: bold;
+    font-size: 125%;
+}
+
+.bolder {
+    font-weight: bolder;
+    font-size: 300%;
+}
+
+em {
+    font-style: italic;
+}
+
+table.controls {
+    width: 400px;
+}
+
+table.download {
+    margin: auto;
+}
+
+/*th {
+    background-color: #b7f42f;
+    border: 1px solid #888;
+    padding: 2px 10px;
+}*/
+
+tr td {
+    background-color:#EAF2D3;
+    border: 1px solid #888;
+    padding: 2px 10px;
+}
+
+tr.alt td {
+    background-color: #ced6b7;
+    border: 1px solid #888;
+    padding: 2px 10px;
+}
+
+.centered {
+    text-align: center;
+}
+
+img {
+    margin: 10px;
+}
+
+a {
+    color: #3f5593;
+}
+a:hover {
+    color: #6183e2;
+}
+
+pre {
+    border: 1px solid black;
+    margin: 5px;
+    padding: 10px;
+}
+
+pre.changelog {
+    background-color: #d8d8d8;
+    font-family: 'Courier New', serif;
+    font-size: 70%;
+}
+
+pre.song {
+    background-color: #d7d8ac;
+    width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+b {
+    font-weight: bold;
+}
+
+ol, ul {
+    margin: 10px 60px;
+}
