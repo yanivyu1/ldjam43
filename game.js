@@ -1497,7 +1497,7 @@ function initComponents()
         },
 
         _handleDoor: function(door) {
-            if (this.findAndRemoveItem(door.requiredKey)) {
+            if (this.findItem(door.requiredKey)) {
                 door.destroy();
                 if (door.invisiblePlatform != null) {
                     door.invisiblePlatform.destroy();
@@ -1526,11 +1526,10 @@ function initComponents()
             }
         },
 
-        findAndRemoveItem: function(itemType) {
+        findItem: function(itemType) {
             x = this.nextCollectible;
             while (x != null) {
                 if (x.itemType == itemType) {
-                    x.removeThis();
                     return true;
                 }
                 x = x.nextCollectible;
