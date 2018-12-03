@@ -1128,12 +1128,8 @@ function initComponents()
             this.dir_animate('stand', -1);
             this.setupMovement();
 
-<<<<<<< HEAD
-            this.onHit('move_blocking', this.onHitMoveBlocking);
-            // this.onHit('jump_through', this.onHitGravityBlocking);
-=======
             this.onHit('move_blocking_for_' + this.gender, this.onHitMoveBlocking);
->>>>>>> 2220708a789dc7d0caee86de7eba4bdd2ff9666d
+            // this.onHit('jump_through', this.onHitGravityBlocking);
             this.bind('NewDirection', this.prophetNewDirection);
             this.bind('ConversionStarted', this.onConversionStarted);
             this.bind('ConversionEnded', this.onConversionEnded);
@@ -1159,12 +1155,8 @@ function initComponents()
         onHitMoveBlocking: function(hitData) {
             // Black magic.
             this.x -= this.dx;
-<<<<<<< HEAD
             this.x = Math.round(this.x);
-            if (this.hit('move_blocking') && this.vy < 0) {
-=======
             if (this.hit('move_blocking_for_' + this.gender) && this.vy < 0) { // Still touching block, and jumping
->>>>>>> 2220708a789dc7d0caee86de7eba4bdd2ff9666d
                 this.y -= this.dy;
                 this.y = Math.floor(this.y) - 1;
                 this.vy = 0;
