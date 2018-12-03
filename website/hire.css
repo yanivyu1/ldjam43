@@ -52,15 +52,9 @@ body {
 }
 
 @font-face {
-    font-family: Alanden;
-    src: url(assets/Alanden.ttf);
-    src: url(assets/Alanden.ttf) format('truetype');
-}
-
-@font-face {
-    font-family: Tribal;
-    src: url(assets/Tribal_Schoolhouse.ttf);
-    src: url(assets/Tribal_Schoolhouse.ttf) format('truetype');
+    font-family: Amiga4ever;
+    src: url(assets/amiga4ever_pro2.ttf);
+    src: url(assets/amiga4ever_pro2.ttf) format('truetype');
 }
 
 .section {
@@ -72,7 +66,7 @@ body {
 }
 
 h1 {
-    font-family: Tribal, 'Lucida Sans', sans-serif;
+    font-family: Amiga4ever, 'Lucida Sans', sans-serif;
     font-size: 36px;
     text-align: center;
     margin-bottom: 20px;

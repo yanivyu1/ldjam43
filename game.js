@@ -251,7 +251,7 @@ function initScenes()
         Crafty.e('2D, DOM, Text')
             .text('Loading...')
             .textColor('white')
-            .textFont({family: 'Tribal', size:'50px', weight: 'bold'})
+            .textFont({family: 'Amiga4ever', size:'50px'})
             .textAlign('center')
             .attr({x: 0, y: game_state.crafty_height / 3, w: game_state.crafty_width});
 
@@ -332,17 +332,33 @@ function initComponents()
             });
         }
     });
+
+    Crafty.c('AmigaText', {
+        init: function() {
+            this.addComponent('2D, DOM, Text');
+            this.textColor('white');
+            this.textFont({family: 'Amiga4ever'});
+
+            var text_shadow = '';
+            for (var x = -2; x <= 2; x++) {
+                for (var y = -2; y <= 2; y++) {
+                    text_shadow += '' + x + 'px ' + y + 'px 0 black, ';
+                }
+            }
+            text_shadow = text_shadow.slice(0, -2);
+            this.css('text-shadow', text_shadow);
+
+            this.z = zorders.text;
+        }
+    });
     
     Crafty.c('ProphetText', {
         init: function() {
             this._size = '10px';
             this._guess_size = 15;
 
-            this.addComponent('2D, DOM, Text, FloatingOverProphet');
+            this.addComponent('AmigaText, FloatingOverProphet');
             this.textAlign('center');
-            this.textColor('black');
-            this.textFont({family: 'Tribal', size: this._size, weight: 'bold'});
-            this.z = zorders.text;
         },
 
         refreshText: function(text) {
@@ -362,19 +378,17 @@ function initComponents()
 
     Crafty.c('LevelTitleText', {
         init: function() {
-            this.addComponent('2D, DOM, Text, Keyboard');
+            this.addComponent('AmigaText, Keyboard');
             this.textAlign('left');
-            this.textColor('black');
 
             this.bind('KeyDown', this.onKeyDown);
 
             this.key_down = false;
             this.timeout = false;
-            this.z = zorders.text;
         },
 
         setText: function(text, size, guess_size) {
-            this.textFont({family: 'Tribal', size: size, weight: 'bold'});
+            this.textFont({size: size});
 
             // Entire screen as width since it's left-aligned
             this.attr({w: consts.pixel_width, h: guess_size});
@@ -989,13 +1003,15 @@ function initComponents()
 
     Crafty.c('Counter', {
         init: function() {
-            this.addComponent('2D, DOM, Text');
+            this.orig_size = '10px';
+            this.enlarged_size = '16px';
+            
+            this.addComponent('AmigaText');
             this.textAlign('center');
-            this.textColor('black');
-            this.textFont({family: 'Alanden'});
+            this.textFont({size: this.orig_size});
+
             this.total = 0;
             this.count = 0;
-            this.z = zorders.text;
         },
 
         setTotal: function(total) {
@@ -1020,12 +1036,13 @@ function initComponents()
 
         blowUp: function() {
             this.css({
-                'font-size': '16px',
+                'font-size': this.enlarged_size,
                 transition: 'font-size 0.3s'
             });
+            var obj = this;
             setTimeout(function() {
                 Crafty('Counter').css({
-                    'font-size': '10px',
+                    'font-size': obj.orig_size,
                     transition: 'font-size 0.3s'
                 });
             }, 300);
