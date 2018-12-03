@@ -645,7 +645,7 @@ function initComponents()
 
     Crafty.c('Floor', {
         init: function() {
-            this.addComponent('2D, DOM, tile_floor, jump_through');
+            this.addComponent('2D, DOM, tile_floor');
         }
     });
 
@@ -1129,7 +1129,6 @@ function initComponents()
             this.setupMovement();
 
             this.onHit('move_blocking_for_' + this.gender, this.onHitMoveBlocking);
-            // this.onHit('jump_through', this.onHitGravityBlocking);
             this.bind('NewDirection', this.prophetNewDirection);
             this.bind('ConversionStarted', this.onConversionStarted);
             this.bind('ConversionEnded', this.onConversionEnded);
@@ -1164,13 +1163,6 @@ function initComponents()
                 this.y = Math.floor(this.y) - 1;
             }
         },
-
-        // onHitGravityBlocking: function(hitData) {
-        //     // Black magic.
-        //     if(this.hit('jump_through') && this.vy < 0) {
-        //         this.y = Math.floor(this.y) - 1;
-        //     }
-        // },
 
         prophetNewDirection: function(direction) {
             // if we stopped on the x scale, let the believers know that we stopped
