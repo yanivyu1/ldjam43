@@ -76,9 +76,9 @@ var consts = {
     pixel_height: 640, // 32 * 20
     anim_fps: 12,
     full_screen_ratio: 0.9,
-    zoom_in_level: 1.5,
+    zoom_in_level: 2,
     prophet_walk_speed: 120,
-    prophet_jump_speed: 265,
+    prophet_jump_speed: 310,
     believer_jump_speed: 3000,
     believer_walk_speed: 777,
     follow_x_gap_px: 16,
@@ -539,12 +539,23 @@ function initComponents()
                     Crafty('Prophet').die('dying_in_lava', false, true);
                     Crafty('ProphetText').refreshText(texts.restart_level);
                 }
+            }else if (e.key == Crafty.keys.DOWN_ARROW && Crafty('Prophet').vy == 0 && Crafty('Prophet')) {
+                var prophet = Crafty('Prophet');
+                prophet.vx = 0;
+                prophet.disableControl();
             }
         },
 
         onKeyUp: function(e) {
             if (game_state.scene_type == 'level' && e.key == Crafty.keys.Z) {
                 zoomer.handleZoomPress(false, false);
+            }else if (e.key == Crafty.keys.DOWN_ARROW && !Crafty('Prophet').dying) {
+                if (Crafty('Prophet').NewDirection == 1){
+                  Crafty('Prophet').animate('stand_right', -1);
+                }else {
+                    Crafty('Prophet').animate('stand_left', -1);
+                }
+                Crafty('Prophet').enableControl();
             }
         }
     });
@@ -975,7 +986,7 @@ function initComponents()
             if (this.dying) {
                 return;
             }
-
+            this.disableControl();
             this.dying = true;
             this.disable_movement_animations = true;
             prev_vy = this.vy;
@@ -1006,6 +1017,7 @@ function initComponents()
                 Crafty.audio.play(this.typeStr + '-lava');
             }
             this.die('dying_in_lava', false, false);
+
         },
 
         onTouchTrap: function(hitData) {
@@ -1129,7 +1141,6 @@ function initComponents()
             this.setupMovement();
 
             this.onHit('move_blocking_for_' + this.gender, this.onHitMoveBlocking);
-            // this.onHit('jump_through', this.onHitGravityBlocking);
             this.bind('NewDirection', this.prophetNewDirection);
             this.bind('ConversionStarted', this.onConversionStarted);
             this.bind('ConversionEnded', this.onConversionEnded);
@@ -1321,10 +1332,12 @@ function initComponents()
             var prev_x = this.x;
 
             actual_gap = consts.follow_x_gap_px + consts.tile_width;
-            if (Crafty.s('Keyboard').isKeyDown('DOWN_ARROW')) {
+            if (Crafty.s('Keyboard').isKeyDown('DOWN_ARROW')  && Crafty('Prophet').vy == 0) {
                 actual_gap = actual_speed;
+                if (actual_gap > 0){
+                    Crafty('Prophet').animate('casting_right', -1);
+                }
             }
-
             if (this.x < prevCharX - actual_gap) {
                 this.shift(actual_speed, 0, 0, 0);
                 // TODO(yoni): fix animations
