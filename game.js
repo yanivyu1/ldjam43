@@ -49,11 +49,11 @@ var assets = function() {
         ],
         "audio": {
             // Background music
-            'bg-music-0': ['assets/music/beach_please.mp3'],
-            'bg-music-1': ['assets/music/Village.mp3'],
-            'bg-music-2': ['assets/music/forest.mp3'],
-            'bg-music-3': ['assets/music/Temple.mp3'],
-            'bg-music-4': ['assets/music/Volcano.mp3'],
+            'bg-world1': ['assets/music/bg-world1.mp3'],
+            'bg-world2': ['assets/music/bg-world2.mp3'],
+            'bg-world3': ['assets/music/bg-world3.mp3'],
+            'bg-world4': ['assets/music/bg-world4.mp3'],
+            'bg-world5': ['assets/music/bg-world5.mp3'],
             // SFX - believers
             "Male-trap": ["assets/sound_fx/stab_male.mp3"],
             "Female-trap": ["assets/sound_fx/stab_female.mp3"],
@@ -91,7 +91,7 @@ var consts = {
 var game_state = {
     cur_world: 0,
     cur_level: 0,
-    playing_music_for_world: -1,
+    playing_music_for_world: null,
     scene_type: null,
     zoom_out_level: null
 };
@@ -302,16 +302,17 @@ function initScenes()
             addOuterWall(consts.level_width, i);
         }
 
-        addBackground(worlds[game_state.cur_world].world);
+        var world_id = worlds[game_state.cur_world].world;
+        addBackground(world_id);
 
-        if (game_state.playing_music_for_world != game_state.cur_world) {
-            prev_music_id = 'bg-music-' + game_state.playing_music_for_world;
-            if (game_state.playing_music_for_world > -1 && Crafty.audio.isPlaying(prev_music_id)) {
+        if (game_state.playing_music_for_world != world_id) {
+            prev_music_id = 'bg-world' + game_state.playing_music_for_world;
+            if (game_state.playing_music_for_world != null && Crafty.audio.isPlaying(prev_music_id)) {
                 Crafty.audio.stop(prev_music_id);
             }
 
-            Crafty.audio.play('bg-music-' + game_state.cur_world, -1, 0.5);
-            game_state.playing_music_for_world = game_state.cur_world;
+            Crafty.audio.play('bg-world' + world_id, -1, 0.5);
+            game_state.playing_music_for_world = world_id;
         }
 
         var stage = worlds[game_state.cur_world].stages[game_state.cur_level];
