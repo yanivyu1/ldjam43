@@ -493,8 +493,8 @@ Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	Y	Y	Y	Y	Y	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y
 					!wana-friz			X	X	X	X	X								X	X	X	X	X	^	^	!wana-bern		
 								X	X	X	X	X							0/4	X	X	X	X	X					
 	P			N	I	m		^	^	^	^	^								^	^	^	^	^		M	i	n	
-^	^	^	^	^	^	^	^	X	X	G	L	L	L						L	L	L	G	X	X	^	^	^	^	^
-								X	X	X	X	X	L						L	X	X	X	X	X					
+^	^	^	^	^	^	^	^	X	X	L	L	L	L						L	L	L	L	X	X	^	^	^	^	^
+								X	X	G	X	X	L						L	X	X	G	X	X					
 								X	X	X	X	X	L						L	X	X	X	X	X					
 								X	X	X	X	X	L	l	l	l	l	l	L	X	X	X	X	X					
 Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	l	l	l	l	l	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y
