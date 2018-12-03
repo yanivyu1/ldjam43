@@ -12,6 +12,13 @@ Row 2-3:
 Row 4-5:
   0-3 Casting start
   4-11 Casting loop
+
+Enemy
+=====
+Row 4-5
+  12-18 Idle
+  19-27 Attack
+  28-34 Dying (attacked)
   
 Believer/Nonbeliever 1
 ======================
@@ -25,7 +32,7 @@ Row 6-7:
 Row 8-9:
   0-20 Dying (lava)
   21-27 Dying (trap)
-  28-35 Dying (lightning)
+  28-34 Dying (lightning)
 
 Believer/Nonbeliever 2
 ======================
@@ -34,26 +41,42 @@ Row 10-11:
 Row 12-13:
   Same as rows 8-9
 
-Objects:
+Gates
+=====
+Row 6 DGate:
+Row 7 UGate:
+Row 10 LGate:
+Row 11 RGate:
+  35 Closed
+  35-39 Open
+  39 Opened
+  39-35 Close
+
+Other Objects
+=============
 Row 14:
   0-5 Lava
   6-11 DeepLava
   12 Floor
   13-18 Trap
-  27 MBlock
-  28 WBlock
-  29 Ice
-  30 Deepice
+  19 MBlock
+  20 WBlock
+  21 Ice
+  22 Deepice
+  23 IceShrineActive, LavaShrineActive
+  24 IceShrine
+  25 LavaShrine
+  26 Key1
+  37 Door1
+  38 Key2
+  39 Door2
+  30 Key3
+  31 Door3
+  32 Switch
   --- Objects Below this line are placeholder images ---
-  31 IceShrine
-  32 LavaShrine
-  33 Key1
-  34 Door1
-  35 Key2
-  36 Door2
-  37 Key3
-  38 Door3
-  39 Amulet
+  33 Amulet
+  34-36 Lightning1-3
+  
 
 Walls
 =====
