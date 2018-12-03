@@ -426,8 +426,10 @@ function initComponents()
 
         onTouchTrap: function(hitData) {
             if (!this.dying) {
-                var trap = hitData[0].obj;
-                trap.activate();
+                for (var trap_idx in hitData) {
+                    var trap = hitData[trap_idx].obj;
+                    trap.activate();
+                }
                 this.die('dying_in_trap', true, true);
             }
         },
