@@ -55,7 +55,7 @@ X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X
 									Y	Y	Y																		
 																													
 					n						m																		
-		P		X	X	X	X	X	X	X	X	X	X	X	X														
+	P			X	X	X	X	X	X	X	X	X	X	X	X														
 X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X				0/2						X	X	X
 X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X
 																													
@@ -185,8 +185,8 @@ X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X
 		X	X	X	X	X	X	X	X				Y	Y	Y	Y	Y	Y	Y	Y			Y	Y	Y	Y			
 					X	X								Y	Y	Y	Y	Y									Y		
 				X	X											Y											Y		
-X	X	X		X	X																		Y	Y			Y		
-				X	X					n								Y	Y	Y	Y	Y	Y				Y		
+X	X	X		X	X														N	m			Y	Y			Y		
+				X	X	N				n								Y	Y	Y	Y	Y	Y				Y		
 					X	X	X	X	X	X	X																Y		
 		X	X	X	X	X																			Y	Y	Y		
 					X	X					N					m											Y		
@@ -235,7 +235,7 @@ X	X	X				X	X	X					X	X	X	X	X	X			X	X	X	X	X
 X	X	X				X	X	X																					
 X	X	X				X	X	X																					
 X	X	X				X	X	X														n				0/4			
-X	X	X				X	X	X	~	~	~	~	~	~	~	~	~	~	~	X	X	X	X			X	X	X	X
+X	X	~				X	X	X	~	~	~	~	~	~	~	~	~	~	~	X	X	X	X			X	X	X	X
 X	X	X	Y	Y	Y	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	X	X	X	X
 X	X	X	Y	Y	Y	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	X	X	X	X
 																													
@@ -688,9 +688,9 @@ X	Y	X											Y	Y	Y	Y											X	Y	X
 X	^	X					^	^					Y	L	L	Y					^	^					X	^	X
 ^	P	^	s										Y	L	L	Y											S	n	X
 X	Y	X	X	Y	X							0/4		L	L									X	Y	X	X	Y	X
-X	Y	X	X	Y	X									L	L									X	Y	X	X	Y	X
+X	Y	X	X	Y	X	^								L	L								^	X	Y	X	X	Y	X
 X	Y	X	^	^	X									L	L									X	^	^	X	Y	X
-X	Y	X	M	s	$	s					N			L	L						m		s	W82		m	X	Y	X
+X	Y	X	M	s	$	s					N			L	L						m		s	W122		m	X	Y	X
 X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	L	L	X	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X
 X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	L	L	X	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X
 														L	L														
@@ -738,3 +738,343 @@ X	X	Y	X	X	Z	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	z	X	L	L	X	Y	X
 																						X	L	L	L	L	L	X	
 																						X	X	X	X	X	X	X	
 																													
+																													X
+									X																	X			X
+									X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X			X
+	P	Y	Y	Y	Y				X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X			X
+	Y	Y	Y	Y	Y	Y	^	^	^	s			s									s			s				X
+	Y	X	Y	Y	X	Y			X	Y	X		Y	X		Y	X		Y	X		Y	X		Y	X	^		X
+	Y	Y	Y	Y	Y	Y			X	Y	X		Y	X		Y	X		Y	X		Y	X		Y	X			X
+		Y	Y	Y	Y				^							s					~	s			s				X
+		Y	L	L	Y				X	Y		X	Y		X	Y		X	Y		X	Y		X	Y	X	^		X
+		Y	L	L	Y				X	Y		X	Y		X	Y		X	Y		X	Y		X	Y	X			X
+			L	L		0/1			^				s		~	s			s			s			s				X
+			L	L					X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	^		X
+			L	L					X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X			X
+			L	L		s					S						S			S			S			S		n	X
+X	Y	X	L	L	X	X	Z	X	X	Y	X	X	Y	Z	z	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X
+X	Y	X	L	L	X	X	z	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X
+			L	L																									
+	X	L	L	L	L	L	L	X																					
+	X	X	X	X	X	X	X	X																					
+																													
+			X	Y	X																			D3					
+			K2						n		M							K3						D2					
+			X	Y	X				X	Y	X						X	Y	X					D1					
+			X	Y	X				X	Y	X						X	Y	X					Y	Y	Y	Y		
+																					m		Y	Y	Y	Y	Y	Y	
+						X	Y	X					X	Y	X						X		Y	X	Y	Y	X	Y	
+						X	Y	X					X	Y	X						X		Y	Y	Y	Y	Y	Y	
+																	~	K1	~					Y	Y	Y	Y		
+			X	Y	X				X	Y	X						X	Y	X					Y	L	L	Y		
+			X	Y	X				X	Y	X						X	Y	X					Y	L	L	Y		
+																							0/1		L	L			
+X	Y	X																							L	L			
+X	Y	X																							L	L			
+	P	n								M					s			H							L	L			
+X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	z	X	Y	X	X	Y	X	X	L	L	X	Y	X
+X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	Z	X	Y	X	X	Y	X	X	L	L	X	Y	X
+																									L	L			
+																							X	L	L	L	L	X	
+																							X	X	X	X	X	X	
+																													
+																													
+	P	n	m	m	n	m	n	m	m															s					
+X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	H	Y	F	X	X	Y	X				
+X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Y	X	X	Z	Y	z	X	X	Y	X				
+M	M	N	M	N	M	D1												X	z	Y	Z	X							
+X	Y	X	X	Y	X	^	^											X	Z	Y	z	X							
+N	M	N	N	N	M	D2												X	z	Y	Z	X							
+X	Y	X	X	Y	X	^	^											X		Y		X							
+M	N	N	M	N	M	D3							Y	Y	Y	Y				Y									
+X	Y	X	X	Y	X	^	^					Y	Y	Y	Y	Y	Y												
+												Y	X	Y	Y	X	Y												
+							^		^		^	Y	Y	Y	Y	Y	Y	^		^		^				K3	K2	K1	
+	Y	Y	Y								0/25		Y	Y	Y	Y										Y	Y	Y	
+	Y	Y	Y										Y	L	L	Y										Y	Y	Y	
+	Y	Y	Y	Y									Y	L	L	Y									Y	Y	Y	Y	
+	Y	Y	L	L										L	L										L	L	Y	Y	
+		Y	Y	L										L	L										L	Y	Y		
+			X	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	X			
+			X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X			
+																													
+																													
+																													
+																													
+																													
+																													
+									e																				
+								X	X	X	X																		
+							X	X	X	X	X	X																	
+							X	X	X	X	X	X	X																
+						X	X	X	X	X	X	X	X	X															
+						X	X	X	X	X	X	X	X	X	X		M												
+					X	X	X	X	X	X	X	X	X	X	X	X	X				n								
+					X	X	X	X	X	X	X	X	X	X	X	X	X	X	X		X	X							
+				X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X		X	X	X						
+				X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X		X	X	X	X	X	X	X	X	X
+			X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X		X	X	X	X	X	X	X	X	X
+			X	X	X	X	X	X	X	Y	L	0/6		N	n			E					X	X	X	X	X	X	X
+		X	X	X	X	X	X	X	X	Y	L	L	L	X	X	X	X	X	X	X	X		e		M	n		X	X
+	P	X	X	X	X	X	Y	Y	Y	Y	Y	Y	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	Y	X
+X	X	X	X	X	X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X
+																													
+																													
+																													
+	P																												
+X	X																												
+X	X	X		X																									
+X	X	X		X	X	X	X																						
+X	X	X		X	X	X	X	X	X	X																			
+X	X	X		X	X	X	X	X	X	X	X	X	X																
+X	X	X		X	X	X	Y	X	X	X	X	X	X	X	X	X													
+X	X	X		X	X	Y	L	Y	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+X	X	X		X	X	X	Y	X	X	X	X												X	X	X	X	X	X	X
+X	X				X	X	X	X	X	X																			
+X	X		^		X	X	X	X	X	X						s		N			0/1	e	e	e					
+X	X			m				X	X	X				X	X	X	X	X	X		X	X	X	X	X	X	X	X	X
+X	X	X		X	X	X	X	X	X	X				X	X	X	X	X	Y		Y	Y	Y	X	X	X	X	X	X
+X	X	X		X	X	X	X	X	X	X	X			X	X	X	X	X	Y	L	Y	Y	Y	Y	Y	X	X	X	X
+X	X	X		X	X	X	X	X	X	X	X			X	X	X	X	X	Y	L	Y	Y	Y	Y	Y	Y	X	X	X
+X	X	X			e									S	Y	Y	Y	Y	Y	L	L	L	L	L	Y	Y	Y	X	X
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	Y	L	L	L	L	L	L	L	L	L	L	Y	Y	Y	X	X
+																													
+															~	~	~	~											
+	P	m	e												X	X	X	X	^	^	^		^	^	^		N	n	
+X	X	X	X		E												S									n	X	X	X
+X	X	X	X		X	X	X	X	X	X	X						$					0/4				X	X	X	X
+X	X	X	X		X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	L	L	L	L	L	Y	X	X
+X	X	X	X		X	X	X	X	X	X	X	X	X	X	X	X	X	X	Y	L	L	L	L	L	L	Y	Y	X	X
+X	X	X	X				e	e								X	X	X	X	Y	Y	L	Y	Y	Y	Y	X	X	X
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X		X	X	X	X	X	Y	L	L	Y	L	Y	X	X	X
+X	X	X	X						E		e			E		X	X	X	X	X	Y	Y	L	Y	Y	Y	X	X	X
+X	X	X	X	X	X	X	X	X	X		X	X	X	X	X	X	X	X	X	X	X	Y	L	Y	Y	X	X	X	X
+X	X	X	X		X	X	X	X				X	X	X	X	X	X	X	X	X	Y	L	L	L	Y	X	X	X	X
+X	X	X	X				E	e						e		E		X	X	Y	L	Y	Y	L	Y	X	X	X	X
+X	X	X	X	X		X	X	X	X	X	X	X	X	X		X		X	X	Y	Y	Y	L	L	Y	X	X	X	X
+X	X	X	X	X				X	X	X	X	X	X	X	~	X		X	X	X	X	Y	L	Y	X	X	X	X	X
+X	X	X	X	X	X					e				X	X	X		X	X	X	X	Y	L	Y	X	X	X	X	X
+X	X	X	X	X	X	X	X	X	X	X	X	X		e		s		X	X	X	X	Y	L	Y	X	X	X	X	X
+X	X	X	X	X	X	X	X	X	X	Y	Y	Y	X	X	X	X		Y	Y	Y	Y	L	L	Y	X	X	X	X	X
+X	X	X	X	X	X	X	X	X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X	X	X	X	X	X
+X	X	X	X	L	L	L	L	L	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	X	X	X	X	X	X
+																													
+																													
+	P																												
+X	X																				^	^		^	^			n	
+X	X	X																										y	y
+X	X	X															e										y	y	y
+X	X	X	X										^	^		^	^	^		^	^						y	y	y
+X	X	X	X																								y	y	y
+X	X	X	X	X										E												y	y	x	y
+X	X	X	X	X	X								^	^												y	y	y	y
+X	X	X	X	X	X																				y	y	y	y	y
+X	X	X	X	X	X	X										E										L	y	y	y
+X	X	X	X	X	X	X	X						^	^		^	^			^	^					L	S	S	y
+X	X	X	X	X	X	X	X																			L	$	$	y
+X	X	X	X	X	X	X																				L	y	y	y
+Y	Y	Y	X	X	X	X																	^			L			
+L	L	S	S	S	S		0/1													^						L		e	
+L	L								E			E				E	e			E	E	E	E	E	X	L		X	X
+L	L	L	L	L	L	L	L	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	Y	L	Y	X	X
+L	L	L	L	L	L	L	L	Y	Y	X	X	X	X	X	X	X	X	X	X	X	X	X	X	Y	L	L	L	Y	X
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+	P		n		0/1																								
+	Y	Y	Y	L	Y																								
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+	P		n		0/1																								
+	Y	Y	Y	L	Y																								
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+	P		n		0/1																								
+	Y	Y	Y	L	Y																								
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+	P		n		0/1																								
+	Y	Y	Y	L	Y																								
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+																													
+	P		n		0/1																								
+	Y	Y	Y	L	Y																								
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+																													
+																													
+																													
+																													
+																													
+																													
+																0/15													
+													X	X		X	X												
+												X	Y				Y	X											
+											X	Y			n			Y	X										
+										X	Y			Y	Y	Y	Y	Y	Y	X									
+									X	Y		M	n				m			Y	X								
+								X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y			Y	X							
+							X	Y			n						M					Y	X						
+						X	Y			Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X					
+					X	Y							M				m			N				Y	X				
+				X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y			Y	X			
+			X	Y				M			m					N			n			n				Y	X		
+	P	X	Y	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	
+X	X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X
+																													
+																													
+																													
+																													
+																													
+																													
+																0/10													
+													X	X		X	X												
+												X	Y				Y	X											
+											X	Y			n			Y	X										
+										X	Y			Y	Y	Y	Y	Y	Y	X									
+									X	Y		M	n				m			Y	X								
+								X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y			Y	X							
+							X	Y			n						M					Y	X						
+						X	Y			Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X					
+					X	Y							M				m			N				Y	X				
+				X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	L	Y	X			
+			X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X		
+	P	X	Y	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	
+X	X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X
+																													
+																													
+																													
+																													
+																													
+																													
+																0/5													
+													X	X		X	X												
+												X	Y				Y	X											
+											X	Y			n			Y	X										
+										X	Y			Y	Y	Y	Y	Y	Y	X									
+									X	Y		M	n				m			Y	X								
+								X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	L	Y	X							
+							X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X						
+						X	Y	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X					
+					X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X				
+				X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	L	Y	X			
+			X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X		
+	P	X	Y	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	
+X	X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X
+																													
+																													
+																													
+																													
+																													
+																													
+																0/1													
+													X	X		X	X												
+												X	Y				Y	X											
+											X	Y	L	L	L	L	L	Y	X										
+										X	Y	L	L	Y	Y	Y	Y	Y	Y	X									
+									X	Y	L	L	L	L	L	L	L	L	L	Y	X								
+								X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	L	Y	X							
+							X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X						
+						X	Y	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X					
+					X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X				
+				X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	L	Y	X			
+			X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X		
+	P	X	Y	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	
+X	X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X
+																													
+																													
+																													
+																													
+																													
+																													
+														P		0/1													
+													X	X		X	X												
+												X	Y				Y	X											
+											X	Y	L	L	L	L	L	Y	X										
+										X	Y	L	L	Y	Y	Y	Y	Y	Y	X									
+									X	Y	L	L	L	L	L	L	L	L	L	Y	X								
+								X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	L	Y	X							
+							X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X						
+						X	Y	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X					
+					X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X				
+				X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	L	Y	X			
+			X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X		
+		X	Y	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	
+X	X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X
