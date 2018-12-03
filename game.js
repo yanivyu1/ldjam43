@@ -90,8 +90,8 @@ var consts = {
 };
 
 var game_state = {
-    cur_world: 0,
-    cur_level: 0,
+    cur_world: 2,
+    cur_level: 4,
     playing_music_for_world: null,
     scene_type: null,
     zoom_out_level: null
@@ -143,22 +143,30 @@ function addInvisiblePlatform(tiles_x, tiles_y)
 
 function addLava(tiles_x, tiles_y, lava_type)
 {
-    return addEntity('Lava', tiles_x, tiles_y).setLavaType(lava_type);
+    var lava_obj = addEntity('Lava', tiles_x, tiles_y).setLavaType(lava_type);
+    LavaAndIceManager.registerLava(tiles_x, tiles_y, lava_obj);
+    return lava_obj;
 }
 
 function addIce(tiles_x, tiles_y, ice_type)
 {
-    return addEntity('Ice', tiles_x, tiles_y).setIceType(ice_type);
+    var ice_obj = addEntity('Ice', tiles_x, tiles_y).setIceType(ice_type);
+    LavaAndIceManager.registerIce(tiles_x, tiles_y, ice_obj);
+    return ice_obj;
 }
 
 function addLavaGen(tiles_x, tiles_y)
 {
-    return addEntity('LavaGen', tiles_x, tiles_y);
+    var lava_gen = addEntity('LavaGen', tiles_x, tiles_y);
+    LavaAndIceManager.registerLavaGen(tiles_x, tiles_y, lava_gen);
+    return lava_gen;
 }
 
 function addIceGen(tiles_x, tiles_y)
 {
-    return addEntity('IceGen', tiles_x, tiles_y);
+    var ice_gen = addEntity('IceGen', tiles_x, tiles_y);
+    LavaAndIceManager.registerIceGen(tiles_x, tiles_y, ice_gen);
+    return ice_gen;
 }
 
 function initScenes()
@@ -312,6 +320,7 @@ function initScenes()
 
         game_state.scene_type = 'level';
         zoomer.reset();
+        LavaAndIceManager.reset();
 
         for (var i = 0; i < consts.level_height - 1; i++) {
             addOuterWall(0, i);
