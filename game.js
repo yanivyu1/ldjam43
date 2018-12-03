@@ -43,7 +43,8 @@ var consts = {
     believer_jump_speed: 3000,
     follow_x_gap_px: 16,
     wait_for_death: 2000,
-    wait_for_skip: 1000
+    wait_for_skip: 1000,
+    prophet_text_timeout: 5000
 };
 
 var game_state = {
@@ -301,6 +302,13 @@ function initComponents()
             this.attr({w: this._guess_size * text.length, h: this._guess_size});
             this.text(text);
             this.positionOverProphet();
+            
+            var prophet_text = this;
+            setTimeout(function() {
+                if (prophet_text.text() == text) {
+                    prophet_text.text('');
+                }
+            }, consts.prophet_text_timeout);
         }
     });
 
