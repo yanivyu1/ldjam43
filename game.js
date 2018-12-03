@@ -713,16 +713,16 @@ function initComponents()
             }
             else if (game_state.scene_type == 'level' && Crafty.keydown[Crafty.keys.SHIFT]) {
                 if (e.key == Crafty.keys.N) {
-                    Crafty('ProphetText').refreshText(texts.skip_level);
-                    setTimeout(function() {
+                    //Crafty('ProphetText').refreshText(texts.skip_level);
+                    //setTimeout(function() {
                         switchToNextLevel();
-                    }, consts.wait_for_skip);
+                    //}, consts.wait_for_skip);
                 }
                 else if (e.key == Crafty.keys.W) {
-                    Crafty('ProphetText').refreshText(texts.skip_world);
-                    setTimeout(function() {
+                    //Crafty('ProphetText').refreshText(texts.skip_world);
+                    //setTimeout(function() {
                         switchToNextWorld();
-                    }, consts.wait_for_skip);
+                    //}, consts.wait_for_skip);
                 }
                 else if (e.key == Crafty.keys.P) {
                     switchToPrevLevel();
