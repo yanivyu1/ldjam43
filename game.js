@@ -33,8 +33,10 @@ var consts = {
     tile_height: 32,
     level_width: 30,
     level_height: 20,
+    pixel_width: 960, // 32 * 30
+    pixel_height: 640, // 32 * 20
     anim_fps: 12,
-    full_screen_ratio: 0.95,
+    full_screen_ratio: 0.9,
     zoom_in_level: 2,
     prophet_walk_speed: 120,
     prophet_jump_speed: 320,
@@ -46,7 +48,8 @@ var consts = {
 var game_state = {
     cur_world: 0,
     cur_level: 0,
-    scene_type: null
+    scene_type: null,
+    zoom_out_level: null
 };
 
 function addReel(entity, anim_name, row, first_col, last_col)
@@ -179,16 +182,42 @@ function initScenes()
         game_state.scene_type = 'intro';
 
         Crafty.e('2D, DOM, Image')
-            .attr({x: 0, y: 0})
-            .image('assets/Island-text.png');
+              .image('assets/Island-text.png')
+              .addComponent('FullScreenImage');
+    });
 
-        //Crafty.viewport.scale(1 / window.devicePixelRatio);
-        //Crafty.viewport.zoom(consts.zoom_in_level);
+    Crafty.defineScene('loading', function() {
+        // Cannot use assets or components. Fonts are ok.
+        Crafty.e('2D, DOM, Text')
+            .text('Loading...')
+            .textColor('white')
+            .textFont({family: 'Tribal', size:'15px', weight: 'bold'})
+            .textAlign('center')
+            .attr({x: 0, y: game_state.crafty_height / 3, w: game_state.crafty_width});
+
+        Crafty.load(assets, function() {
+            initComponents();
+            initScenes();
+            createNonLevelEntities();
+            Crafty.enterScene('intro');
+        });
     });
 }
 
 function initComponents()
 {
+    Crafty.c('FullScreenImage', {
+        init: function() {
+            // Scale
+            Crafty.viewport.scale(game_state.zoom_out_level);
+
+            // Center
+            this.shift((game_state.crafty_width / game_state.zoom_out_level - this.w) / 2,
+                       (game_state.crafty_height / game_state.zoom_out_level - this.h) / 2,
+                       0, 0);
+        }
+    });
+
     Crafty.c('KeyboardTrapper', {
         init: function() {
             this.addComponent('Keyboard');
@@ -200,9 +229,7 @@ function initComponents()
         // Just an always-present component for trapping keyboard keys
         onKeyDown: function(e) {
             if (game_state.scene_type == 'level' && e.key == Crafty.keys.Z) {
-                var zoom_out_level = Math.min(window.innerWidth / 960, window.innerHeight / 640);
-                zoom_out_level *= consts.full_screen_ratio;
-                Crafty.viewport.scale(zoom_out_level);
+                Crafty.viewport.scale(game_state.zoom_out_level);
             }
             else if (game_state.scene_type == 'intro' && e.key == Crafty.keys.ENTER) {
                 Crafty.enterScene('level');
@@ -901,8 +928,12 @@ function createNonLevelEntities()
 
 function initGame()
 {
-    Crafty.init(window.innerWidth * consts.full_screen_ratio,
-                window.innerHeight * consts.full_screen_ratio,
+    game_state.crafty_width = Math.round(window.innerWidth * consts.full_screen_ratio);
+    game_state.crafty_height = Math.round(window.innerHeight * consts.full_screen_ratio);
+    game_state.zoom_out_level = Math.min(game_state.crafty_width / consts.pixel_width,
+                                         game_state.crafty_height / consts.pixel_height);
+
+    Crafty.init(game_state.crafty_width, game_state.crafty_height,
                 document.getElementById('game'));
     Crafty.pixelart(true);
     Crafty.viewport.bounds = {
@@ -911,12 +942,8 @@ function initGame()
               y: consts.level_height * consts.tile_height}
             };
 
-    Crafty.load(assets, function() {
-        initComponents();
-        initScenes();
-        createNonLevelEntities();
-        Crafty.enterScene('intro');
-    });
+    initScenes();
+    Crafty.enterScene('loading');
 }
 
 initGame();
