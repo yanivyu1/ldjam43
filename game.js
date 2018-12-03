@@ -58,7 +58,7 @@ var assets = function() {
             "Male-trap": ["sound_fx/stab_male.mp3"],
             "Female-trap": ["sound_fx/stab_female.mp3"],
             "Male-lava": ["sound_fx/true_believer_ascends_to_hevan.mp3"],
-            "Female-lava": ["sound_fx/true_believer_ascends_to_hevan.mp3"],
+            "Female-lava": ["sound_fx/female_true_believer_ascends_to_hevan.mp3"],
             "Prophet-lava": ["sound_fx/prophet_fired.mp3"],
         }
     };
@@ -927,8 +927,8 @@ function initComponents()
             this.trigger('Dying');
         },
 
-        onTouchLava: function() {
-            if (this.typeStr) {
+        onTouchLava: function(hitData, isFirstTouch) {
+            if (this.typeStr && isFirstTouch) {
                 Crafty.audio.play(this.typeStr + '-lava');
             }
             this.die('dying_in_lava', false, false);
