@@ -110,7 +110,15 @@ var texts = {
 var zorders = {
     // higher = closer to the user's eyeballs
     default: 0,   // Crafty default
-    text: 1
+    walls: 1,
+    stage_titles: 2,
+    generic_items: 3,
+    inventory_items: 4,
+    enemies: 5,
+    believers: 6,
+    target_and_lightning: 7,
+    prophet: 8,
+    prophet_text: 9
 };
 
 function addReel(entity, anim_name, row, first_col, last_col)
@@ -723,7 +731,7 @@ function initComponents()
                     Crafty('Prophet').die('dying_in_lava', false, true);
                     Crafty('ProphetText').refreshText(texts.restart_level);
                 }
-            }else if (e.key == Crafty.keys.DOWN_ARROW && Crafty('Prophet').vy == 0 && Crafty('Prophet')) {
+            }else if ((e.key == Crafty.keys.DOWN_ARROW || e.key == Crafty.keys.S) && Crafty('Prophet').vy == 0 && Crafty('Prophet')) {
                 var prophet = Crafty('Prophet');
                 prophet.vx = 0;
                 prophet.disableControl();
@@ -733,7 +741,7 @@ function initComponents()
         onKeyUp: function(e) {
             if (game_state.scene_type == 'level' && e.key == Crafty.keys.Z) {
                 zoomer.handleZoomPress(false, false);
-            }else if (e.key == Crafty.keys.DOWN_ARROW && !Crafty('Prophet').dying) {
+            }else if ((e.key == Crafty.keys.DOWN_ARROW || e.key == Crafty.keys.S) && !Crafty('Prophet').dying) {
                 if (Crafty('Prophet').NewDirection == 1){
                   Crafty('Prophet').animate('stand_right', -1);
                 }else {
@@ -772,8 +780,6 @@ function initComponents()
             }
             text_shadow = text_shadow.slice(0, -2);
             this.css('text-shadow', text_shadow);
-
-            this.z = zorders.text;
         }
     });
 
@@ -784,6 +790,7 @@ function initComponents()
 
             this.addComponent('AmigaText, FloatingOverProphet');
             this.textAlign('center');
+            this.z = zorders.prophet_text;
         },
 
         refreshText: function(text) {
@@ -810,6 +817,7 @@ function initComponents()
 
             this.key_down = false;
             this.timeout = false;
+            this.z = zorders.stage_titles;
         },
 
         setText: function(text, size, guess_size) {
@@ -841,12 +849,14 @@ function initComponents()
     Crafty.c('Floor', {
         init: function() {
             this.addComponent('2D, DOM, tile_floor');
+            this.z = zorders.walls;
         }
     });
 
     Crafty.c('Wall', {
         init: function() {
             this.addComponent('2D, DOM, move_blocking_for_m, move_blocking_for_w');
+            this.z = zorders.walls;
         }
     });
 
@@ -879,6 +889,7 @@ function initComponents()
             this.addComponent('2D, DOM, tile_lava, SpriteAnimation');
             addReel(this, 'shallow', 14, 0, 5);
             addReel(this, 'deep', 14, 6, 11);
+            this.z = zorders.walls;
         },
 
         setLavaType: function(lava_type) {
@@ -898,6 +909,7 @@ function initComponents()
             this.animate('silent', -1);
             this.bind('AnimationEnd', this.onAnimationCompleted);
             this.is_killing = false;
+            this.z = zorders.enemies;
         },
 
         activate: function() {
@@ -941,6 +953,8 @@ function initComponents()
             // addReel(this, 'right_open', 11, 35, 39);
             // addReel(this, 'right_opened', 11, 39, 39);
             // addReel(this, 'right_close', 1, 39, 35);
+
+            this.z = zorders.enemies;
         },
 
         setGateType: function(gate_type) {
@@ -951,12 +965,14 @@ function initComponents()
     Crafty.c('MBlock', {
         init: function() {
             this.addComponent('2D, DOM, tile_mblock, move_blocking_for_w');
+            this.z = zorders.walls;
         }
     });
 
     Crafty.c('WBlock', {
         init: function() {
             this.addComponent('2D, DOM, tile_wblock, move_blocking_for_m');
+            this.z = zorders.walls;
         }
     });
 
@@ -967,6 +983,7 @@ function initComponents()
             addReel(this, 'deep', 14, 22, 22);
             this.ice_type = null;
             this.associated_platform = null;
+            this.z = zorders.walls;
         },
 
         setIceType: function(ice_type) {
@@ -1003,21 +1020,22 @@ function initComponents()
 
     Crafty.c('IceShrine', {
         init: function() {
-            // TODO: Actually implement this
-            this.addComponent('Floor, tile_iceshrine');
+            this.addComponent('2D, DOM, tile_iceshrine');
+            this.z = zorders.generic_items;
         }
     });
 
     Crafty.c('LavaShrine', {
         init: function() {
-            // TODO: Actually implement this
-            this.addComponent('Floor, tile_lavashrine');
+            this.addComponent('2D, DOM, tile_lavashrine');
+            this.z = zorders.generic_items;
         }
     });
 
     Crafty.c('Item', {
         init: function() {
-            this.addComponent('Floor');
+            this.addComponent('2D, DOM');
+            this.z = zorders.generic_items;
         }
     });
 
@@ -1028,6 +1046,7 @@ function initComponents()
             this.prevCollectible = null;
             this.nextCollectible = null;
             this.itemType = null;
+            this.z = zorders.inventory_items;
         },
 
         removeThis: function() {
@@ -1122,7 +1141,8 @@ function initComponents()
     Crafty.c('Switch', {
         init: function() {
             // TODO: Actually implement this
-            this.addComponent('Floor, tile_switch');
+            this.addComponent('2D, DOM, tile_switch');
+            this.z = zorders.enemies;
         }
     });
 
@@ -1295,7 +1315,6 @@ function initComponents()
                 Crafty.audio.play(this.typeStr + '-lava');
             }
             this.die('dying_in_lava', false, false);
-
         },
 
         onTouchTrap: function(hitData) {
@@ -1418,6 +1437,8 @@ function initComponents()
             this.dir_animate('stand', -1);
             this.setupMovement();
 
+            this.z = zorders.prophet;
+
             this.onHit('move_blocking_for_' + this.gender, this.onHitMoveBlocking);
             this.bind('NewDirection', this.prophetNewDirection);
             this.bind('ConversionStarted', this.onConversionStarted);
@@ -1536,6 +1557,7 @@ function initComponents()
         init: function() {
             this.addComponent('Character, unbeliever_stand_right');
             this.offsetBoundary(-3, 0, -3, 0);
+            this.z = zorders.believers;
 
             this.jumper(consts.believer_jump_speed, []);
 
@@ -1620,6 +1642,7 @@ function initComponents()
     Crafty.c('TrueBeliever', {
         init: function() {
             this.addComponent('Character, HasConvertingPowers, NewDirectionWorkaround, true_believer_stand_right');
+            this.z = zorders.believers;
 
             this.jumper(consts.believer_jump_speed, []);
             this.bind('Dying', this.onTrueBelieverDying);
@@ -1767,6 +1790,7 @@ function initComponents()
 
             this.total = 0;
             this.count = 0;
+            this.z = zorders.stage_titles;
         },
 
         setTotal: function(total) {
