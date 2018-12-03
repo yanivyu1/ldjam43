@@ -148,7 +148,7 @@ function initScenes()
                        w: consts.tile_width * 3});
         }
 
-        function addLevelTitle(prophet_tiles_x, prophet_tiles_y, level_title)
+        function addLevelTitle(prophet_tiles_x, prophet_tiles_y, level_name, level_title)
         {
             var tiles_y;
             
@@ -165,7 +165,10 @@ function initScenes()
                 }
             }
 
-            addEntity('LevelTitleText', prophet_tiles_x, tiles_y).setText(level_title);
+            addEntity('LevelTitleText', prophet_tiles_x, tiles_y - 1/2)
+                .setText(level_name, '10px', 15);
+            addEntity('LevelTitleText', prophet_tiles_x, tiles_y)
+                .setText(level_title, '15px', 20);
         }
 
         game_state.scene_type = 'level';
@@ -194,7 +197,8 @@ function initScenes()
                 var prophet = addProphet(objects[i].x, objects[i].y);
                 Crafty.viewport.follow(prophet, 0, 0);
                 Crafty.e('ProphetText');
-                addLevelTitle(objects[i].x, objects[i].y, 'Level title!!!');
+                addLevelTitle(objects[i].x, objects[i].y,
+                    'Level ' + stage.name, stage.title);
             }
             else if (objects[i].type == 'NPC') {
                 addUnbeliever(objects[i].x, objects[i].y, objects[i].facing, 1);
@@ -342,13 +346,9 @@ function initComponents()
 
     Crafty.c('LevelTitleText', {
         init: function() {
-            this._size = '15px';
-            this._guess_size = 20;
-
             this.addComponent('2D, DOM, Text, Keyboard');
             this.textAlign('left');
             this.textColor('black');
-            this.textFont({family: 'Tribal', size: this._size, weight: 'bold'});
 
             this.bind('KeyDown', this.onKeyDown);
 
@@ -357,9 +357,11 @@ function initComponents()
             this.z = zorders.text;
         },
 
-        setText: function(text) {
+        setText: function(text, size, guess_size) {
+            this.textFont({family: 'Tribal', size: size, weight: 'bold'});
+
             // Entire screen as width since it's left-aligned
-            this.attr({w: consts.pixel_width, h: this._guess_size});
+            this.attr({w: consts.pixel_width, h: guess_size});
             this.text(text);
 
             var level_title_text = this;
