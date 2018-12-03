@@ -37,6 +37,13 @@ var assets = function() {
                 tile: 32,
                 tileh: 32,
                 map: sprite_map
+            },
+            "assets/gfx/cutscenes/intro/intro_animation.png": {
+                tile: 960,
+                tileh: 640,
+                map:  {
+                    intro_animation: [0,0]
+                }
             }
         },
         "images": [
@@ -45,7 +52,8 @@ var assets = function() {
             'assets/gfx/bg-world2.png',
             'assets/gfx/bg-world3.png',
             'assets/gfx/bg-world4.png',
-            'assets/gfx/bg-world5.png'
+            'assets/gfx/bg-world5.png',
+            'assets/gfx/cutscenes/intro/Background.png'
         ],
         "audio": {
             // Background music
@@ -514,6 +522,30 @@ function initScenes()
         Crafty.audio.play('bg-intro', 0.75);
     });
 
+    Crafty.defineScene('intro_cutscene', function() {
+        game_state.scene_type = 'intro_cutscene';
+
+        Crafty.e('2D, DOM, Image')
+            .image('assets/gfx/cutscenes/intro/Background.png')
+            .addComponent('FullScreenImage');
+
+
+        Crafty.c('IntroAnimation', {
+            init: function() {
+                this.addComponent('2D, DOM, SpriteAnimation, intro_animation, FullScreenImage');
+                this.reel('IntroAnimation', 2666, 0, 0, 17);
+                this.animate('IntroAnimation', 1);
+                this.bind('AnimationEnd', this.onAnimationCompleted);
+            },
+
+            onAnimationCompleted: function(data) {
+                Crafty.enterScene('level');
+            }
+        });
+        Crafty.e('IntroAnimation');
+
+    });
+
     Crafty.defineScene('loading', function() {
         // Cannot use assets or components, they're not yet loaded. Fonts are ok.
         Crafty.e('2D, DOM, Text')
@@ -760,7 +792,10 @@ function initComponents()
                 zoomer.handleZoomPress(true, Crafty.keydown[Crafty.keys.SHIFT]);
             }
             else if (game_state.scene_type == 'intro' && e.key == Crafty.keys.ENTER) {
-                Crafty.enterScene('level'); // TODO cutscene
+                Crafty.enterScene('intro_cutscene');
+            }
+            else if (game_state.scene_type == 'intro_cutscene' && e.key == Crafty.keys.ENTER) {
+                Crafty.enterScene('level');
             }
             else if (game_state.scene_type == 'level' && Crafty.keydown[Crafty.keys.SHIFT]) {
                 if (e.key == Crafty.keys.N) {
