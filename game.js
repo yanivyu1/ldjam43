@@ -43,7 +43,7 @@ var consts = {
     believer_jump_speed: 3000,
     follow_x_gap_px: 16,
     wait_for_death: 2000,
-    wait_for_skip: 1000,
+    wait_for_skip: 500,
     prophet_text_timeout: 5000
 };
 
