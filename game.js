@@ -44,7 +44,8 @@ var consts = {
     follow_x_gap_px: 16,
     wait_for_death: 2000,
     wait_for_skip: 500,
-    prophet_text_timeout: 5000
+    prophet_text_timeout: 5000,
+    title_text_timeout: 5000
 };
 
 var game_state = {
@@ -60,6 +61,12 @@ var texts = {
     oops: 'oops text, please ignore',
     restart_level: 'Try, try again...',
     skip_level: 'Coward.'
+};
+
+var zorders = {
+    // higher = closer to the user's eyeballs
+    default: 0,   // Crafty default
+    floating_text: 1
 };
 
 function addReel(entity, anim_name, row, first_col, last_col)
@@ -141,6 +148,26 @@ function initScenes()
                        w: consts.tile_width * 3});
         }
 
+        function addLevelTitle(prophet_tiles_x, prophet_tiles_y, level_title)
+        {
+            var tiles_y;
+            
+            if (prophet_tiles_y < 10) {
+                tiles_y = prophet_tiles_y + 3;
+                if (tiles_y > 17) {
+                    tiles_y = 17;
+                }
+            }
+            else {
+                tiles_y = prophet_tiles_y - 3;
+                if (tiles_y < 3) {
+                    tiles_y = 3;
+                }
+            }
+
+            addEntity('LevelTitleText', prophet_tiles_x, tiles_y).setText(level_title);
+        }
+
         game_state.scene_type = 'level';
         Crafty.viewport.scale(consts.zoom_in_level);
 
@@ -167,6 +194,7 @@ function initScenes()
                 var prophet = addProphet(objects[i].x, objects[i].y);
                 Crafty.viewport.follow(prophet, 0, 0);
                 Crafty.e('ProphetText');
+                addLevelTitle(objects[i].x, objects[i].y, 'Level title!!!');
             }
             else if (objects[i].type == 'NPC') {
                 addUnbeliever(objects[i].x, objects[i].y, objects[i].facing, 1);
@@ -294,6 +322,7 @@ function initComponents()
             this.textAlign('center');
             this.textColor('black');
             this.textFont({family: 'Tribal', size: this._size, weight: 'bold'});
+            this.z = zorders.text;
         },
 
         refreshText: function(text) {
@@ -308,6 +337,47 @@ function initComponents()
                     prophet_text.text('');
                 }
             }, consts.prophet_text_timeout);
+        }
+    });
+
+    Crafty.c('LevelTitleText', {
+        init: function() {
+            this._size = '15px';
+            this._guess_size = 20;
+
+            this.addComponent('2D, DOM, Text, Keyboard');
+            this.textAlign('left');
+            this.textColor('black');
+            this.textFont({family: 'Tribal', size: this._size, weight: 'bold'});
+
+            this.bind('KeyDown', this.onKeyDown);
+
+            this.key_down = false;
+            this.timeout = false;
+            this.z = zorders.text;
+        },
+
+        setText: function(text) {
+            // Entire screen as width since it's left-aligned
+            this.attr({w: consts.pixel_width, h: this._guess_size});
+            this.text(text);
+
+            var level_title_text = this;
+            setTimeout(function() {
+                level_title_text.timeout = true;
+                level_title_text.checkDestroy();
+            }, consts.title_text_timeout);
+        },
+
+        onKeyDown: function() {
+            this.key_down = true;
+            this.checkDestroy();
+        },
+
+        checkDestroy: function() {
+            if (this.key_down && this.timeout) {
+                this.destroy();
+            }
         }
     });
 
@@ -907,6 +977,7 @@ function initComponents()
             this.textFont({family: 'Alanden'});
             this.total = 0;
             this.count = 0;
+            this.z = zorders.text;
         },
 
         setTotal: function(total) {
