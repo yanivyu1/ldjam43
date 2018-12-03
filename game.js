@@ -66,7 +66,7 @@ var consts = {
     pixel_height: 640, // 32 * 20
     anim_fps: 12,
     full_screen_ratio: 0.9,
-    zoom_in_level: 2,
+    zoom_in_level: 1.5,
     prophet_walk_speed: 120,
     prophet_jump_speed: 320,
     believer_jump_speed: 3000,
