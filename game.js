@@ -89,7 +89,7 @@ function initScenes()
 
         function addOuterWall(tiles_x, tiles_y)
         {
-            return addWall(tiles_x, tiles_y, null).attr({w: 1});
+            return addEntity('OuterWall', tiles_x, tiles_y).attr({w: 1});
         }
 
         function addLava(tiles_x, tiles_y, lava_type)
@@ -265,6 +265,12 @@ function initComponents()
     Crafty.c('Wall', {
         init: function() {
             this.addComponent('2D, DOM, gravity_blocking, move_blocking');
+        }
+    });
+
+    Crafty.c('OuterWall', {
+        init: function() {
+            this.addComponent('2D, DOM, move_blocking');
         }
     });
 
