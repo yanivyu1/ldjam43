@@ -48,6 +48,7 @@ var consts = {
     prophet_walk_speed: 120,
     prophet_jump_speed: 320,
     believer_jump_speed: 3000,
+    believer_walk_speed: 777,
     follow_x_gap_px: 16,
     wait_for_death: 2000,
     wait_for_skip: 500,
@@ -167,7 +168,7 @@ function initScenes()
         function addLevelTitle(prophet_tiles_x, prophet_tiles_y, level_name, level_title)
         {
             var tiles_y;
-            
+
             if (prophet_tiles_y < 10) {
                 tiles_y = prophet_tiles_y + 3;
                 if (tiles_y > 17) {
@@ -366,7 +367,7 @@ function initComponents()
             this.attr({w: this._guess_size * text.length, h: this._guess_size});
             this.text(text);
             this.positionOverProphet();
-            
+
             var prophet_text = this;
             setTimeout(function() {
                 if (prophet_text.text() == text) {
@@ -512,6 +513,27 @@ function initComponents()
             this.onHit('Lava', this.onTouchLava);
             this.onHit('Trap', this.onTouchTrap);
             this.bind('AnimationEnd', this.onAnimationEnd);
+
+            this.nextCharacter = null;
+            this.prevCharacter = null;
+        },
+
+        insertBelieverAfterThis: function(believer) {
+            believer.prevCharacter = this;
+            if (this.nextCharacter) {
+                this.nextCharacter.prevCharacter = believer;
+                believer.nextCharacter = this.nextCharacter;
+            }
+            this.nextCharacter = believer;
+        },
+
+        removeThisFromCharacterQueue: function() {
+            if (this.nextCharacter) {
+                this.prevCharacter.nextCharacter = this.nextCharacter;
+                this.nextCharacter.prevCharacter = this.prevCharacter;
+            } else {
+                this.prevCharacter.nextCharacter = null;
+            }
         },
 
         dir_animate: function(reelId, loopCount) {
@@ -571,6 +593,9 @@ function initComponents()
             this.dying = true;
             this.disable_movement_animations = true;
             prev_vy = this.vy;
+            if (this.has('TrueBeliever')) {
+                this.removeThisFromCharacterQueue();
+            }
             this.removeComponent('Multiway'); // If we could walk, don't walk anymore
             if (allow_falling) {
                 // work around bug(?) in Crafty - vy is reset even though we're falling
@@ -673,9 +698,9 @@ function initComponents()
             this.trigger('ConversionStarted');
 
             var collidedUnbeliever = hitData[0].obj;
-            var prophet = Crafty('Prophet');
+            var self = this;
             collidedUnbeliever.trulyBelieve(function(trueBeliever) {
-                prophet.believers.push(trueBeliever);
+                self.insertBelieverAfterThis(trueBeliever);
             });
         },
 
@@ -714,15 +739,12 @@ function initComponents()
             this.setupMovement();
 
             this.onHit('move_blocking', this.onHitMoveBlocking);
-            this.bind('Move', this.onMove);
             this.bind('NewDirection', this.prophetNewDirection);
             this.bind('ConversionStarted', this.onConversionStarted);
             this.bind('ConversionEnded', this.onConversionEnded);
             this.bind('Dying', this.onProphetDying);
             this.bind('Died', this.onProphetDied);
 
-            this.believers = [];
-            this.believers_blocked_walls = [];
             this.num_dying_believers = 0;
             this.winning = false;
         },
@@ -744,20 +766,6 @@ function initComponents()
                 this.y -= this.dy;
                 this.vy = 0;
             }
-        },
-
-        onMove: function() {
-            var idx = 0;
-            var believers_for_end_of_queue = [];
-            for (believer in this.believers) {
-                if (this.believers[idx].onProphetMoved(this.x, idx)) {
-                    // Successfully moved believer
-                    idx += 1;
-                } else { // The believer was blocked by a wall, and should be pushed to the end of the queue later.
-                    believers_for_end_of_queue.push(this.believers.splice(idx, 1)[0]);
-                }
-            }
-            this.believers = this.believers.concat(believers_for_end_of_queue);
         },
 
         prophetNewDirection: function(direction) {
@@ -790,7 +798,7 @@ function initComponents()
 
         onProphetDied: function() {
             restartLevel();
-        }
+        },
     });
 
     Crafty.c('Unbeliever', {
@@ -818,7 +826,7 @@ function initComponents()
 
         onAnimationFinished: function(data) {
             if (data.id == this.being_converted_anim) {
-                var trueBeliever = Crafty.e('TrueBeliever' + this.believer_idx)
+                var trueBeliever = Crafty.e('TrueBeliever' + this.believer_type)
                     .attr({x: this.x,
                            y: this.y,
                            w: consts.tile_width,
@@ -845,7 +853,7 @@ function initComponents()
             addReel(this, 'fall_left', 7, 0, 6); // copy stand animation
             addReel(this, 'being_converted_left', 7, 7, 15);
 
-            this.believer_idx = 1;
+            this.believer_type = 1;
         }
     });
 
@@ -862,7 +870,7 @@ function initComponents()
             addReel(this, 'fall_left', 11, 0, 6); // copy stand animation
             addReel(this, 'being_converted_left', 11, 7, 15);
 
-            this.believer_idx = 2;
+            this.believer_type = 2;
         }
     });
 
@@ -874,39 +882,34 @@ function initComponents()
             this.bind('Dying', this.onTrueBelieverDying);
             this.bind('Died', this.onTrueBelieverDied);
 
-            this.blocked_by_wall = false;
+            this.bind('EnterFrame', this.beforeEnterFrame);
+
+            this.nextCharacter = null;
+            this.prevCharacter = null;
         },
 
-        onProphetMoved: function(prophetX, idx) {
+        beforeEnterFrame: function(data) {
+            // Handle falls
+            if (this.vy != 0) {
+                // Don't move on x axis while falling
+                return;
+            }
+
             if (this.converting || this.dying) {
                 // Don't move while converting or dying
-                return false;
+                return;
             }
 
-            if (this.blocked_by_wall) {
-                if (this.checkIfStillWallBlocked(prophetX)) {
-                    // Don't move
-                    return false;
-                }
-            }
-
-            var actual_gap_x_px = (consts.follow_x_gap_px + consts.tile_width) * (idx + 1);
+            var prevCharX = this.prevCharacter.x;
+            var actual_speed = consts.believer_walk_speed * data.dt * 0.0001;
             var prev_x = this.x;
-            var delta_x = 0;
-            if (this.x >= prophetX - actual_gap_x_px && this.x <= prophetX + actual_gap_x_px) {
-                // Do not move, will overlap prophet
-            } else {
-                if (this.x > prophetX) {
-                    delta_x = prophetX + actual_gap_x_px - this.x;
-                } else {
-                    delta_x = prophetX - actual_gap_x_px - this.x;
-                }
-            }
 
-            this.shift(delta_x, 0, 0, 0);
-            if (delta_x > 0) {
+            if (this.x < prevCharX - consts.follow_x_gap_px - consts.tile_width) {
+                this.shift(actual_speed, 0, 0, 0);
+                // TODO(yoni): fix animations
                 this.setNewDirectionX(1);
-            } else if (delta_x < 0) {
+            } else if (this.x > prevCharX + consts.follow_x_gap_px + consts.tile_width) {
+                this.shift(-1 * actual_speed, 0, 0, 0);
                 this.setNewDirectionX(-1);
             } else {
                 this.setNewDirectionX(0);
@@ -914,12 +917,8 @@ function initComponents()
 
             if (hitDatas = this.hit('move_blocking')) {
                 this.x = prev_x;
-                this.blocked_by_wall = true;
                 this.setNewDirectionX(0);
-                return false;
             }
-
-            return true;
         },
 
         checkIfStillWallBlocked: function(prophetX) {
@@ -940,7 +939,7 @@ function initComponents()
             if (win_lose == 'win') {
                 Crafty('ProphetText').refreshText(texts.win);
                 prophet.winning = true;
-                
+
             }
             else if (win_lose == 'lose') {
                 Crafty('ProphetText').refreshText(texts.lose);
