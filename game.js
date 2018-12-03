@@ -5,7 +5,22 @@ var assets = function() {
         true_believer_stand_right: [16, 6],
         tile_lava: [0, 14],
         tile_floor: [12, 14],
-        tile_trap: [13, 14]
+        tile_trap: [13, 14],
+        enemy_stand_right: [12, 4],
+        tile_dgate: [35, 8],
+        tile_mblock: [19, 14],
+        tile_wblock: [20, 14],
+        tile_ice: [21, 14],
+        tile_iceshrine: [24, 14],
+        tile_lavashrine: [25, 14],
+        tile_key1: [26, 14],
+        tile_door1: [27, 14],
+        tile_key2: [28, 14],
+        tile_door2: [29, 14],
+        tile_key3: [30, 14],
+        tile_door3: [31, 14],
+        tile_switch: [32, 14],
+        tile_amulet: [33, 14],
     };
 
     for (var row = 0; row < 5; row++) {
@@ -159,6 +174,81 @@ function initScenes()
             return addEntity('Trap', tiles_x, tiles_y);
         }
 
+        function addGate(tiles_x, tiles_y, gate_type)
+        {
+            return addEntity('Gate', tiles_x, tiles_y).setGateType(gate_type);
+        }
+
+        function addMBlock(tiles_x, tiles_y)
+        {
+            return addEntity('MBlock', tiles_x, tiles_y);
+        }
+
+        function addWBlock(tiles_x, tiles_y)
+        {
+            return addEntity('WBlock', tiles_x, tiles_y);
+        }
+
+        function addIce(tiles_x, tiles_y, ice_type)
+        {
+            return addEntity('Ice', tiles_x, tiles_y).setIceType(ice_type);
+        }
+
+        function addIceShrine(tiles_x, tiles_y)
+        {
+            return addEntity('IceShrine', tiles_x, tiles_y);
+        }
+
+        function addLavaGen(tiles_x, tiles_y)
+        {
+            return addEntity('LavaGen', tiles_x, tiles_y);
+        }
+
+        function addLavaShrine(tiles_x, tiles_y)
+        {
+            return addEntity('LavaShrine', tiles_x, tiles_y);
+        }
+        
+        function addKey1(tiles_x, tiles_y)
+        {
+            return addEntity('Key1', tiles_x, tiles_y);
+        }
+        
+        function addDoor1(tiles_x, tiles_y)
+        {
+            return addEntity('Door1', tiles_x, tiles_y);
+        }
+        
+        function addKey2(tiles_x, tiles_y)
+        {
+            return addEntity('Key2', tiles_x, tiles_y);
+        }
+        
+        function addDoor2(tiles_x, tiles_y)
+        {
+            return addEntity('Door2', tiles_x, tiles_y);
+        }
+        
+        function addKey3(tiles_x, tiles_y)
+        {
+            return addEntity('Key3', tiles_x, tiles_y);
+        }
+        
+        function addDoor3(tiles_x, tiles_y)
+        {
+            return addEntity('Door3', tiles_x, tiles_y);
+        }
+        
+        function addSwitch(tiles_x, tiles_y)
+        {
+            return addEntity('Switch', tiles_x, tiles_y);
+        }
+        
+        function addAmulet(tiles_x, tiles_y)
+        {
+            return addEntity('Amulet', tiles_x, tiles_y);
+        }
+
         function addProphet(tiles_x, tiles_y)
         {
             return addEntity('Prophet', tiles_x, tiles_y);
@@ -256,6 +346,63 @@ function initScenes()
             }
             else if (objects[i].type == 'Trap') {
                 addTrap(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'DGate') {
+                addGate(objects[i].x, objects[i].y, 'down');
+            }
+            else if (objects[i].type == 'UGate') {
+                addGate(objects[i].x, objects[i].y, 'up');
+            }
+            else if (objects[i].type == 'LGate') {
+                addGate(objects[i].x, objects[i].y, 'left');
+            }
+            else if (objects[i].type == 'RGate') {
+                addGate(objects[i].x, objects[i].y, 'right');
+            }
+            else if (objects[i].type == 'MBlock') {
+                addMBlock(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'WBlock') {
+                addWBlock(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'Ice') {
+                addIce(objects[i].x, objects[i].y, 'shallow');
+            }
+            else if (objects[i].type == 'Deepice') {
+                addIce(objects[i].x, objects[i].y, 'deep');
+            }
+            else if (objects[i].type == 'LavaGen') {
+                addLavaGen(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'IceShrine') {
+                addIceShrine(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'LavaShrine') {
+                addLavaShrine(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'Key1') {
+                addKey1(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'Door1') {
+                addDoor1(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'Key2') {
+                addKey2(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'Door2') {
+                addDoor2(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'Key3') {
+                addKey3(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'Door3') {
+                addDoor3(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'Switch') {
+                addSwitch(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'Amulet') {
+                addAmulet(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Counter') {
                 addCounter(objects[i].x, objects[i].y)
@@ -505,6 +652,143 @@ function initComponents()
                 this.animate('silent', -1);
                 this.is_killing = false;
             }
+        }
+    });
+    
+    Crafty.c('Gate', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Wall, tile_dgate');
+            // addReel(this, 'down_closed', 6, 35, 35);
+            // addReel(this, 'down_open', 6, 35, 39);
+            // addReel(this, 'down_opened', 6, 39, 39);
+            // addReel(this, 'down_close', 6, 39, 35);
+            // addReel(this, 'up_closed', 7, 35, 35);
+            // addReel(this, 'up_open', 7, 35, 39);
+            // addReel(this, 'up_opened', 7, 39, 39);
+            // addReel(this, 'up_close', 7, 39, 35);
+            // addReel(this, 'left_closed', 10, 35, 35);
+            // addReel(this, 'left_open', 10, 35, 39);
+            // addReel(this, 'left_opened', 10, 39, 39);
+            // addReel(this, 'left_close', 10, 39, 35);
+            // addReel(this, 'right_closed', 11, 35, 35);
+            // addReel(this, 'right_open', 11, 35, 39);
+            // addReel(this, 'right_opened', 11, 39, 39);
+            // addReel(this, 'right_close', 1, 39, 35);
+        },
+
+        setGateType: function(gate_type) {
+            // this.animate(gate_type + '_closed', -1);
+        },
+    });
+    
+    Crafty.c('MBlock', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Wall, tile_mblock');
+        }
+    });
+    
+    Crafty.c('WBlock', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Wall, tile_wblock');
+        }
+    });
+
+    Crafty.c('Ice', {
+        init: function() {
+            this.addComponent('Wall, tile_ice');
+            //addReel(this, 'shallow', 14, 21, 21);
+            //addReel(this, 'deep', 14, 22, 22);
+        },
+
+        setIceType: function(ice_type) {
+            //this.animate(ice_type, -1);
+        },
+    });
+    
+    Crafty.c('LavaGen', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Lava');
+        }
+    });
+    
+    Crafty.c('IceGen', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Ice');
+        }
+    });
+    
+    Crafty.c('IceShrine', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Floor, tile_iceshrine');
+        }
+    });
+    
+    Crafty.c('LavaShrine', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Floor, tile_lavashrine');
+        }
+    });
+    
+    Crafty.c('Key1', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Floor, tile_key1');
+        }
+    });
+    
+    Crafty.c('Door1', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Wall, tile_door1');
+        }
+    });
+    
+    Crafty.c('Key2', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Floor, tile_key2');
+        }
+    });
+    
+    Crafty.c('Door2', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Wall, tile_door2');
+        }
+    });
+    
+    Crafty.c('Key3', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Floor, tile_key3');
+        }
+    });
+    
+    Crafty.c('Door3', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Wall, tile_door3');
+        }
+    });
+    
+    Crafty.c('Switch', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Floor, tile_switch');
+        }
+    });
+    
+    Crafty.c('Amulet', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Floor, tile_amulet');
         }
     });
 
