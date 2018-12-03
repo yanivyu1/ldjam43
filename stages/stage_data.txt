@@ -13,7 +13,7 @@
 																													
 																	Y	Y	Y	Y									
 																													
-																													
+					!Arrows or WASD to move, up or W to jump.<br />Bring the correct number of followers to the lava.																								
 								n						Y	Y														
 						X	X	X	X																				
 	P				X	X	X	X	X									0/1											
@@ -32,7 +32,7 @@ X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X	X
 																													
 																													
 								N																					
-							Y	Y	Y																				
+							Y	Y	Y					!If a follower touches another person<br />they will be converted.															
 																													
 	P													m															
 X	X	X	X	X						X	X	X	X	X	X											X			
@@ -54,7 +54,7 @@ X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X
 										N																			
 									Y	Y	Y																		
 																													
-					n						m																		
+					n						m												!Don't bring too many!						
 	P			X	X	X	X	X	X	X	X	X	X	X	X														
 X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X				0/2						X	X	X
 X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X
@@ -71,7 +71,7 @@ X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X
 																													
 													n																
 												Y	Y	Y															
-																													
+																							!If you stay above your followers<br />they will follow you from below.						
 																		M											
 	P														X	X	X	X	X	X	X	X							
 X	X	X	X	X										X	X	X	X	X							Y	Y			
@@ -93,7 +93,7 @@ X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X	X
 																	Y												
 												M																	
 											Y	Y	Y							Y	Y	Y							
-												Y									Y								
+												Y									Y				!If you made a mistake<br />press Ctrl+R or jump in<br />lava to try again.				
 																													X
 							X	X	X	X																			X
 	P			m		X	X	X	X	X	X														0/2			X	X
@@ -110,7 +110,7 @@ X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X
 																													
 																													
 																													
-																													
+													!Sometimes, you can't get<br />your hands dirty.																
 										N								X	X	X									
 									X	X	Y	Y			Y	Y	Y	Y	Y	X	X	X							
 								X	X	Y	Y								Y	Y	X	X							
@@ -121,7 +121,7 @@ X	X	X	X	X	X	X	X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	L	L	Y	Y	X	X	X	X	X	X	X
 																													
 																													
 																													
-																													
+						!Hold Down or S to Call your minions together.																							
 	P																												
 Y	Y	Y	Y	Y	Y	Y						M																	
 Y	Y	Y	Y	Y	Y					Y	Y	Y	Y																
@@ -141,7 +141,7 @@ Y	Y	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X	X	X	X
 																													
 																													
 																													
-	P																												
+	P						!Hold Z to zoom out.<br />Press Ctrl+Z to stay zoomed out.<br />Don't forget about calling your followers!																						
 X	X	X		m																									
 X	X	X	X	X	X	X	X				X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	
 X	X	X	X	X	X	X								X	X	X						X	X	X	X	X			
@@ -156,7 +156,7 @@ X	X	X	X													Y	Y	Y	Y	Y	Y
 X	X	X	X														Y	Y	Y	Y									
 X	X	X	X													Y	Y	Y	Y							m			
 X	X	X	X	X	X	X	X		N						Y	Y	Y	Y	Y	Y	Y	Y		X	X	X	X	X	X
-X	X	X	X	X	X	X	X	X	X	X						M		0/4		N	n								
+X	X	X	X	X	X	X	X	X	X	X	X					M		0/4		N	n								
 X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X	X
 																													
 																													
@@ -204,9 +204,9 @@ X							X				X							X				X							X
 X							X				X							X				X							X
 X											X																		X
 X	X												X	X	X	X											X	X	X
-X							X	M										X	N			X							X
+X							X	M						!Wana-haya'yuh is not a<br />spike trap god…				X	N			X							X
 X							X	X	X	X	X	~	~	~	~	~	~	X	X		X	X	M				0/1		X
-X	X	X		X	X	X	X				X	X	X	X	X	X	X	X				X	X	X			X	X	X
+X	X	X		X	X	X	X				X	X	X	X	X	X	X	X		!...Nor a fall from height god		X	X	X			X	X	X
 		X			X																			X			X		
 		X			X																			X			X		
 		X	X		X																			X			X		
@@ -215,7 +215,7 @@ X	X	X		X	X	X	X				X	X	X	X	X	X	X	X				X	X	X			X	X	X
 		X		X	X																			X			X		
 		X			X																			X	L	L	X		
 					X																			X	L	L	X		
-		X	X		X																			X	L	L	X		
+		X	X		X	!Oooh… Pointy!																		X	L	L	X		
 	P	X	~	~	X																			X	L	L	X		
 Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y				Y	Y	Y	L	L	Y	Y	Y
 																													
@@ -224,7 +224,7 @@ Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y				Y	Y	Y	L	L	Y	Y	Y
 																													
 																													
 																													
-																													
+								!Spikes are a neat way to<br />get rid of little mistakes...																					
 	P											n								M							m		
 X	X	X				X	X	X		Y	Y	Y	Y	Y		Y	Y	Y	Y	Y	Y	Y				Y	Y	Y	Y
 X	X	X				X	X	X		Y	Y	Y	Y	Y		Y	Y	Y	Y	Y	Y	Y				Y	Y	Y	Y
@@ -241,7 +241,7 @@ X	X	X	Y	Y	Y	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	X	X	X	X
 																													
 																													
 							Y	Y						Y	Y						Y	Y						Y	Y
-																													
+					!Don't forget you can call them																								
 											m							n							m				
 				X	X	X			Y	Y	Y	Y	Y			Y	Y	Y	Y	Y			Y	Y	Y	Y	Y		
 				X	X	X			Y	Y	Y	Y	Y			Y	Y	Y	Y	Y			Y	Y	Y	Y	Y		
@@ -261,7 +261,7 @@ X	X	L	L	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
 																													
 																													
 							Y	Y						Y	Y						Y	Y						Y	Y
-																													
+					!Don't forget you can call them																								
 											m							n							m				
 				X	X	X			Y	Y	Y	Y	Y			Y	Y	Y	Y	Y			Y	Y	Y	Y	Y		
 				X	X	X			Y	Y	Y	Y	Y			Y	Y	Y	Y	Y			Y	Y	Y	Y	Y		
@@ -293,8 +293,8 @@ X	X		X	X			X				X			X				X			X	^	X	^	X			X	X
 ^	^	^	X	X			X				X		^	X		^	^	X			X				X	^		X	X
 			X	X			X				X			X				X			X	~	~	~	X			X	X
 			X	X			X	~	~	~	X			X				X			X	^	^	^	X			X	X
-		X	X	X			X	^	^	^	X	^	^	X	^	^		X			X				X		^	X	X
-			X	X										X														X	X
+		X	X	X			X	^	^	^	X	^	^	X	^	^		X			^				^		^	X	X
+			X	X										X									!Prophets are too proud<br />to do half-jumps.					X	X
 	P		X	X										X					^	^	^	^			0/4			X	X
 X	X	X	X	X	Y	Y	X	X	X	X	X	Y	Y	X	X	X	X	X	Y	Y	X	X	L	L	X	Y	Y	X	X
 X	X	X	X	X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	L	Y	Y	Y	Y	Y
@@ -336,7 +336,7 @@ X	X	X	X	X	X	X	~	~	~	~	~	~	~	X	X	X	X	X	X	X	X	L	L	X	X	X	X	X	X
 	X	X	X	^	^	^		^	^	X	X	X	^	^	X	X	X	^	^	^	^	^	^	X	X	X			
 	X	X	X							^	^	^			^	^	^							X	X	X			
 	X	X	X	^	^	^	^	^	^	X	X	X	^	^	X	X	X	^	^	^	^	^		X	X	X			
-	P																											0/2	
+	P					!House Mapulet															!House Contague							0/2	
 Y	X	X	X	X	X	X	X	X	X	X	X	X	Y	Y	X	X	X	X	X	X	X	X	X	X	X	L	L	Y	Y
 																													
 																													
@@ -354,7 +354,7 @@ Y	X	X	X	X	X	X	X	X	X	X	X	X	Y	Y	X	X	X	X	X	X	X	X	X	X	X	L	L	Y	Y
 			X	X	X	^	^	^	^	^	X	X	X	L	L	^	^	^						X	X	X			X
 			X	X	X						X	X	X	L	L	X	X	X				^		X	X	X			X
 			X	X	X		M				^	^	^	L	L	X	X	X						X	X	X			X
-			X	X	X	^	^	^	^	^	X	X	X	L	L	^	^	^						X	X	X			X
+			X	X	X	^	^	^	^	^	X	X	X	L	L	^	^	^	^					X	X	X			X
 	P										X	X	X	L	L	X	X	X		n									X
 Y	Y	Y	X	X	X	X	X	X	X	X	X	X	X	L	L	X	X	X	X	X	X	X	X	X	X	X	L	L	X
 Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y
@@ -412,7 +412,7 @@ Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	X	X	X	L	L	L	X	X	X	X	Y	Y	Y
 										H					F			L	L	L	L	X	X						
 										H					F			L	X	X	X	X	X						
 							F			^					F			L	X	X	X	X	X						
-							H								F			L	X	X	X	X	X						
+				!These faces look familiar…			H								F			L	X	X	X	X	X						
 							H								F			L	X	X	X	X	X						
 					F		H								F			L	X	X	X	X	X						
 					F		H								F			L	X	X	X	X	X						
@@ -430,7 +430,7 @@ Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y
 			X	X	X	X	X		N	m										X	X	X	X	X					
 			X	X	X	X	X	^	^	^	^									X	X	X	X	X					
 			X	X	X	X	X													X	X	X	X	X					
-			X	X	X	X	X						N		F					X	X	X	X	X	M				
+			X	X	X	X	X						N		H					X	X	X	X	X	M				
 			X	X	X	X	X				^	^	^	^	^	^			0/4	X	X	X	X	X	^	^			
 			X	X	X	X	X													X	X	X	X	X					
 			X	X	X	X	X												L	L	L	L	L	X					
@@ -438,14 +438,14 @@ Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y
 			X	X	X	X	X												L	X	X	X	X	X					
 			X	X	X	X	X	~	~	~	~	~	~	~					L	X	X	X	X	X		M			
 Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	L	L	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y
-					X	X	X	X	X																			X	X
-					H	^	^	^	^			M	m															X	X
+					X	X	X	X	X																				
+					H	^	^	^	^			M	m																
 ^	^				X	X	X	X	X	^	^	^	^	^	^	^	F	^	^	^	^	^	^	^	^	Y		X	X
 					X	X	X	X	X																	Y		X	X
 			^		X	X	X	X	X								^									Y		X	X
 					X	X	X	X	X																	Y		X	X
 					X	X	X	X	X						m					M						Y		X	X
-				^	X	X	X	X	X				^	^	^	^		^	^	^	^	^				Y		X	X
+				^	X	!BAR	X	X	X				^	^	^	^		^	^	^	^	^				Y		X	X
 					X	X	X	X	X																	Y		X	X
 			M	M	F	^	^	^	^								M								m	Y		X	X
 ^	^		^	^	X	X	X	X	X	^	^		Y			^	^	^	^		^	^	^	^	^	Y		X	X
@@ -471,7 +471,7 @@ X	X												X	X	X	X	X										X	X	X
 ^	^	^	^	^	Y	Y	Y	Y	Y	Y	Y	F	X	X	X	X	X	Y	Y	Y	Y	Y	Y	Y	^	H	^	^	^
 						H							^	^	^	^	^												
 ^	^	^	^	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	X		X	X	Y	Y	Y	Y	Y	Y	Y	Y	^	^	^	^
-			F										^	^	^	^	^							~					
+			F										^	^		^	^							~					
 ^	^	^	F	H	Y	Y	Y	Y	Y	Y	Y	Y	X	X	X	X	X	Y	Y	Y	Y	F	Y	Y	Y	Y	^	^	^
 			~									0/6	X	X	X	X	X												
 ^	^	^	^	^	^	H	^	^	^	^	^		X	X	X	X	X		^	^	^	^	^	^	F	^	^	^	^
@@ -490,7 +490,7 @@ Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	Y	Y	Y	Y	Y	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y
 								X	X	X	X	X								X	X	X	X	X			^	^	
 								X	X	X	X	X								X	X	X	X	X					
 								X	X	X	X	X								X	X	X	X	X					
-								X	X	X	X	X								X	X	X	X	X	^	^			
+					!wana-friz			X	X	X	X	X								X	X	X	X	X	^	^	!wana-bern		
 								X	X	X	X	X							0/4	X	X	X	X	X					
 	P			N	I	m		^	^	^	^	^								^	^	^	^	^		M	i	n	
 ^	^	^	^	^	^	^	^	X	X	G	L	L	L						L	L	L	G	X	X	^	^	^	^	^
@@ -603,8 +603,8 @@ Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	X	X	X	l	l	l	l	l	l	l	l	l	Y	Y	Y	Y	Y	Y
 																													
 																													
 									X																				
-								^	X																				
 									X																				
+								^	X																				
 									X	K2	X																		
 									X	Y	X																		
 				X	X	X			X	Y	X																		
@@ -644,12 +644,12 @@ X	X	Y
 									y	x	x	x	x	H	x	x	x	x	y										
 ^									y										y										
 					~				^			m				M			^										
-					X	Y	X	X	Y	X	X	Y	X	D3	X	Y	X	X	Y	X	X	Y	X						^
-		^			X	Y	X	X	Y	X	X	Y	X	D2	X	Y	X	X	Y	X	X	Y	X						
-					X	Y	X							D1							X	Y	X						
-					X	Y	X							D3							X	Y	X						^
-				^	X	Y	X			Y	Y	Y		D2		Y	Y	Y			X	Y	X						
-^					X	Y	X			Y	Y	Y		D1		Y	Y	Y			X	Y	X						
+					X	Y	X	X	Y	X	X	Y	X		X	Y	X	X	Y	X	X	Y	X						^
+		^			X	Y	X	X	Y	X	X	Y	X	D3	X	Y	X	X	Y	X	X	Y	X						
+					X	Y	X							D2							X	Y	X						
+					X	Y	X							D1							X	Y	X						^
+				^	X	Y	X			Y	Y	Y				Y	Y	Y			X	Y	X						
+^					X	Y	X			Y	Y	Y				Y	Y	Y			X	Y	X						
 					X	Y	X			Y	Y	Y	Y		Y	Y	Y	Y			X	Y	X			^			
 					X	Y	X			Y	Y	L	L	0/4	L	L	Y	Y			X	Y	X						
 ^					X	Y	X				Y	Y	L		L	Y	Y				X	Y	X						
@@ -801,13 +801,13 @@ X	Y	X	X	Y	X	^	^					Y	Y	Y	Y	Y	Y
 																													
 																													
 																													
-																													
+									!Old prophets do not make<br />for strong fighters.																				
 																													
 									e																				
 								X	X	X	X																		
 							X	X	X	X	X	X																	
 							X	X	X	X	X	X	X																
-						X	X	X	X	X	X	X	X	X															
+						X	X	X	X	X	X	X	X	X					!But disposable minions do!										
 						X	X	X	X	X	X	X	X	X	X		M												
 					X	X	X	X	X	X	X	X	X	X	X	X	X				n								
 					X	X	X	X	X	X	X	X	X	X	X	X	X	X	X		X	X							
@@ -884,100 +884,100 @@ L	L	L	L	L	L	L	L	Y	Y	X	X	X	X	X	X	X	X	X	X	X	X	X	X	Y	L	L	L	Y	X
 																													
 																													
 																													
+									M																				
+								Y	Y	Y																			
+									Y																				
 																													
 																													
+																							n						
+																						x	x	x	x	x	x	x	
+			!Press X to invoke godly powers!											N								x		A	A	A	A	x	
+														X								x		x	x	x	x	x	
+			0/5																	!Amulet stroage		x		A	A	A	A	x	
+										N												x		x	x	x	x	x	
+	P		A				m			Y														A	A	A	A	x	
+	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	x	x	x	x	x	x	x	
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	Y	Y	Y	Y	Y	Y	Y	Y	Y
 																													
+		0/6																											
 																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-	P		n		0/1																								
-	Y	Y	Y	L	Y																								
+	P	A																											
+X	X	X																											
+X	X	X	X	X	X		n	m	m	n	n																		
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X		X	X	X	X	X	X								
+X	X	X	X	X	X	X	X	X										X		X	X	X	X						
+X	X	X	X	X	X	X	X														X	X	X						
+Y	X	X	X	X	X	X	X				X	X	X	X	X	X	X	X				X	X						
+L	Y	X	X	X	X	X	X																X						
+L	Y	Y	X	X	X	X	X	X															X						
+L	L	L	Y	X	X	X	X	X	X	X	X	X	X	X		X	X	X	X	X	X	X	X						
+Y	L	L	Y	Y	X	X	X	X	X										X		X	X	X						
+Y	Y	L	L	L	Y	X	X	X						X	X	X						X	X						
+Y	Y	Y	Y	L	Y	X	X					M							~				X						
+X	X	X	Y	L	Y	X	X				X	X	X	X		X	X	X	X				X						
+X	X	X	X	Y	X	X	X																						
+X	X	X	X	X	X	X	X	X			X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X			X
 X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
 																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-	P		n		0/1																								
-	Y	Y	Y	L	Y																								
-X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-	P		n		0/1																								
-	Y	Y	Y	L	Y																								
-X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-	P		n		0/1																								
-	Y	Y	Y	L	Y																								
-X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-																													
-	P		n		0/1																								
-	Y	Y	Y	L	Y																								
-X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+																											A		
+																											A		
+									A						E												A		
+									A						^								^				^		
+									^			e							^										
+		0/6										^																	
+							e																						
+X	P	A					^																						
+X	X	X	X																										
+Y	X	X	X	X																									
+Y	Y	Y	X	X	X	X																							
+Y	Y	Y	Y	Y	X	X	X	X																					
+Y	Y	Y	Y	Y	Y	Y	X	X	X	X																			
+Y	Y	Y	Y	Y	Y	Y	Y	Y	X	X	X	X																	
+Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	X	X	X															
+Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	X	X	X													
+L	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	X	X	X											
+L	L	L	L	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	X	X	X							m	m	m
+L	L	L	L	L	L	L	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	X	X	X	X	X	X	X	X	X	X
+																													
+			0/7																										
+																													
+	P		A	A	n		n		n																				
+X	X		A	A	X	X	X		X	X	X		X	X	X		X	X	X		X			A					
+X	X		X	X																		X	X	X	X	X	X	X	X
+X	Y																												
+Y	Y																												
+Y	Y																												
+Y	Y	M																											
+Y	Y	Y	Y	Y	Y	Y	Y			M																			
+Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y			M															
+Y	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y															
+Y	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y															
+Y	Y	Y	Y	L	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y													
+Y	Y	Y	Y	L	L	L	L	L	Y	Y	Y	Y	Y	Y	Y	Y		M											
+Y	Y	Y	Y	L	L	L	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y										
+Y	Y	Y	Y	Y	L	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y		Y	Y	Y			
+Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y				H			
+Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	L	L
+																													
+																													
+																													
+																													
+				N	N	N	N	m	m	m	m																	^	^
+X	X	^	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	L
+					~				~					x	y	x									X	X	X	X	X
+					^				^					x	y	x		i										I	
+		^					~				~							X				N		m				X	^
+				X	X	X	X	X	X	X	X	X						X	X	F	X	X	X	X	X	H	X	X	
+				M	n						^	^	^	x	y	x	^	X											
+Y	Y		Y	Y	Y	Y	Y	Y	Y	Y	L	L	L	x	y	x	G	l	l	Y	Y	Y	Y	Y	Y	Y	Y	^	Y
+Y	Y	^	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	^	Y
+														x	y	x	K3			D3		D2							
+	x	^	x								e			x	y	x				D3	K2	D2	K1						
+	x	E	x								^							^	^	x	x	x	x	x	x	x	x	x	x
+	x	x	x	0/15																		s		D1	M			s	
+	P		A											x	y	x	^	^		x	x	x	x	x	x	x	x	x	Z
+	y	y	y	y	y				e	e			e	x	y	x									S		n		
+X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X	X
 																													
 																													
 																													
@@ -1042,7 +1042,7 @@ X	X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X
 																													
 																													
 																													
-																													
+															!Just one more sacrifice														
 																													
 																0/1													
 													X	X		X	X												
@@ -1062,7 +1062,7 @@ X	X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X
 																													
 																													
 																													
-																													
+															!Just one more sacrifice														
 																													
 														P		0/1													
 													X	X		X	X												

@@ -56,10 +56,10 @@ titles = [
         "Warrior Princess",
         "Bloody Nose",
         "UNLIMITED POWER!!!*<br /><br /><font size=-2>* some limitations may apply</font>",
-        "",
-        "",
-        "",
-        "",
+        "All in one Place",
+        "Not Just for your Friends!",
+        "Sharp Shooter",
+        "Final Exam",
         "Volcano Volcano",
         "Volcano Volcano",
         "Volcano Volcano",
@@ -165,15 +165,24 @@ def process_stage(stg, w):
             elif 'K1' == obj:
                 objects3 += [[j, i, 'Key1']]
             elif 'D1' == obj:
-                objects3 += [[j, i, 'Door1']]
+                if not under_wall:
+                    objects3 += [[j, i, 'Door1']]
+                else:
+                    objects3 += [[j, i, 'DeepDoor1']]
             elif 'K2' == obj:
                 objects3 += [[j, i, 'Key2']]
             elif 'D2' == obj:
-                objects3 += [[j, i, 'Door2']]
+                if not under_wall:
+                    objects3 += [[j, i, 'Door2']]
+                else:
+                    objects3 += [[j, i, 'DeepDoor2']]
             elif 'K3' == obj:
                 objects3 += [[j, i, 'Key3']]
             elif 'D3' == obj:
-                objects3 += [[j, i, 'Door3']]
+                if not under_wall:
+                    objects3 += [[j, i, 'Door3']]
+                else:
+                    objects3 += [[j, i, 'DeepDoor3']]
             elif 's' == obj:
                 objects3 += [[j, i, 'Switch']]
             elif 'S' == obj:

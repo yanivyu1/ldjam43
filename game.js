@@ -257,9 +257,17 @@ function initScenes()
             return addEntity('Key1', tiles_x, tiles_y);
         }
 
-        function addDoor1(tiles_x, tiles_y)
+        function addShallowDoor(tiles_x, tiles_y, door_type)
         {
-            return addEntity('Door1', tiles_x, tiles_y);
+            var invisible_platform = addEntity('InvisiblePlatformDoor', tiles_x, tiles_y).attr({h: 0});
+            var door = addEntity(door_type, tiles_x, tiles_y).attr({invisiblePlatform: invisible_platform});
+            invisible_platform.door = door;
+            return door;
+        }
+
+        function addDeepDoor(tiles_x, tiles_y, door_type)
+        {
+            return addEntity(door_type, tiles_x, tiles_y);
         }
 
         function addKey2(tiles_x, tiles_y)
@@ -267,19 +275,9 @@ function initScenes()
             return addEntity('Key2', tiles_x, tiles_y);
         }
 
-        function addDoor2(tiles_x, tiles_y)
-        {
-            return addEntity('Door2', tiles_x, tiles_y);
-        }
-
         function addKey3(tiles_x, tiles_y)
         {
             return addEntity('Key3', tiles_x, tiles_y);
-        }
-
-        function addDoor3(tiles_x, tiles_y)
-        {
-            return addEntity('Door3', tiles_x, tiles_y);
         }
 
         function addSwitch(tiles_x, tiles_y)
@@ -340,9 +338,13 @@ function initScenes()
         zoomer.reset();
         LavaAndIceManager.reset();
 
-        for (var i = 0; i < consts.level_height - 1; i++) {
+        for (var i = 0; i < consts.level_height; i++) {
             addOuterWall(0, i);
             addOuterWall(consts.level_width, i);
+        }
+
+        for (var i=0; i < consts.level_width; i++) {
+            addTrap(i, consts.level_height);
         }
 
         var world_id = worlds[game_state.cur_world].world;
@@ -441,19 +443,28 @@ function initScenes()
                 addKey1(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Door1') {
-                addDoor1(objects[i].x, objects[i].y);
+                addShallowDoor(objects[i].x, objects[i].y, 'Door1');
+            }
+            else if (objects[i].type == 'DeepDoor1') {
+                addDeepDoor(objects[i].x, objects[i].y, 'Door1');
             }
             else if (objects[i].type == 'Key2') {
                 addKey2(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Door2') {
-                addDoor2(objects[i].x, objects[i].y);
+                addShallowDoor(objects[i].x, objects[i].y, 'Door2');
+            }
+            else if (objects[i].type == 'DeepDoor2') {
+                addDeepDoor(objects[i].x, objects[i].y, 'Door2');
             }
             else if (objects[i].type == 'Key3') {
                 addKey3(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Door3') {
-                addDoor3(objects[i].x, objects[i].y);
+                addShallowDoor(objects[i].x, objects[i].y, 'Door3');
+            }
+            else if (objects[i].type == 'DeepDoor3') {
+                addDeepDoor(objects[i].x, objects[i].y, 'Door3');
             }
             else if (objects[i].type == 'Switch') {
                 addSwitch(objects[i].x, objects[i].y);
@@ -866,14 +877,14 @@ function initComponents()
 
     Crafty.c('Wall', {
         init: function() {
-            this.addComponent('2D, DOM, move_blocking_for_m, move_blocking_for_w');
+            this.addComponent('2D, DOM, move_blocking_for_m, move_blocking_for_p, move_blocking_for_w');
             this.z = zorders.walls;
         }
     });
 
     Crafty.c('InvisiblePlatform', {
         init: function() {
-            this.addComponent('2D, DOM, gravity_blocking_for_m, gravity_blocking_for_w');
+            this.addComponent('2D, DOM, gravity_blocking_for_m, gravity_blocking_for_p, gravity_blocking_for_w');
         }
     });
 
@@ -885,13 +896,20 @@ function initComponents()
 
     Crafty.c('WInvisiblePlatform', {
         init: function() {
-            this.addComponent('2D, DOM, gravity_blocking_for_m');
+            this.addComponent('2D, DOM, gravity_blocking_for_m, gravity_blocking_for_p');
+        }
+    });
+
+    Crafty.c('InvisiblePlatformDoor', {
+        init: function() {
+            this.addComponent('2D, DOM, gravity_blocking_for_w, gravity_blocking_for_m, gravity_blocking_for_p');
+            this.linkedDoor = null;
         }
     });
 
     Crafty.c('OuterWall', {
         init: function() {
-            this.addComponent('2D, DOM, move_blocking_for_m, move_blocking_for_w');
+            this.addComponent('2D, DOM, move_blocking_for_m, move_blocking_for_p, move_blocking_for_w');
         }
     });
 
@@ -916,6 +934,7 @@ function initComponents()
             addReel(this, 'silent', 14, 13, 13);
             addReel(this, 'deadly', 14, 13, 18);
             addReel(this, 'reverse_deadly', 14, 18, 13);
+            this.offsetBoundary(-2, -16, -2, 0);
 
             this.animate('silent', -1);
             this.bind('AnimationEnd', this.onAnimationCompleted);
@@ -1021,7 +1040,7 @@ function initComponents()
 
     Crafty.c('WBlock', {
         init: function() {
-            this.addComponent('2D, DOM, tile_wblock, move_blocking_for_m');
+            this.addComponent('2D, DOM, tile_wblock, move_blocking_for_m, move_blocking_for_p');
             this.z = zorders.walls;
         }
     });
@@ -1105,6 +1124,7 @@ function initComponents()
             }
 
             this.prevCollectible = this.nextCollectible;
+            this.destroy();
         },
 
         // direction is -1 or +1, NOT ZERO
@@ -1112,8 +1132,6 @@ function initComponents()
         doMove: function(destX, prevY, direction, highOrLow) {
             this.y = prevY + highOrLow * (consts.tile_height / 2);
             this.x = destX;
-
-            console.log('I am at x: ' + this.x + ' and y: ' + this.y);
 
             if (this.nextCollectible) {
                 this.nextCollectible.doMove(
@@ -1139,10 +1157,19 @@ function initComponents()
         }
     });
 
+    Crafty.c('Door', {
+        init: function() {
+            this.addComponent('2D, DOM, move_blocking_for_m, move_blocking_for_w, ' +
+                'gravity_blocking_for_m, gravity_blocking_for_w, gravity_blocking_for_p, Collision');
+            this.invisiblePlatform = null;
+        }
+    });
+
     Crafty.c('Door1', {
         init: function() {
             // TODO: Actually implement this
-            this.addComponent('Wall, tile_door1');
+            this.addComponent('Door, tile_door1');
+            this.requiredKey = "Key1";
         }
     });
 
@@ -1163,7 +1190,8 @@ function initComponents()
     Crafty.c('Door2', {
         init: function() {
             // TODO: Actually implement this
-            this.addComponent('Wall, tile_door2');
+            this.addComponent('Door, tile_door2');
+            this.requiredKey = "Key2";
         }
     });
 
@@ -1185,6 +1213,7 @@ function initComponents()
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Wall, tile_door3');
+            this.requiredKey = "Key3";
         }
     });
 
@@ -1313,7 +1342,7 @@ function initComponents()
         },
 
         setGender: function(gender) {
-            // gender = "m" or "w"
+            // gender = "m" or "w" or "p" for prophet
             this.gender = gender;
             this.gravity('gravity_blocking_for_' + gender);
         },
@@ -1479,7 +1508,7 @@ function initComponents()
     Crafty.c('Prophet', {
         init: function() {
             this.addComponent('Character, HasConvertingPowers, prophet_stand_right, Multiway');
-            this.setGender('m');
+            this.setGender('p');
             addReel(this, 'stand_right', 0, 0, 9);
             addReel(this, 'walk_right', 0, 10, 16);
             addReel(this, 'jump_right', 0, 17, 17);
@@ -1511,9 +1540,12 @@ function initComponents()
             this.bind('Died', this.onProphetDied);
             this.onHit('IceShrine', function() { LavaAndIceManager.iceShrineTouched(); });
             this.onHit('LavaShrine', function() { LavaAndIceManager.lavaShrineTouched(); });
+            this.bind('CheckLanding', this.onCheckLanding);
             this.onHit('Enemy', this.onHitEnemy);
 
             this.bind('Move', this.onMove);
+
+            this.onHit('Door', this.onHitDoor);
 
             this.num_dying_believers = 0;
             this.winning = false;
@@ -1531,6 +1563,51 @@ function initComponents()
                  A: 180});
             this.jumper(consts.prophet_jump_speed,
                 [Crafty.keys.UP_ARROW, Crafty.keys.W]);
+        },
+
+        _handleDoor: function(door) {
+            if (this.findItem(door.requiredKey)) {
+                door.destroy();
+                if (door.invisiblePlatform != null) {
+                    door.invisiblePlatform.destroy();
+                }
+                return true;
+            } else { // Block movement - copied from onHitMoveBlocking
+                // Black magic.
+                this.x -= this.dx;
+                this.x = Math.round(this.x);
+                if (this.vy < 0) { // Still touching block, and jumping
+                    this.y -= this.dy;
+                    this.y = Math.floor(this.y) - 1;
+                    this.vy = 0;
+                } else if (this.vy == 0) {
+                    this.y = Math.floor(this.y) - 1;
+                }
+            }
+            return false;
+        },
+
+        onCheckLanding: function(ground) {
+            if (ground.has('InvisiblePlatformDoor')) {
+                if (this._handleDoor(ground.door)) {
+                    ground.destroy();
+                }
+            }
+        },
+
+        findItem: function(itemType) {
+            x = this.nextCollectible;
+            while (x != null) {
+                if (x.itemType == itemType) {
+                    return true;
+                }
+                x = x.nextCollectible;
+            }
+            return false;
+        },
+
+        onHitDoor: function(hitDatas) {
+            this._handleDoor(hitDatas[0].obj);
         },
 
         onMove: function() {
