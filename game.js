@@ -554,14 +554,12 @@ var LavaAndIceManager = {
     },
 
     replaceLavaWithIce: function(x, y, lava_obj) {
-        var ice_obj = addIce(x, y, lava_obj.lava_type);
-        this.level_map[x][y] = {type: 'ice', obj: ice_obj};
+        addIce(x, y, lava_obj.lava_type); // this registers the ice
         lava_obj.destroy();
     },
 
     replaceIceWithLava: function(x, y, ice_obj) {
-        var lava_obj = addLava(x, y, ice_obj.ice_type);
-        this.level_map[x][y] = {type: 'lava', obj: lava_obj};
+        addLava(x, y, ice_obj.ice_type); // this registers the lava
         ice_obj.destroyPlatformIfExists();
         ice_obj.destroy();
     },
@@ -629,6 +627,8 @@ var LavaAndIceManager = {
     },
 
     iceShrineTouched: function() {
+        if (!this.lava_gens) return;
+
         // Go through all the lava gens and turn them into ice gens
         var initial_positions = [];
         for (var idx in this.lava_gens) {
@@ -649,6 +649,8 @@ var LavaAndIceManager = {
     },
 
     lavaShrineTouched: function() {
+        if (!this.ice_gens) return;
+
         // Go through all the ice gens and turn them into lava gens
         var initial_positions = [];
         for (var idx in this.ice_gens) {
@@ -863,6 +865,7 @@ function initComponents()
         setLavaType: function(lava_type) {
             this.animate(lava_type, -1);
             this.lava_type = lava_type;
+            return this;
         },
     });
 
@@ -954,6 +957,8 @@ function initComponents()
             if (ice_type == 'shallow') {
                 this.associated_platform = addInvisiblePlatform(this.x / consts.tile_width, this.y / consts.tile_height);
             }
+
+            return this;
         },
 
         destroyPlatformIfExists: function() {
@@ -1322,8 +1327,8 @@ function initComponents()
             this.bind('ConversionEnded', this.onConversionEnded);
             this.bind('Dying', this.onProphetDying);
             this.bind('Died', this.onProphetDied);
-            this.onHit('IceShrine', LavaAndIceManager.iceShrineTouched);
-            this.onHit('LavaShrine', LavaAndIceManager.lavaShrineTouched);
+            this.onHit('IceShrine', function() { LavaAndIceManager.iceShrineTouched(); });
+            this.onHit('LavaShrine', function() { LavaAndIceManager.lavaShrineTouched(); });
 
             this.num_dying_believers = 0;
             this.winning = false;
