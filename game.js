@@ -68,7 +68,7 @@ var consts = {
     full_screen_ratio: 0.9,
     zoom_in_level: 2,
     prophet_walk_speed: 120,
-    prophet_jump_speed: 320,
+    prophet_jump_speed: 265,
     believer_jump_speed: 3000,
     believer_walk_speed: 777,
     follow_x_gap_px: 16,
@@ -201,42 +201,42 @@ function initScenes()
         {
             return addEntity('LavaShrine', tiles_x, tiles_y);
         }
-        
+
         function addKey1(tiles_x, tiles_y)
         {
             return addEntity('Key1', tiles_x, tiles_y);
         }
-        
+
         function addDoor1(tiles_x, tiles_y)
         {
             return addEntity('Door1', tiles_x, tiles_y);
         }
-        
+
         function addKey2(tiles_x, tiles_y)
         {
             return addEntity('Key2', tiles_x, tiles_y);
         }
-        
+
         function addDoor2(tiles_x, tiles_y)
         {
             return addEntity('Door2', tiles_x, tiles_y);
         }
-        
+
         function addKey3(tiles_x, tiles_y)
         {
             return addEntity('Key3', tiles_x, tiles_y);
         }
-        
+
         function addDoor3(tiles_x, tiles_y)
         {
             return addEntity('Door3', tiles_x, tiles_y);
         }
-        
+
         function addSwitch(tiles_x, tiles_y)
         {
             return addEntity('Switch', tiles_x, tiles_y);
         }
-        
+
         function addAmulet(tiles_x, tiles_y)
         {
             return addEntity('Amulet', tiles_x, tiles_y);
@@ -517,7 +517,7 @@ function initComponents()
             this.z = zorders.text;
         }
     });
-    
+
     Crafty.c('ProphetText', {
         init: function() {
             this._size = '10px';
@@ -581,7 +581,7 @@ function initComponents()
 
     Crafty.c('Floor', {
         init: function() {
-            this.addComponent('2D, DOM, tile_floor');
+            this.addComponent('2D, DOM, tile_floor, jump_through');
         }
     });
 
@@ -647,7 +647,7 @@ function initComponents()
             }
         }
     });
-    
+
     Crafty.c('Gate', {
         init: function() {
             // TODO: Actually implement this
@@ -674,14 +674,14 @@ function initComponents()
             // this.animate(gate_type + '_closed', -1);
         },
     });
-    
+
     Crafty.c('MBlock', {
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Wall, tile_mblock');
         }
     });
-    
+
     Crafty.c('WBlock', {
         init: function() {
             // TODO: Actually implement this
@@ -700,84 +700,84 @@ function initComponents()
             //this.animate(ice_type, -1);
         },
     });
-    
+
     Crafty.c('LavaGen', {
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Lava');
         }
     });
-    
+
     Crafty.c('IceGen', {
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Ice');
         }
     });
-    
+
     Crafty.c('IceShrine', {
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Floor, tile_iceshrine');
         }
     });
-    
+
     Crafty.c('LavaShrine', {
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Floor, tile_lavashrine');
         }
     });
-    
+
     Crafty.c('Key1', {
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Floor, tile_key1');
         }
     });
-    
+
     Crafty.c('Door1', {
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Wall, tile_door1');
         }
     });
-    
+
     Crafty.c('Key2', {
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Floor, tile_key2');
         }
     });
-    
+
     Crafty.c('Door2', {
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Wall, tile_door2');
         }
     });
-    
+
     Crafty.c('Key3', {
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Floor, tile_key3');
         }
     });
-    
+
     Crafty.c('Door3', {
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Wall, tile_door3');
         }
     });
-    
+
     Crafty.c('Switch', {
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Floor, tile_switch');
         }
     });
-    
+
     Crafty.c('Amulet', {
         init: function() {
             // TODO: Actually implement this
@@ -1041,6 +1041,7 @@ function initComponents()
             this.setupMovement();
 
             this.onHit('move_blocking', this.onHitMoveBlocking);
+            // this.onHit('jump_through', this.onHitGravityBlocking);
             this.bind('NewDirection', this.prophetNewDirection);
             this.bind('ConversionStarted', this.onConversionStarted);
             this.bind('ConversionEnded', this.onConversionEnded);
@@ -1061,14 +1062,25 @@ function initComponents()
                 [Crafty.keys.UP_ARROW, Crafty.keys.W]);
         },
 
-        onHitMoveBlocking: function() {
+        onHitMoveBlocking: function(hitData) {
             // Black magic.
             this.x -= this.dx;
-            if (this.hit('move_blocking') && this.vy < 0) { // Still touching block, and jumping
+            this.x = Math.round(this.x);
+            if (this.hit('move_blocking') && this.vy < 0) {
                 this.y -= this.dy;
+                this.y = Math.floor(this.y) - 1;
                 this.vy = 0;
+            }else if (this.vy == 0) {
+                this.y = Math.floor(this.y) - 1;
             }
         },
+
+        // onHitGravityBlocking: function(hitData) {
+        //     // Black magic.
+        //     if(this.hit('jump_through') && this.vy < 0) {
+        //         this.y = Math.floor(this.y) - 1;
+        //     }
+        // },
 
         prophetNewDirection: function(direction) {
             // if we stopped on the x scale, let the believers know that we stopped
@@ -1306,7 +1318,7 @@ function initComponents()
         init: function() {
             this.orig_size = '10px';
             this.enlarged_size = '16px';
-            
+
             this.addComponent('AmigaText');
             this.textAlign('center');
             this.textFont({size: this.orig_size});
