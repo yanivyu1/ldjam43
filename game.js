@@ -86,7 +86,7 @@ var consts = {
     wait_for_skip: 500,
     prophet_text_timeout: 5000,
     title_text_timeout: 5000,
-    inventory_gap: 4
+    inventory_gap_y: 10
 };
 
 var game_state = {
@@ -102,7 +102,8 @@ var texts = {
     lose: 'lose text, please ignore',
     oops: 'oops text, please ignore',
     restart_level: 'Try, try again...',
-    skip_level: 'Coward.'
+    skip_level: 'Coward.',
+    skip_world: 'Wuss.'
 };
 
 var zorders = {
@@ -533,6 +534,12 @@ function initComponents()
                         switchToNextLevel();
                     }, consts.wait_for_skip);
                 }
+                else if (e.key == Crafty.keys.W) {
+                    Crafty('ProphetText').refreshText(texts.skip_world);
+                    setTimeout(function() {
+                        switchToNextWorld();
+                    }, consts.wait_for_skip);
+                }
                 else if (e.key == Crafty.keys.P) {
                     switchToPrevLevel();
                 }
@@ -810,16 +817,9 @@ function initComponents()
         }
     });
 
-    Crafty.c('Key1', {
-        init: function() {
-            // TODO: Actually implement this
-            this.addComponent('Item, tile_key1');
-        }
-    });
-
     Crafty.c('CollectedItem', {
         init: function() {
-            this.addComponent('2D');
+            this.addComponent('2D, DOM');
 
             this.prevCollectible = null;
             this.nextCollectible = null;
@@ -835,13 +835,28 @@ function initComponents()
         },
 
         // direction is -1 or +1, NOT ZERO
-        doMove: function(prevX, prevY, direction) {
-            this.y = prevY;
-            this.x = prevX - (direction * (consts.tile_width + consts.inventory_gap));
+        // highOrLow is 1 if should be below the prophet's Y, -1 if should be above
+        doMove: function(destX, prevY, direction, highOrLow) {
+            this.y = prevY + highOrLow * (consts.tile_height / 2);
+            this.x = destX;
+
+            console.log('I am at x: ' + this.x + ' and y: ' + this.y);
 
             if (this.nextCollectible) {
-                this.nextCollectible.doMove(this.x, this.y, direction);
+                this.nextCollectible.doMove(
+                    this.x - (direction * (consts.tile_width / 2)),
+                    this.y,
+                    direction,
+                    -1 * highOrLow);
             }
+        }
+    });
+
+    Crafty.c('Key1', {
+        init: function() {
+            // TODO: Actually implement this
+            this.addComponent('Item, tile_key1');
+            this.itemType = 'Key1';
         }
     });
 
@@ -862,6 +877,7 @@ function initComponents()
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Item, tile_key2');
+            this.itemType = 'Key2';
         }
     });
 
@@ -882,6 +898,7 @@ function initComponents()
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Item, tile_key3');
+            this.itemType = 'Key3';
         }
     });
 
@@ -909,6 +926,7 @@ function initComponents()
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Item, tile_amulet');
+            this.itemType = 'Amulet';
         }
     })
 
@@ -948,6 +966,8 @@ function initComponents()
             this.onHit('Trap', this.onTouchTrap);
             this.bind('AnimationEnd', this.onAnimationEnd);
 
+            this.onHit('Item', this.onHitItem);
+
             this.nextCharacter = null;
             this.prevCharacter = null;
 
@@ -955,6 +975,12 @@ function initComponents()
             this.type = null;
 
             this.gender = null; // "m" or "w"
+        },
+
+        onHitItem: function(hitDatas) {
+            itemType = hitDatas[0].obj.itemType;
+            Crafty('Prophet').addCollectible(itemType);
+            hitDatas[0].obj.destroy();
         },
 
         setGender: function(gender) {
@@ -1194,8 +1220,6 @@ function initComponents()
             this.bind('Dying', this.onProphetDying);
             this.bind('Died', this.onProphetDied);
 
-            this.onHit('Item', this.onHitItem);
-
             this.bind('Move', this.onMove);
 
             this.num_dying_believers = 0;
@@ -1217,12 +1241,16 @@ function initComponents()
         },
 
         onMove: function() {
-            if (this.nextCollectible) {
+            if (this.nextCollectible != null) {
                 direction = -1;
                 if (this.vx >= 0) {
                     direction = 1;
                 }
-                this.nextCollectible.doMove(this.x, this.y, direction);
+                this.nextCollectible.doMove(
+                    this.x - direction * (consts.tile_width),
+                    this.y,
+                    direction,
+                    -1);
             }
         },
 
@@ -1234,11 +1262,11 @@ function initComponents()
                 preceding_x = x.x;
             }
 
-            var new_x = preceding_x + consts.tile_width + consts.inventory_gap;
+            var new_x = preceding_x + consts.tile_width + consts.tile_width / 2;
             if (Math.sign(this.vx) >= 0) {
-                new_x = preceding_x - consts.tile_width - consts.inventory_gap;
+                new_x = preceding_x - consts.tile_width - consts.tile_width / 2;
             }
-            var collectible = Crafty.e('Collectible' + itemType)
+            var collectible = Crafty.e('Collected' + itemType)
                 .attr({
                     x: new_x,
                     y: this.y,
@@ -1249,12 +1277,6 @@ function initComponents()
 
             x.nextCollectible = collectible;
             collectible.prevCollectible = x;
-        },
-
-        onHitItem: function(hitDatas) {
-            itemType = hitDatas[0].obj.itemType;
-            this.addCollectible(itemType);
-            hitDatas[0].obj.destroy();
         },
 
         onHitMoveBlocking: function(hitData) {
@@ -1586,6 +1608,16 @@ function switchToNextLevel()
     } else {
         game_state.cur_level++;
     }
+    Crafty.enterScene('level');
+}
+
+function switchToNextWorld()
+{
+    if (game_state.cur_world + 1 == worlds.length) {
+        return;
+    }
+    game_state.cur_level = 0;
+    game_state.cur_world++;
     Crafty.enterScene('level');
 }
 
