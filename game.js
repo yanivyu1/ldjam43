@@ -199,7 +199,7 @@ function initScenes()
     });
 
     Crafty.defineScene('loading', function() {
-        // Cannot use assets or components. Fonts are ok.
+        // Cannot use assets or components, they're not yet loaded. Fonts are ok.
         Crafty.e('2D, DOM, Text')
             .text('Loading...')
             .textColor('white')
@@ -209,7 +209,6 @@ function initScenes()
 
         Crafty.load(assets, function() {
             initComponents();
-            initScenes();
             createNonLevelEntities();
             setTimeout(function() {
                 Crafty.enterScene('intro');
@@ -1034,7 +1033,7 @@ function initGame()
               y: consts.level_height * consts.tile_height}
             };
 
-    initScenes();
+    initScenes(); // Needed for loading scene
     Crafty.enterScene('loading');
 }
 
