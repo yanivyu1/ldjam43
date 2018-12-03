@@ -40,29 +40,29 @@ var assets = function() {
             }
         },
         "images": [
-            'assets/bg-intro.png',
-            'assets/bg-world1.png',
-            'assets/bg-world2.png',
-            'assets/bg-world3.png',
-            'assets/bg-world4.png',
-            'assets/bg-world5.png'
+            'assets/gfx/bg-intro.png',
+            'assets/gfx/bg-world1.png',
+            'assets/gfx/bg-world2.png',
+            'assets/gfx/bg-world3.png',
+            'assets/gfx/bg-world4.png',
+            'assets/gfx/bg-world5.png'
         ],
         "audio": {
             // Background music
-            'bg-music-0': ['music/beach_please.mp3'],
-            'bg-music-1': ['music/Village.mp3'],
-            'bg-music-2': ['music/forest.mp3'],
-            'bg-music-3': ['music/Temple.mp3'],
-            'bg-music-4': ['music/Volcano.mp3'],
+            'bg-music-0': ['assets/music/beach_please.mp3'],
+            'bg-music-1': ['assets/music/Village.mp3'],
+            'bg-music-2': ['assets/music/forest.mp3'],
+            'bg-music-3': ['assets/music/Temple.mp3'],
+            'bg-music-4': ['assets/music/Volcano.mp3'],
             // SFX - believers
-            "Male-trap": ["sound_fx/stab_male.mp3"],
-            "Female-trap": ["sound_fx/stab_female.mp3"],
-            "Male-lava": ["sound_fx/true_believer_ascends_to_hevan.mp3"],
-            "Female-lava": ["sound_fx/female_true_believer_ascends_to_hevan.mp3"],
-            "Male-converted": ["sound_fx/converted_male.mp3"],
-            "Female-converted": ["sound_fx/converted_female.mp3"],
+            "Male-trap": ["assets/sound_fx/stab_male.mp3"],
+            "Female-trap": ["assets/sound_fx/stab_female.mp3"],
+            "Male-lava": ["assets/sound_fx/true_believer_ascends_to_hevan.mp3"],
+            "Female-lava": ["assets/sound_fx/female_true_believer_ascends_to_hevan.mp3"],
+            "Male-converted": ["assets/sound_fx/converted_male.mp3"],
+            "Female-converted": ["assets/sound_fx/converted_female.mp3"],
             // SFX - prophet
-            "Prophet-lava": ["sound_fx/prophet_fired.mp3"],
+            "Prophet-lava": ["assets/sound_fx/prophet_fired.mp3"],
         }
     };
 }();
@@ -133,7 +133,7 @@ function initScenes()
         {
             Crafty.e('2D, DOM, Image')
                 .attr({x: 0, y: 0})
-                .image('assets/bg-world' + world_id + '.png');
+                .image('assets/gfx/bg-world' + world_id + '.png');
         }
 
         function addEntity(entity_type, tiles_x, tiles_y, tile_type)
@@ -416,7 +416,7 @@ function initScenes()
         game_state.scene_type = 'intro';
 
         Crafty.e('2D, DOM, Image')
-              .image('assets/bg-intro.png')
+              .image('assets/gfx/bg-intro.png')
               .addComponent('FullScreenImage');
     });
 
