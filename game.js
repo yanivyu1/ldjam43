@@ -330,9 +330,13 @@ function initScenes()
         zoomer.reset();
         LavaAndIceManager.reset();
 
-        for (var i = 0; i < consts.level_height - 1; i++) {
+        for (var i = 0; i < consts.level_height; i++) {
             addOuterWall(0, i);
             addOuterWall(consts.level_width, i);
+        }
+
+        for (var i=0; i < consts.level_width; i++) {
+            addTrap(i, consts.level_height);
         }
 
         var world_id = worlds[game_state.cur_world].world;
