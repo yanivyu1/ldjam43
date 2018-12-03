@@ -905,6 +905,7 @@ function initComponents()
             addReel(this, 'silent', 14, 13, 13);
             addReel(this, 'deadly', 14, 13, 18);
             addReel(this, 'reverse_deadly', 14, 18, 13);
+            this.offsetBoundary(-2, -16, -2, 0);
 
             this.animate('silent', -1);
             this.bind('AnimationEnd', this.onAnimationCompleted);
