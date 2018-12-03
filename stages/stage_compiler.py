@@ -46,16 +46,16 @@ titles = [
         "Mind Games",
         "Switched on",
         "Trash Compactor",
-        "",
-        "",
-        "",
+        "Hand Holding",
+        "Guardian Prophet",
+        "One of Three",
         "Temple Volcano",
     ], [
-        "", #5-1
-        "",
-        "",
-        "",
-        "",
+        "Enemy at the Crater", #5-1
+        "Underground Lair",
+        "Warrior Princess",
+        "Bloody Nose",
+        "UNLIMITED POWER!!!*<br /><br /><font size=-2>* some limitations may apply</font>",
         "",
         "",
         "",
@@ -120,9 +120,14 @@ def process_stage(stg, w):
         for j in range(cols):
             obj = stg[i][j].strip()
             under_wall = False
+            under_mwall = False
+            under_wwall = False
             requires_invis = False
             if 0 < i:
-                under_wall = is_wall(stg[i-1][j].strip())
+                uobj = stg[i-1][j].strip()
+                under_wall = is_wall(uobj)
+                under_mwall = under_wall or 'H' == uobj
+                under_wwall = under_wall or 'F' == uobj
             if 'P' == obj:
                 objects1 += [[j, i, 'Prophet']]
             elif 'N' == obj:
@@ -135,8 +140,12 @@ def process_stage(stg, w):
                 objects2 += [[j, i, 'NPC2', 'facing', 'left']]
             elif 'H' == obj:
                 objects3 += [[j, i, 'MBlock']]
+                if not under_mwall:
+                    objects5 += [[j, i, 'MInvisiblePlatform']]
             elif 'F' == obj:
                 objects3 += [[j, i, 'WBlock']]
+                if not under_wwall:
+                    objects5 += [[j, i, 'WInvisiblePlatform']]
             elif 'L' == obj:
                 tp = 'Lava'
                 if under_wall:
@@ -175,6 +184,12 @@ def process_stage(stg, w):
                 objects3 += [[j, i, 'LGate']]
             elif 'Z' == obj:
                 objects3 += [[j, i, 'RGate']]
+            elif 'E' == obj:
+                objects3 += [[j, i, 'Enemy', 'facing', 'right']]
+            elif 'e' == obj:
+                objects3 += [[j, i, 'Enemy', 'facing', 'left']]
+            elif 'A' == obj:
+                objects3 += [[j, i, 'Amulet']]
             elif 'X' == obj:
                 wlind = wallindex_xy(stg, i, j, w, obj)
                 objects4 += [[j, i, 'Wall', 'spriteindex', wlind]]
@@ -218,7 +233,7 @@ def read_stages(inf):
     stagecount = int(len(lines) / rows)
     stagesxy = []
     for s in range(stagecount):
-        stagesxy += [process_stage(lines[s*20:(s+1)*20], int(s/10))]
+        stagesxy += [process_stage(lines[s*20:(s+1)*20], min(int(s/10), 4))]
     return stagesxy
 
 def world(w, stgs):
@@ -230,7 +245,7 @@ def world(w, stgs):
 
 def stage(w, s, r, objs):
     stg = {}
-    stg['name'] = str(min(w,10))+'-'+str(s)
+    stg['name'] = str(w)+'-'+str(min(s,10))
     stg['title'] = titles[w-1][s-1]
     stg['required'] = r
     stg['objects'] = objs
