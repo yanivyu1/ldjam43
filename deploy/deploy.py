@@ -1,13 +1,17 @@
 import os
 import shutil
 
-BASE = os.path.dirname(os.path.dirname(os.path.normpath(__file__)))
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TARGET = os.path.join(BASE, 'deploy', 'stuff')
 UGLIFY_CMDLINE = f"uglifyjs {os.path.join(BASE, 'game.js')} -c -m -o {os.path.join(TARGET, 'game.min.js')}"
 
 
 def is_ignored(item):
     return item.lower().endswith('.txt')
+
+
+def ignore(src, names):
+    return [n for n in names if is_ignored(n)]
 
 
 def copytree_workaround(src, dst):
@@ -19,11 +23,11 @@ def copytree_workaround(src, dst):
 
 
 def copytree(dir_name, to_target=False):
-    target_dir = TARGET if to_target else os.path.join(TARGET, dir_name)
-    if not os.path.isdir(target_dir):
-        os.makedirs(target_dir)
-    copytree_workaround(os.path.join(BASE, dir_name), target_dir)
-
+    if to_target:
+        copytree_workaround(os.path.join(BASE, dir_name), TARGET)
+    else:
+        shutil.copytree(os.path.join(BASE, dir_name), os.path.join(TARGET, dir_name),
+                        ignore=ignore)
 
 def copy(fn):
     shutil.copy(os.path.join(BASE, fn), os.path.join(TARGET, fn))
