@@ -199,7 +199,9 @@ function initScenes()
             initComponents();
             initScenes();
             createNonLevelEntities();
-            Crafty.enterScene('intro');
+            setTimeout(function() {
+                Crafty.enterScene('intro');
+            }, 250);
         });
     });
 }
