@@ -24,7 +24,14 @@ var assets = function() {
                 map: sprite_map
             }
         },
-        "images": ["assets/bg-beach.png", 'assets/Island-text.png']
+        "images": [
+            'assets/bg-intro.png',
+            'assets/bg-world1.png',
+            'assets/bg-world2.png',
+            'assets/bg-world3.png',
+            'assets/bg-world4.png',
+            'assets/bg-world5.png'
+        ]
     };
 }();
 
@@ -43,7 +50,10 @@ var consts = {
     believer_jump_speed: 3000,
     believer_walk_speed: 666,
     follow_x_gap_px: 16,
-    wait_for_death: 1000
+    wait_for_death: 2000,
+    wait_for_skip: 500,
+    prophet_text_timeout: 5000,
+    title_text_timeout: 5000
 };
 
 var game_state = {
@@ -51,6 +61,20 @@ var game_state = {
     cur_level: 0,
     scene_type: null,
     zoom_out_level: null
+};
+
+var texts = {
+    win: 'win text, please ignore',
+    lose: 'lose text, please ignore',
+    oops: 'oops text, please ignore',
+    restart_level: 'Try, try again...',
+    skip_level: 'Coward.'
+};
+
+var zorders = {
+    // higher = closer to the user's eyeballs
+    default: 0,   // Crafty default
+    text: 1
 };
 
 function addReel(entity, anim_name, row, first_col, last_col)
@@ -72,6 +96,15 @@ function addReel(entity, anim_name, row, first_col, last_col)
 function initScenes()
 {
     Crafty.defineScene('level', function() {
+        function addBackground(world_id)
+        {
+            console.log(world_id);
+            console.log('assets/bg-world' + world_id + '.png');
+            Crafty.e('2D, DOM, Image')
+                .attr({x: 0, y: 0})
+                .image('assets/bg-world' + world_id + '.png');
+        }
+
         function addEntity(entity_type, tiles_x, tiles_y, tile_type)
         {
             return Crafty.e(entity_type, tile_type)
@@ -98,7 +131,7 @@ function initScenes()
 
         function addInvisiblePlatform(tiles_x, tiles_y)
         {
-            return addEntity('InvisiblePlatform', tiles_x, tiles_y).attr({h: 1});
+            return addEntity('InvisiblePlatform', tiles_x, tiles_y).attr({h: 0});
         }
 
         function addLava(tiles_x, tiles_y, lava_type)
@@ -127,35 +160,62 @@ function initScenes()
         function addCounter(tiles_x, tiles_y)
         {
             return Crafty.e('Counter')
-                .attr({x: tiles_x * consts.tile_width,
-                    y: tiles_y * consts.tile_height});
+                .attr({x: (tiles_x - 1) * consts.tile_width,
+                       y: tiles_y * consts.tile_height,
+                       w: consts.tile_width * 3});
+        }
+
+        function addLevelTitle(prophet_tiles_x, prophet_tiles_y, level_name, level_title)
+        {
+            var tiles_y;
+
+            if (prophet_tiles_y < 10) {
+                tiles_y = prophet_tiles_y + 3;
+                if (tiles_y > 17) {
+                    tiles_y = 17;
+                }
+            }
+            else {
+                tiles_y = prophet_tiles_y - 3;
+                if (tiles_y < 3) {
+                    tiles_y = 3;
+                }
+            }
+
+            addEntity('LevelTitleText', prophet_tiles_x, tiles_y - 1/2)
+                .setText(level_name, '10px', 15);
+            addEntity('LevelTitleText', prophet_tiles_x, tiles_y)
+                .setText(level_title, '15px', 20);
         }
 
         game_state.scene_type = 'level';
         Crafty.viewport.scale(consts.zoom_in_level);
 
-        Crafty.e('2D, DOM, Image')
-            .attr({x: 0, y: 0})
-            .image('assets/bg-beach.png');
-
         for (var i = 0; i < consts.level_height - 1; i++) {
             addOuterWall(0, i);
             addOuterWall(consts.level_width, i);
         }
+
+        addBackground(worlds[game_state.cur_world].world);
+
         var stage = worlds[game_state.cur_world].stages[game_state.cur_level];
         var objects = stage.objects;
         for(var i=0;i<objects.length;i++){
             if(objects[i].type == 'Wall') {
                 addWall(objects[i].x, objects[i].y, 'tile_' + objects[i].type +''+objects[i].spriteindex);
-                addInvisiblePlatform(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Floor') {
                 addFloor(objects[i].x, objects[i].y);
+            }
+            else if (objects[i].type == 'InvisiblePlatform') {
                 addInvisiblePlatform(objects[i].x, objects[i].y);
             }
             else if (objects[i].type == 'Prophet') {
                 var prophet = addProphet(objects[i].x, objects[i].y);
                 Crafty.viewport.follow(prophet, 0, 0);
+                Crafty.e('ProphetText');
+                addLevelTitle(objects[i].x, objects[i].y,
+                    'Level ' + stage.name, stage.title);
             }
             else if (objects[i].type == 'NPC') {
                 addUnbeliever(objects[i].x, objects[i].y, objects[i].facing, 1);
@@ -183,22 +243,21 @@ function initScenes()
         game_state.scene_type = 'intro';
 
         Crafty.e('2D, DOM, Image')
-              .image('assets/Island-text.png')
+              .image('assets/bg-intro.png')
               .addComponent('FullScreenImage');
     });
 
     Crafty.defineScene('loading', function() {
-        // Cannot use assets or components. Fonts are ok.
+        // Cannot use assets or components, they're not yet loaded. Fonts are ok.
         Crafty.e('2D, DOM, Text')
             .text('Loading...')
             .textColor('white')
-            .textFont({family: 'Tribal', size:'15px', weight: 'bold'})
+            .textFont({family: 'Tribal', size:'50px', weight: 'bold'})
             .textAlign('center')
             .attr({x: 0, y: game_state.crafty_height / 3, w: game_state.crafty_width});
 
         Crafty.load(assets, function() {
             initComponents();
-            initScenes();
             createNonLevelEntities();
             setTimeout(function() {
                 Crafty.enterScene('intro');
@@ -235,28 +294,21 @@ function initComponents()
                 Crafty.viewport.scale(game_state.zoom_out_level);
             }
             else if (game_state.scene_type == 'intro' && e.key == Crafty.keys.ENTER) {
-                Crafty.enterScene('level');
+                Crafty.enterScene('level'); // TODO cutscene
             }
             else if (game_state.scene_type == 'level' && Crafty.keydown[Crafty.keys.SHIFT]) {
-                if (e.key == Crafty.keys.S) {
-                  var prophet = Crafty('Prophet');
-                  Crafty.e('SkipLevelText')
-                      .attr({x:prophet.x - 24, y:prophet.y - 60, w: 75})
-                      .textAlign('center')
-                      .textColor('black')
-                      .textFont({family: 'Tribal', size:'15px', weight: 'bold'})
-                      .text('Coward.');
-                    setTimeout(function(){
+                if (e.key == Crafty.keys.N) {
+                    Crafty('ProphetText').refreshText(texts.skip_level);
+                    setTimeout(function() {
                         switchToNextLevel();
-                    }, consts.wait_for_death);
+                    }, consts.wait_for_skip);
                 }
                 else if (e.key == Crafty.keys.P) {
                     switchToPrevLevel();
                 }
                 else if (e.key == Crafty.keys.R) {
-                    if (Crafty('Prophet').length > 0) {
-                        Crafty('Prophet').die('dying_in_lava');
-                    }
+                    Crafty('Prophet').die('dying_in_lava', false, true);
+                    Crafty('ProphetText').refreshText(texts.restart_level);
                 }
             }
         },
@@ -264,30 +316,87 @@ function initComponents()
         onKeyUp: function(e) {
             if (game_state.scene_type == 'level' && e.key == Crafty.keys.Z) {
                 Crafty.viewport.scale(consts.zoom_in_level);
-            }else if(e.key == Crafty.keys.ENTER){
-                Crafty.enterScene('level');
-            }else if (Crafty.keydown[Crafty.keys.SHIFT]) {
-                if (e.key == Crafty.keys.R) {
-                    if(Crafty('Prophet').length > 0){
-                      var prophet = Crafty('Prophet');
-                      Crafty.e('SkipLevelText')
-                          .attr({x:prophet.x-6, y:prophet.y - 42, w:200})
-                          .textAlign('center')
-                          .textColor('black')
-                          .textFont({family: 'Tribal', size:'15px'})
-                          .text('What a World... What a World...');
-                        setTimeout(function(){
-                            Crafty('Prophet').die('dying_in_lava');
-                        }, consts.wait_for_death);
-                    }
-                }
             }
         }
     });
-    
-    Crafty.c('SkipLevelText',{
+
+    Crafty.c('FloatingOverProphet', {
         init: function() {
-            this.addComponent('2D, DOM, Text');
+            this.bind('UpdateFrame', this.positionOverProphet);
+        },
+
+        positionOverProphet: function() {
+            var prophet = Crafty('Prophet');
+            this.attr({
+                x: prophet.x + (prophet.w - this.w) / 2,
+                y: prophet.y - this.h - consts.tile_height / 2
+            });
+        }
+    });
+
+    Crafty.c('ProphetText', {
+        init: function() {
+            this._size = '10px';
+            this._guess_size = 15;
+
+            this.addComponent('2D, DOM, Text, FloatingOverProphet');
+            this.textAlign('center');
+            this.textColor('black');
+            this.textFont({family: 'Tribal', size: this._size, weight: 'bold'});
+            this.z = zorders.text;
+        },
+
+        refreshText: function(text) {
+            // Guess the width and height... Too much width is fine since we center it.
+            this.attr({w: this._guess_size * text.length, h: this._guess_size});
+            this.text(text);
+            this.positionOverProphet();
+
+            var prophet_text = this;
+            setTimeout(function() {
+                if (prophet_text.text() == text) {
+                    prophet_text.text('');
+                }
+            }, consts.prophet_text_timeout);
+        }
+    });
+
+    Crafty.c('LevelTitleText', {
+        init: function() {
+            this.addComponent('2D, DOM, Text, Keyboard');
+            this.textAlign('left');
+            this.textColor('black');
+
+            this.bind('KeyDown', this.onKeyDown);
+
+            this.key_down = false;
+            this.timeout = false;
+            this.z = zorders.text;
+        },
+
+        setText: function(text, size, guess_size) {
+            this.textFont({family: 'Tribal', size: size, weight: 'bold'});
+
+            // Entire screen as width since it's left-aligned
+            this.attr({w: consts.pixel_width, h: guess_size});
+            this.text(text);
+
+            var level_title_text = this;
+            setTimeout(function() {
+                level_title_text.timeout = true;
+                level_title_text.checkDestroy();
+            }, consts.title_text_timeout);
+        },
+
+        onKeyDown: function() {
+            this.key_down = true;
+            this.checkDestroy();
+        },
+
+        checkDestroy: function() {
+            if (this.key_down && this.timeout) {
+                this.destroy();
+            }
         }
     });
 
@@ -369,7 +478,8 @@ function initComponents()
     // NOTE: Due to technical reasons Character does not implement "blocked by wall".
     // Properties: direction
     // Functions: dir_animate (like animate, but adds the direction)
-    // Events: Death (fired when the death animation is over)
+    // Events: Dying (fired when starting to die, after the counter is updated)
+    //         Died (fired when the death animation is over)
     // Animations should be defined by derived components:
     // stand, walk, jump, fall, dying_in_lava, dying_in_trap
     // All should be defined with "_left" and "_right"
@@ -488,11 +598,11 @@ function initComponents()
             }
 
             this.death_anim = this.dir_animate(death_anim, 1);
-
+            this.trigger('Dying');
         },
 
         onTouchLava: function() {
-            this.die('dying_in_lava');
+            this.die('dying_in_lava', false, false);
         },
 
         onTouchTrap: function(hitData) {
@@ -509,22 +619,10 @@ function initComponents()
             if (data.id == this.death_anim) {
                 this.visible = false;
                 var character = this;
-                var prophet = Crafty('Prophet');
                 setTimeout(function() {
-                    character.trigger('Death');
+                    character.trigger('Died');
                 }, consts.wait_for_death);
-                if(character.getId() == Crafty('Prophet').getId()) {
-                    Crafty.enterScene('level');
-                }
-                character.destroy();
-                var trueBelievers = Crafty('TrueBeliever');
-                if(Crafty('Counter').count == Crafty('Counter').total && trueBelievers.length == 0 && prophet.length == 1){
-                    switchToNextLevel();
-                }else if(Crafty('Counter').count > Crafty('Counter').total){
-                    Crafty.enterScene('level');
-                }
             }
-
         }
     });
 
@@ -630,6 +728,11 @@ function initComponents()
             this.bind('NewDirection', this.prophetNewDirection);
             this.bind('ConversionStarted', this.onConversionStarted);
             this.bind('ConversionEnded', this.onConversionEnded);
+            this.bind('Dying', this.onProphetDying);
+            this.bind('Died', this.onProphetDied);
+
+            this.num_dying_believers = 0;
+            this.winning = false;
         },
 
         setupMovement: function() {
@@ -642,7 +745,7 @@ function initComponents()
                 [Crafty.keys.UP_ARROW, Crafty.keys.W]);
         },
 
-        onHitMoveBlocking: function(hitDatas) {
+        onHitMoveBlocking: function() {
             // Black magic.
             this.x -= this.dx;
             if (this.hit('move_blocking') && this.vy < 0) { // Still touching block, and jumping
@@ -673,6 +776,14 @@ function initComponents()
             this.addComponent('Multiway');
             this.addComponent('Jumper');
             this.setupMovement();
+        },
+
+        onProphetDying: function() {
+            Crafty('ProphetText').refreshText(this.winning ? texts.oops : texts.lose);
+        },
+
+        onProphetDied: function() {
+            restartLevel();
         },
     });
 
@@ -710,7 +821,7 @@ function initComponents()
                 trueBeliever.direction = this.direction;
                 trueBeliever.dir_animate('stand', -1);
                 this.destroy();
-                trueBeliever.prophetQueueIdx = this.being_converted_cb(trueBeliever);
+                this.being_converted_cb(trueBeliever);
             }
         }
     });
@@ -754,6 +865,8 @@ function initComponents()
             this.addComponent('Character, HasConvertingPowers, NewDirectionWorkaround, true_believer_stand_right');
 
             this.jumper(consts.believer_jump_speed, []);
+            this.bind('Dying', this.onTrueBelieverDying);
+            this.bind('Died', this.onTrueBelieverDied);
 
             this.bind('EnterFrame', this.beforeEnterFrame);
 
@@ -798,6 +911,44 @@ function initComponents()
                 this.setNewDirectionX(0);
             }
         },
+
+        checkIfStillWallBlocked: function(prophetX) {
+            // Basically, check if the prophet is nearby to "reactivate" believer
+            if (Math.abs(prophetX - this.x) <= (consts.tile_width / 2)) {
+                this.blocked_by_wall = false;
+                return false;
+            }
+
+            return true;
+        },
+
+        onTrueBelieverDying: function() {
+            var prophet = Crafty('Prophet');
+            prophet.num_dying_believers++;
+            var win_lose = checkWinLoseConditions(true);
+
+            if (win_lose == 'win') {
+                Crafty('ProphetText').refreshText(texts.win);
+                prophet.winning = true;
+
+            }
+            else if (win_lose == 'lose') {
+                Crafty('ProphetText').refreshText(texts.lose);
+            }
+        },
+
+        onTrueBelieverDied: function() {
+            Crafty('Prophet').num_dying_believers--;
+            this.destroy();
+            var win_lose = checkWinLoseConditions(false);
+
+            if (win_lose == 'win') {
+                switchToNextLevel();
+            }
+            else if (win_lose == 'lose') {
+                restartLevel();
+            }
+        }
     });
 
     Crafty.c('TrueBeliever1', {
@@ -843,12 +994,12 @@ function initComponents()
     Crafty.c('Counter', {
         init: function() {
             this.addComponent('2D, DOM, Text');
-            this.attr({w: consts.tile_width});
             this.textAlign('center');
             this.textColor('black');
             this.textFont({family: 'Alanden'});
             this.total = 0;
             this.count = 0;
+            this.z = zorders.text;
         },
 
         setTotal: function(total) {
@@ -916,6 +1067,44 @@ function switchToPrevLevel()
     Crafty.enterScene('level');
 }
 
+function restartLevel()
+{
+    Crafty.enterScene('level');
+}
+
+function checkWinLoseConditions(allow_dying_believers)
+{
+    var prophet = Crafty('Prophet');
+    var trueBelievers = Crafty('TrueBeliever');
+    var counter = Crafty('Counter');
+    var num_believers = trueBelievers.length;
+
+    if (prophet.dying) {
+        // Prophet died, possibly after a win condition.
+        // Fail after he finishes dying (the prophet will restart).
+        return null;
+    }
+
+    // Dismiss dying believers
+    if (allow_dying_believers) {
+        num_believers -= prophet.num_dying_believers;
+    }
+
+    // Win condition: Count reached total, and no remaining believers
+    if (counter.count == counter.total && num_believers == 0) {
+        return 'win';
+    }
+
+    // Lose condition, besides the prophet dying (treated by the prophet itself):
+    // Counter is too high.
+    if (counter.count > counter.total) {
+        return 'lose';
+    }
+
+    // Neither win nor lose
+    return null;
+}
+
 function createNonLevelEntities()
 {
     Crafty.e('KeyboardTrapper');
@@ -937,7 +1126,7 @@ function initGame()
               y: consts.level_height * consts.tile_height}
             };
 
-    initScenes();
+    initScenes(); // Needed for loading scene
     Crafty.enterScene('loading');
 }
 
