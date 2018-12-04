@@ -205,6 +205,11 @@ function initScenes()
             return addEntity('OuterWall', tiles_x, tiles_y).attr({w: 1});
         }
 
+        function addOuterCeiling(tiles_x, tiles_y)
+        {
+            return addEntity('OuterCeiling', tiles_x, tiles_y).attr({h: 1});
+        }
+
         function addMInvisiblePlatform(tiles_x, tiles_y)
         {
             return addEntity('MInvisiblePlatform', tiles_x, tiles_y).attr({h: 0});
@@ -353,6 +358,7 @@ function initScenes()
 
         for (var i=0; i < consts.level_width; i++) {
             addTrap(i, consts.level_height);
+            addOuterCeiling(i, 0);
         }
 
         var world_id = worlds[game_state.cur_world].world;
@@ -943,6 +949,12 @@ function initComponents()
     });
 
     Crafty.c('OuterWall', {
+        init: function() {
+            this.addComponent('2D, DOM, move_blocking_for_m, move_blocking_for_p, move_blocking_for_w');
+        }
+    });
+
+    Crafty.c('OuterCeiling', {
         init: function() {
             this.addComponent('2D, DOM, move_blocking_for_m, move_blocking_for_p, move_blocking_for_w');
         }
