@@ -103,6 +103,31 @@ wall_types = [
     'L', 'G', 'l'
 ]
 
+excluded_levels_ext = [
+    '4-5',
+    '4-6',
+    '4-7',
+    '4-8',
+    '4-9',
+    '4-10',
+    '5-2',
+    '5-3',
+    '5-5',
+    '5-6',
+    '5-7',
+    '5-8',
+    '5-9',
+]
+
+excluded_levels_simp = excluded_levels_ext + [
+    '2-3',
+    '2-4',
+    '2-7',
+    '3-6',
+    '3-9',
+    '4-3',
+]
+
 def is_wall(obj):
     if len(obj) < 1:
         return False
@@ -279,7 +304,15 @@ def compile_stages(infp, otfp):
     stgs = []
     for s in stages:
         objs = [object(o) for o in s]
-        stgs += [stage(wind, sind, reqs[(wind-1) * 10 + (sind-1)], objs)]
+        newstg = stage(wind, sind, reqs[(wind-1) * 10 + (sind-1)], objs)
+        # Full mode
+        #stgs += [newstg]
+        # Extended mode
+        #if newstg['name'] not in excluded_levels_ext:
+        #    stgs += [newstg]
+        # Simple mode
+        if newstg['name'] not in excluded_levels_simp:
+            stgs += [newstg]
         sind += 1
         if 10 < sind and 5 > wind:
             wrds += [world(wind, stgs)]
