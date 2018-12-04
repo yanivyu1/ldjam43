@@ -110,6 +110,7 @@ var texts = {
     lose: 'Better luck next time.',
     oops: 'Oops! Clumsy...',
     restart_level: 'Try, try again...',
+	restart_last_level: 'This is not the way...',
     skip_level: 'Coward.',
     skip_world: 'Wuss.'
 };
@@ -779,7 +780,11 @@ function initComponents()
                 else if (e.key == Crafty.keys.R) {
                     Crafty.audio.play('Prophet-lava');
                     Crafty('Prophet').die('dying_in_lava', false, true);
-                    Crafty('ProphetText').refreshText(texts.restart_level);
+					if (worlds[game_state.cur_world].stages[game_state.cur_level].name == '5-10') {
+						Crafty('ProphetText').refreshText(texts.restart_last_level);
+					} else {
+						Crafty('ProphetText').refreshText(texts.restart_level);
+					}
                 }
                 else if (e.key == Crafty.keys.M) {
                     Crafty.audio.toggleMute();
@@ -1750,7 +1755,15 @@ function initComponents()
         },
 
         onProphetDied: function() {
-            restartLevel();
+			if (worlds[game_state.cur_world].stages[game_state.cur_level].name == '5-10') {
+				var counter = Crafty('Counter');
+				if (counter.count == counter.total) {
+					switchToNextWorld();
+				} else {
+					switchToNextLevel();
+				}
+			}
+			restartLevel();
         },
 
         onHitEnemy: function(hitDatas) {
