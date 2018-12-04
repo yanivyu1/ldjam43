@@ -613,7 +613,7 @@ function initScenes()
         'audio': 'ending',
     });
 
-    defineCutscene('ending2', 'ending2', 45000, {
+    defineCutscene('ending2', 'ending2', 1000000, {
         'background': 'assets/gfx/endscreen.png',
         'audio': 'epic_win',
     });
@@ -866,7 +866,7 @@ function initComponents()
             else if (game_state.scene_type == 'intro' && e.key == Crafty.keys.ENTER) {
                 Crafty.enterScene('intro_cutscene1');
             }
-            else if (game_state.scene_type == 'cutscene' && e.key == Crafty.keys.ENTER) {
+            else if (game_state.scene_type == 'cutscene' && (e.key == Crafty.keys.ENTER || e.key == Crafty.keys.SPACE)) {
                 game_state.end_cutscene();
             }
             else if (game_state.scene_type == 'level' && Crafty.keydown[Crafty.keys.SHIFT]) {
