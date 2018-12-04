@@ -61,7 +61,8 @@ var assets = function() {
             'assets/gfx/cutscenes/transitions/w3-intro.gif',
             'assets/gfx/cutscenes/transitions/w4-intro.gif',
             'assets/gfx/cutscenes/transitions/w5-intro.gif',
-            'assets/gfx/endscreen.png'
+            'assets/gfx/endscreen.png',
+            'assets/gfx/credits.gif',
         ],
         "audio": {
             // Background music
@@ -614,7 +615,7 @@ function initScenes()
     });
 
     defineCutscene('ending2', 'ending2', 1000000, {
-        'background': 'assets/gfx/endscreen.png',
+        'gif': 'assets/gfx/credits.gif',
         'audio': 'epic_win',
     });
 
