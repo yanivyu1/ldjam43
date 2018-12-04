@@ -612,7 +612,7 @@ function initScenes()
         'audio': 'ending',
     });
 
-    defineCutscene('ending2', 'ending2', 45000, {
+    defineCutscene('ending2', 'ending2', 1000000, {
         'background': 'assets/gfx/endscreen.png',
         'audio': 'epic_win',
     });
