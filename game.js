@@ -1876,7 +1876,11 @@ function initComponents()
         },
 
         onProphetDying: function() {
-            Crafty('ProphetText').refreshText(this.winning ? texts.oops : texts.lose);
+			if (worlds[game_state.cur_world].stages[game_state.cur_level].name == '5-10') {
+				return;
+			} else {
+				Crafty('ProphetText').refreshText(this.winning ? texts.oops : texts.lose);
+			}
         },
 
         onProphetDied: function() {
