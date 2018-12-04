@@ -312,6 +312,13 @@ function initScenes()
                        w: consts.tile_width * 3});
         }
 
+        function addNote(tiles_x, tiles_y, help_text)
+        {
+            var n = addEntity('Note', tiles_x, tiles_y);
+            n.setHelpText(help_text);
+            return n;
+        }
+
         function addLevelTitle(prophet_tiles_x, prophet_tiles_y, level_name, level_title)
         {
             var tiles_y;
@@ -476,6 +483,9 @@ function initScenes()
             else if (objects[i].type == 'Counter') {
                 addCounter(objects[i].x, objects[i].y)
                     .setTotal(stage.required);
+            }
+            else if (objects[i].type == 'Note') {
+                addNote(objects[i].x, objects[i].y, objects[i].text);
             }
         }
     });
@@ -872,6 +882,24 @@ function initComponents()
             if (this.key_down && this.timeout) {
                 //this.destroy();
             }
+        }
+    });
+
+    Crafty.c('Note', {
+        init: function() {
+            this._size = '8px';
+            this._guess_size = 15;
+
+            this.addComponent('AmigaText');
+            this.textAlign('left');
+            this.textFont({size: this._size});
+            this.z = zorders.stage_titles;
+        },
+
+        setHelpText: function(text) {
+            // Half screen as width since it's left-aligned
+            this.attr({w: consts.pixel_width / 2, h: this._guess_size});
+            this.text(text);
         }
     });
 
