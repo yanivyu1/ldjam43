@@ -100,9 +100,9 @@ var game_state = {
 };
 
 var texts = {
-    win: 'win text, please ignore',
-    lose: 'lose text, please ignore',
-    oops: 'oops text, please ignore',
+    win: 'And on we go!',
+    lose: 'Better luck next time.',
+    oops: 'Oops! Clumsy...',
     restart_level: 'Try, try again...',
     skip_level: 'Coward.',
     skip_world: 'Wuss.'
