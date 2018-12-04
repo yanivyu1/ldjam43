@@ -61,8 +61,8 @@ titles = [
         "Sharp Shooter",
         "Final Exam",
         "Volcano Volcano",
-        "Volcano Volcano",
-        "Volcano Volcano",
+        "Volcano Volcano<br /><font size=-4>(Play fair)</font>",
+        "Volcano Volcano<br /><font size=-2>(Not like that either)</font>",
         "...",
         "Well?",
     ]

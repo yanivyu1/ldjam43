@@ -13,7 +13,7 @@
 																													
 																	Y	Y	Y	Y									
 																													
-					!Arrows or WASD to move, up or W to jump.<br />Bring the correct number of followers to the lava.																								
+						!Bring the correct number<br />of followers to the lava.																							
 								n						Y	Y														
 						X	X	X	X																				
 	P				X	X	X	X	X									0/1											
@@ -32,7 +32,7 @@ X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X	X
 																													
 																													
 								N																					
-							Y	Y	Y					!If a follower touches another person<br />they will be converted.															
+							Y	Y	Y					!If a follower touches another<br />person they will be converted.															
 																													
 	P													m															
 X	X	X	X	X						X	X	X	X	X	X											X			
@@ -204,7 +204,7 @@ X							X				X							X				X							X
 X							X				X							X				X							X
 X											X																		X
 X	X												X	X	X	X											X	X	X
-X							X	M						!Wana-haya'yuh is not a<br />spike trap god…				X	N			X							X
+X							X	M						!Wana-Haya'yuh is not a<br />spike trap god…				X	N			X							X
 X							X	X	X	X	X	~	~	~	~	~	~	X	X		X	X	M				0/1		X
 X	X	X		X	X	X	X				X	X	X	X	X	X	X	X		!...Nor a fall from height god		X	X	X			X	X	X
 		X			X																			X			X		
@@ -412,9 +412,9 @@ Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	X	X	X	L	L	L	X	X	X	X	Y	Y	Y
 										H					F			L	L	L	L	X	X						
 										H					F			L	X	X	X	X	X						
 							F			^					F			L	X	X	X	X	X						
-				!These faces look familiar…			H								F			L	X	X	X	X	X						
 							H								F			L	X	X	X	X	X						
-					F		H								F			L	X	X	X	X	X						
+							H								F			L	X	X	X	X	X						
+					F		H			!These faces look familiar…					F			L	X	X	X	X	X						
 					F		H								F			L	X	X	X	X	X						
 	P				F		H		m						F			L	X	X	X	X	X						
 Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y
@@ -490,7 +490,7 @@ Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	Y	Y	Y	Y	Y	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y
 								X	X	X	X	X								X	X	X	X	X			^	^	
 								X	X	X	X	X								X	X	X	X	X					
 								X	X	X	X	X								X	X	X	X	X					
-					!wana-friz			X	X	X	X	X								X	X	X	X	X	^	^	!wana-bern		
+					!Wana-Friz			X	X	X	X	X								X	X	X	X	X	^	^	!Wana-Bern		
 								X	X	X	X	X							0/4	X	X	X	X	X					
 	P			N	I	m		^	^	^	^	^								^	^	^	^	^		M	i	n	
 ^	^	^	^	^	^	^	^	X	X	L	L	L	L						L	L	L	L	X	X	^	^	^	^	^
@@ -500,7 +500,7 @@ Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	Y	Y	Y	Y	Y	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y
 Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	l	l	l	l	l	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y
 																													
 																								X					
-		i																		X	X			X					
+		I																		X	X			X					
 Y	Y	Y	Y	Y																X	X		X	X					
 	x	x	x																	X	X	X	X	X					
 		Y																		X	X	^	^	^					
@@ -514,7 +514,7 @@ Y	Y	Y	Y	Y																X	X		X	X
 									X	X										X	l	X	l	X					
 								X	X	X	X									^	l	^	l	^					
 					^			X	X	X	X	X								X	l	X	l	X				^	^
-		^						X	X	X	X	X				0/4		M		X	L	X	L	X			I		
+		^						X	X	X	X	X				0/4		M		X	L	X	L	X			i		
 								X	X	X	X	X				X		^		X	L	X	L	X			Y		
 	P					n		^	^	^	^	^				X	l	l	l	l	L	X	G	X		x	x	x	
 Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	l	l	l	l	l	l	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y
@@ -891,9 +891,9 @@ L	L	L	L	L	L	L	L	Y	Y	X	X	X	X	X	X	X	X	X	X	X	X	X	X	Y	L	L	L	Y	X
 																													
 																							n						
 																						x	x	x	x	x	x	x	
-			!Press X to invoke godly powers!											N								x		A	A	A	A	x	
+														N								x		A	A	A	A	x	
 														X								x		x	x	x	x	x	
-			0/5																	!Amulet stroage		x		A	A	A	A	x	
+			0/5			!Press X to invoke godly powers!														!Amulet stroage		x		A	A	A	A	x	
 										N												x		x	x	x	x	x	
 	P		A				m			Y														A	A	A	A	x	
 	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	x	x	x	x	x	x	x	
@@ -986,17 +986,17 @@ X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X	X
 																													
 																0/15													
 													X	X		X	X												
-												X	Y				Y	X											
-											X	Y			n			Y	X										
-										X	Y			Y	Y	Y	Y	Y	Y	X									
-									X	Y		M	n				m			Y	X								
-								X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y			Y	X							
-							X	Y			n						M					Y	X						
-						X	Y			Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X					
-					X	Y							M				m			N				Y	X				
-				X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y			Y	X			
-			X	Y				M			m					N			n			n				Y	X		
-	P	X	Y	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	
+												X	X				X	X											
+											X	X			n			X	X										
+										X	X			X	X	X	X	X	X	X									
+									X	X		M	n				m			X	X								
+								X	X	X	X	X	X	X	X	X	X	X			X	X							
+							X	X			n						M					X	X						
+						X	X			X	X	X	X	X	X	X	X	X	X	X	X	X	X	X					
+					X	X							M				m			N				X	X				
+				X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X			X	X			
+			X	X				M			m					N			n			n				X	X		
+	P	X	X	L	L	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	
 X	X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X
 																													
 																													
@@ -1006,15 +1006,15 @@ X	X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X
 																													
 																0/10													
 													X	X		X	X												
-												X	Y				Y	X											
-											X	Y			n			Y	X										
-										X	Y			Y	Y	Y	Y	Y	Y	X									
-									X	Y		M	n				m			Y	X								
-								X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y			Y	X							
-							X	Y			n						M					Y	X						
-						X	Y			Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X					
-					X	Y							M				m			N				Y	X				
-				X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	L	Y	X			
+												X	X				X	X											
+											X	X			n			X	X										
+										X	X			X	X	X	X	X	X	X									
+									X	X		M	n				m			X	X								
+								X	X	X	X	X	X	X	X	X	X	X			X	X							
+							X	X			n						M					X	X						
+						X	X			X	X	X	X	X	X	X	X	X	X	X	X	X	X	X					
+					X	X							M				m			N				X	X				
+				X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	X	X			
 			X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X		
 	P	X	Y	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	
 X	X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X
@@ -1026,11 +1026,11 @@ X	X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X
 																													
 																0/5													
 													X	X		X	X												
-												X	Y				Y	X											
-											X	Y			n			Y	X										
-										X	Y			Y	Y	Y	Y	Y	Y	X									
-									X	Y		M	n				m			Y	X								
-								X	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	L	Y	X							
+												X	X				X	X											
+											X	X			n			X	X										
+										X	X			X	X	X	X	X	X	X									
+									X	X		M	n				m			X	X								
+								X	X	X	X	X	X	X	X	X	X	X	L	L	X	X							
 							X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X						
 						X	Y	L	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X					
 					X	Y	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	L	Y	X				
