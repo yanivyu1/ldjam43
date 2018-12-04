@@ -44,13 +44,6 @@ var assets = function() {
                 map:  {
                     intro_animation: [0,0]
                 }
-            },
-            "assets/gfx/cutscenes/intro2/animation.png": {
-                tile: 960,
-                tileh: 640,
-                map:  {
-                    intro_animation2: [0,0]
-                }
             }
         },
         "images": [
