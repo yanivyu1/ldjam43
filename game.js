@@ -1357,6 +1357,8 @@ function initComponents()
 
             this.onHit('Lava', this.onTouchLava);
             this.onHit('Trap', this.onTouchTrap);
+            this.onHit('IceShrine', function() { LavaAndIceManager.iceShrineTouched(); });
+            this.onHit('LavaShrine', function() { LavaAndIceManager.lavaShrineTouched(); });
             this.bind('AnimationEnd', this.onAnimationEnd);
 
             this.onHit('Item', this.onHitItem);
@@ -1573,8 +1575,6 @@ function initComponents()
             this.bind('ConversionEnded', this.onConversionEnded);
             this.bind('Dying', this.onProphetDying);
             this.bind('Died', this.onProphetDied);
-            this.onHit('IceShrine', function() { LavaAndIceManager.iceShrineTouched(); });
-            this.onHit('LavaShrine', function() { LavaAndIceManager.lavaShrineTouched(); });
             this.bind('CheckLanding', this.onCheckLanding);
             this.onHit('Enemy', this.onHitEnemy);
 
