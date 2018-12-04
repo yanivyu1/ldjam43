@@ -49,6 +49,16 @@ def deploy():
     game_min_html = game_html.replace(b'game.js', b'game.min.js')
     open(os.path.join(TARGET, 'game.min.html'), 'wb').write(game_min_html)
 
+    # game_extended.min.html
+    game_html = open(os.path.join(BASE, 'game_extended.html'), 'rb').read()
+    game_min_html = game_html.replace(b'game.js', b'game.min.js')
+    open(os.path.join(TARGET, 'game_extended.min.html'), 'wb').write(game_min_html)
+
+    # game_full.min.html
+    game_html = open(os.path.join(BASE, 'game_full.html'), 'rb').read()
+    game_min_html = game_html.replace(b'game.js', b'game.min.js')
+    open(os.path.join(TARGET, 'game_full.min.html'), 'wb').write(game_min_html)
+
 
 if __name__ == '__main__':
     deploy()
