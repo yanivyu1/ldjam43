@@ -105,7 +105,9 @@ var texts = {
     oops: 'Oops! Clumsy...',
     restart_level: 'Try, try again...',
     skip_level: 'Coward.',
-    skip_world: 'Wuss.'
+    skip_world: 'Wuss.',
+    not_enough_remaining: 'Not enough people remaining!',
+    too_many_followers: 'Too many followers!'
 };
 
 var zorders = {
@@ -1856,6 +1858,8 @@ function initComponents()
 
             this.nextCharacter = null;
             this.prevCharacter = null;
+
+            checkStuckConditions();
         },
 
         onHitEnemy: function(hitDatas) {
@@ -1933,6 +1937,9 @@ function initComponents()
             }
             else if (win_lose == 'lose') {
                 Crafty('ProphetText').refreshText(texts.lose);
+            }
+            else {
+                checkStuckConditions();
             }
         },
 
@@ -2122,6 +2129,26 @@ function checkWinLoseConditions(allow_dying_believers)
 
     // Neither win nor lose
     return null;
+}
+
+function checkStuckConditions()
+{
+    var prophet = Crafty('Prophet');
+    var trueBelievers = Crafty('TrueBeliever');
+    var unbelievers = Crafty('Unbeliever');
+    var counter = Crafty('Counter');
+    var living_believers = trueBelievers.length - prophet.num_dying_believers;
+    var num_unbelievers = unbelievers.length;
+
+    // Remaining number of living followers + unbelievers is less than remaining in the counter
+    if (living_believers + num_unbelievers < counter.total - counter.count) {
+        Crafty('ProphetText').refreshText(texts.not_enough_remaining);
+    }
+
+    // Too many followers
+    else if (living_believers > counter.total - counter.count) {
+        Crafty('ProphetText').refreshText(texts.too_many_followers);
+    }
 }
 
 function createNonLevelEntities()
