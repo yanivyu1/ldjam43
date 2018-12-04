@@ -104,9 +104,9 @@ var game_state = {
 };
 
 var texts = {
-    win: 'win text, please ignore',
-    lose: 'lose text, please ignore',
-    oops: 'oops text, please ignore',
+    win: 'And on we go!',
+    lose: 'Better luck next time.',
+    oops: 'Oops! Clumsy...',
     restart_level: 'Try, try again...',
     skip_level: 'Coward.',
     skip_world: 'Wuss.'
@@ -207,6 +207,11 @@ function initScenes()
         function addOuterWall(tiles_x, tiles_y)
         {
             return addEntity('OuterWall', tiles_x, tiles_y).attr({w: 1});
+        }
+
+        function addOuterCeiling(tiles_x, tiles_y)
+        {
+            return addEntity('OuterCeiling', tiles_x, tiles_y).attr({h: 1});
         }
 
         function addMInvisiblePlatform(tiles_x, tiles_y)
@@ -357,6 +362,7 @@ function initScenes()
 
         for (var i=0; i < consts.level_width; i++) {
             addTrap(i, consts.level_height);
+            addOuterCeiling(i, 0);
         }
 
         var world_id = worlds[game_state.cur_world].world;
@@ -949,6 +955,12 @@ function initComponents()
     });
 
     Crafty.c('OuterWall', {
+        init: function() {
+            this.addComponent('2D, DOM, move_blocking_for_m, move_blocking_for_p, move_blocking_for_w');
+        }
+    });
+
+    Crafty.c('OuterCeiling', {
         init: function() {
             this.addComponent('2D, DOM, move_blocking_for_m, move_blocking_for_p, move_blocking_for_w');
         }
