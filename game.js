@@ -64,6 +64,12 @@ var assets = function() {
             "Female-converted": ["assets/sound_fx/converted_female.mp3"],
             // SFX - prophet
             "Prophet-lava": ["assets/sound_fx/prophet_fired.mp3"],
+            // SFX - level
+            "Win-signal": ["assets/sound_fx/win_signal.mp3"],
+            "lava-freeze": ["assets/sound_fx/lava_freeze.mp3"],
+            "lava-unfreeze": ["assets/sound_fx/lava_unfreeze.mp3"],
+            "door": ["assets/sound_fx/door.mp3"],
+            "item-picked-up": ["assets/sound_fx/item_picked_up.mp3"]
         }
     };
 }();
@@ -505,7 +511,7 @@ function initScenes()
               .image('assets/gfx/bg-intro.png')
               .addComponent('FullScreenImage');
         Crafty.audio.stop();
-        Crafty.audio.play('bg-intro');
+        Crafty.audio.play('bg-intro', 0.75);
     });
 
     Crafty.defineScene('loading', function() {
@@ -695,6 +701,7 @@ var LavaAndIceManager = {
 
         // Start flood-filling
         if (initial_positions.length > 0) {
+            Crafty.audio.play("lava-freeze");
             setTimeout(function() {
                 LavaAndIceManager.onFloodFillLavaToIce(LavaAndIceManager.generation, initial_positions);
             }, consts.ice_lava_flood_fill_timeout);
@@ -717,6 +724,7 @@ var LavaAndIceManager = {
 
         // Start flood-filling
         if (initial_positions.length > 0) {
+            Crafty.audio.play("lava-unfreeze");
             setTimeout(function() {
                 LavaAndIceManager.onFloodFillIceToLava(LavaAndIceManager.generation, initial_positions);
             }, consts.ice_lava_flood_fill_timeout);
@@ -771,6 +779,7 @@ function initComponents()
                     switchToPrevLevel();
                 }
                 else if (e.key == Crafty.keys.R) {
+                    Crafty.audio.play('Prophet-lava');
                     Crafty('Prophet').die('dying_in_lava', false, true);
                     Crafty('ProphetText').refreshText(texts.restart_level);
                 }
@@ -1449,7 +1458,7 @@ function initComponents()
 
         onTouchLava: function(hitData, isFirstTouch) {
             if (this.typeStr && isFirstTouch) {
-                Crafty.audio.play(this.typeStr + '-lava');
+                Crafty.audio.play(this.typeStr + '-lava', 1);
             }
             this.die('dying_in_lava', false, false);
         },
@@ -1616,6 +1625,7 @@ function initComponents()
 
         _handleDoor: function(door) {
             if (this.findItem(door.requiredKey)) {
+                Crafty.audio.play('door');
                 door.destroy();
                 if (door.invisiblePlatform != null) {
                     door.invisiblePlatform.destroy();
@@ -1693,6 +1703,8 @@ function initComponents()
                     h: consts.tile_height,
                     itemType: itemType
                 });
+
+            Crafty.audio.play("item-picked-up");
 
             x.nextCollectible = collectible;
             collectible.prevCollectible = x;
@@ -1778,7 +1790,7 @@ function initComponents()
             }
 
             if (this.typeStr) {
-                Crafty.audio.play(this.typeStr + '-converted');
+                Crafty.audio.play(this.typeStr + '-converted', 1);
             }
             this.being_converted = true;
             this.being_converted_cb = callback;
@@ -1933,6 +1945,8 @@ function initComponents()
             if (win_lose == 'win') {
                 Crafty('ProphetText').refreshText(texts.win);
                 prophet.winning = true;
+                Crafty.audio.stop(this.typeStr + '-lava');
+                Crafty.audio.play('Win-signal', 1, 1);
 
             }
             else if (win_lose == 'lose') {
