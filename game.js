@@ -1210,7 +1210,8 @@ function initComponents()
 
     Crafty.c('Ice', {
         init: function() {
-            this.addComponent('2D, DOM, tile_ice, SpriteAnimation, move_blocking_for_m, move_blocking_for_w');
+            this.addComponent('2D, DOM, tile_ice, SpriteAnimation, move_blocking_for_m, move_blocking_for_w, ' +
+                'move_blocking_for_p',);
             addReel(this, 'shallow', 14, 21, 21);
             addReel(this, 'deep', 14, 22, 22);
             this.ice_type = null;
