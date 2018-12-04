@@ -68,6 +68,7 @@ var assets = function() {
             'assets/gfx/cutscenes/transitions/w3-intro.gif',
             'assets/gfx/cutscenes/transitions/w4-intro.gif',
             'assets/gfx/cutscenes/transitions/w5-intro.gif',
+            'assets/gfx/endscreen.png'
         ],
         "audio": {
             // Background music
@@ -93,8 +94,14 @@ var assets = function() {
             "door": ["assets/sound_fx/door.mp3"],
             "item-picked-up": ["assets/sound_fx/item_picked_up.mp3"],
             // Cutscenes
-            'intro-cutscene-sound': ['assets/voices/opening.mp3']
-
+            'intro-cutscene-sound': ['assets/voices/opening.mp3'],
+            'w1-intro': ['assets/voices/world1.mp3'],
+            'w2-intro': ['assets/voices/world2.mp3'],
+            'w3-intro': ['assets/voices/world3.mp3'],
+            'w4-intro': ['assets/voices/world4.mp3'],
+            'w5-intro': ['assets/voices/world5.mp3'],
+            'ending'  : ['assets/voices/end.mp3'],
+            'epic_win': ['assets/music/epic_win.mp3']
         }
     };
 }();
@@ -592,19 +599,30 @@ function initScenes()
 
     });
 
-    defineCutscene('intro_cutscene2', 'w1-intro', 61200, {
+    defineCutscene('intro_cutscene2', 'w0-intro', 61200, {
         'background': 'assets/gfx/cutscenes/intro2/bg-beach_intro.png',
         'gif': 'assets/gfx/cutscenes/intro2/animation.gif',
         'audio': 'intro-cutscene-sound',
-        'animation_loops': -1,
     });
 
-    for(var i=1; i<=worlds.length; i++) {
-        name = 'w' + i + '-intro'
-        defineCutscene(name, 'level', 1000, {
-            'gif': 'assets/gfx/cutscenes/transitions/'+name+'.gif',
+    var intro_sounds_secs = [10.422833, 11.546083, 14.497958, 11.232625, 14.053875]
+
+    for(var i=0; i<worlds.length; i++) {
+        defineCutscene('w' + i + '-intro', 'level', (intro_sounds_secs[i]-1)*1000, {
+            'gif': 'assets/gfx/cutscenes/transitions/w'+(i+1)+'-intro.gif',
+            'audio': 'w' + (i+1) + '-intro'
         })
     }
+
+    defineCutscene('ending', 'ending2', 5500, {
+        'background': 'assets/gfx/endscreen.png',
+        'audio': 'ending',
+    });
+
+    defineCutscene('ending2', 'ending2', 45000, {
+        'background': 'assets/gfx/endscreen.png',
+        'audio': 'epic_win',
+    });
 
     Crafty.defineScene('loading', function() {
         // Cannot use assets or components, they're not yet loaded. Fonts are ok.
@@ -2164,9 +2182,17 @@ function initComponents()
 
 function switchToNextWorld()
 {
+    prev_music_id = 'bg-world' + game_state.playing_music_for_world;
+    if (game_state.playing_music_for_world != null && Crafty.audio.isPlaying(prev_music_id)) {
+        Crafty.audio.stop(prev_music_id);
+        game_state.playing_music_for_world = null
+    }
+
     if (game_state.cur_world + 1 == worlds.length) {
+        Crafty.enterScene('ending');
         return;
     }
+
     game_state.cur_level = 0;
     game_state.cur_world++;
     Crafty.enterScene('w'+game_state.cur_world+'-intro');
