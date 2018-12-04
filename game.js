@@ -67,7 +67,9 @@ var assets = function() {
             // SFX - level
             "Win-signal": ["assets/sound_fx/win_signal.mp3"],
             "lava-freeze": ["assets/sound_fx/lava_freeze.mp3"],
-            "lava-unfreeze": ["assets/sound_fx/lava_unfreeze.mp3"]
+            "lava-unfreeze": ["assets/sound_fx/lava_unfreeze.mp3"],
+            "door": ["assets/sound_fx/door.mp3"],
+            "item-picked-up": ["assets/sound_fx/item_picked_up.mp3"]
         }
     };
 }();
@@ -1621,6 +1623,7 @@ function initComponents()
 
         _handleDoor: function(door) {
             if (this.findItem(door.requiredKey)) {
+                Crafty.audio.play('door');
                 door.destroy();
                 if (door.invisiblePlatform != null) {
                     door.invisiblePlatform.destroy();
@@ -1698,6 +1701,8 @@ function initComponents()
                     h: consts.tile_height,
                     itemType: itemType
                 });
+
+            Crafty.audio.play("item-picked-up");
 
             x.nextCollectible = collectible;
             collectible.prevCollectible = x;
