@@ -37,6 +37,13 @@ var assets = function() {
                 tile: 32,
                 tileh: 32,
                 map: sprite_map
+            },
+            "assets/gfx/cutscenes/intro/intro_animation.png": {
+                tile: 960,
+                tileh: 640,
+                map:  {
+                    intro_animation: [0,0]
+                }
             }
         },
         "images": [
@@ -45,7 +52,16 @@ var assets = function() {
             'assets/gfx/bg-world2.png',
             'assets/gfx/bg-world3.png',
             'assets/gfx/bg-world4.png',
-            'assets/gfx/bg-world5.png'
+            'assets/gfx/bg-world5.png',
+            'assets/gfx/cutscenes/intro/Background.png',
+            'assets/gfx/cutscenes/intro2/bg-beach_intro.png',
+            'assets/gfx/cutscenes/intro2/animation.gif',
+            'assets/gfx/cutscenes/transitions/w1-intro.gif',
+            'assets/gfx/cutscenes/transitions/w2-intro.gif',
+            'assets/gfx/cutscenes/transitions/w3-intro.gif',
+            'assets/gfx/cutscenes/transitions/w4-intro.gif',
+            'assets/gfx/cutscenes/transitions/w5-intro.gif',
+            'assets/gfx/endscreen.png'
         ],
         "audio": {
             // Background music
@@ -69,7 +85,16 @@ var assets = function() {
             "lava-freeze": ["assets/sound_fx/lava_freeze.mp3"],
             "lava-unfreeze": ["assets/sound_fx/lava_unfreeze.mp3"],
             "door": ["assets/sound_fx/door.mp3"],
-            "item-picked-up": ["assets/sound_fx/item_picked_up.mp3"]
+            "item-picked-up": ["assets/sound_fx/item_picked_up.mp3"],
+            // Cutscenes
+            'intro-cutscene-sound': ['assets/voices/opening.mp3'],
+            'w1-intro': ['assets/voices/world1.mp3'],
+            'w2-intro': ['assets/voices/world2.mp3'],
+            'w3-intro': ['assets/voices/world3.mp3'],
+            'w4-intro': ['assets/voices/world4.mp3'],
+            'w5-intro': ['assets/voices/world5.mp3'],
+            'ending'  : ['assets/voices/end.mp3'],
+            'epic_win': ['assets/music/epic_win.mp3']
         }
     };
 }();
@@ -186,6 +211,32 @@ function addIceGen(tiles_x, tiles_y)
     var ice_gen = addEntity('IceGen', tiles_x, tiles_y);
     LavaAndIceManager.registerIceGen(tiles_x, tiles_y, ice_gen);
     return ice_gen;
+}
+
+function defineCutscene(scene_name, next_scene, msecs, properties) {
+    Crafty.defineScene(scene_name, function() {
+        game_state.scene_type = 'cutscene';
+
+        var end_cutscene = function() {
+            game_state.cutscene_timer.cancelDelay(game_state.end_cutscene);
+            if(properties['audio'])
+                Crafty.audio.stop(properties['audio']);
+            Crafty.enterScene(next_scene);
+        }
+        game_state.end_cutscene = end_cutscene;
+
+        if(properties['background'])
+            Crafty.e('2D, DOM, Image').image(properties['background']).addComponent('FullScreenImage');
+
+        if(properties['gif'])
+            Crafty.e('2D, DOM, Image').image(properties['gif']).addComponent('FullScreenImage');
+
+        if(properties['audio'])
+            Crafty.audio.play(properties['audio']);
+
+        game_state.cutscene_timer = Crafty.e("Delay").delay(game_state.end_cutscene, msecs, 0);
+
+    });
 }
 
 function initScenes()
@@ -514,6 +565,58 @@ function initScenes()
         Crafty.audio.play('bg-intro', 0.75);
     });
 
+    Crafty.defineScene('intro_cutscene1', function() {
+        game_state.scene_type = 'cutscene';
+        game_state.end_cutscene = function () {
+            Crafty.enterScene('intro_cutscene2');
+        }
+
+        Crafty.e('2D, DOM, Image')
+            .image('assets/gfx/cutscenes/intro/Background.png')
+            .addComponent('FullScreenImage');
+
+
+        Crafty.c('IntroAnimation', {
+            init: function() {
+                this.addComponent('2D, DOM, SpriteAnimation, intro_animation, FullScreenImage');
+                this.reel('IntroAnimation', 2000, 0, 0, 17);
+                this.animate('IntroAnimation', 1);
+                this.bind('AnimationEnd', this.onAnimationCompleted);
+            },
+
+            onAnimationCompleted: function(data) {
+                game_state.end_cutscene();
+            }
+        });
+        Crafty.e('IntroAnimation');
+
+    });
+
+    defineCutscene('intro_cutscene2', 'w0-intro', 61200, {
+        'background': 'assets/gfx/cutscenes/intro2/bg-beach_intro.png',
+        'gif': 'assets/gfx/cutscenes/intro2/animation.gif',
+        'audio': 'intro-cutscene-sound',
+    });
+
+    var intro_sounds_secs = [10.422833, 11.546083, 14.497958, 11.232625, 14.053875]
+
+    for(var i=0; i<worlds.length; i++) {
+        defineCutscene('w' + i + '-intro', 'level', (intro_sounds_secs[i]-1)*1000, {
+            'gif': 'assets/gfx/cutscenes/transitions/w'+(i+1)+'-intro.gif',
+            'audio': 'w' + (i+1) + '-intro'
+        })
+    }
+
+    defineCutscene('ending', 'ending2', 5500, {
+        'background': 'assets/gfx/endscreen.png',
+        'audio': 'ending',
+    });
+
+    defineCutscene('ending2', 'ending2', 45000, {
+        'background': 'assets/gfx/endscreen.png',
+        'audio': 'epic_win',
+    });
+
     Crafty.defineScene('loading', function() {
         // Cannot use assets or components, they're not yet loaded. Fonts are ok.
         Crafty.e('2D, DOM, Text')
@@ -760,7 +863,10 @@ function initComponents()
                 zoomer.handleZoomPress(true, Crafty.keydown[Crafty.keys.SHIFT]);
             }
             else if (game_state.scene_type == 'intro' && e.key == Crafty.keys.ENTER) {
-                Crafty.enterScene('level'); // TODO cutscene
+                Crafty.enterScene('intro_cutscene1');
+            }
+            else if (game_state.scene_type == 'cutscene' && e.key == Crafty.keys.ENTER) {
+                game_state.end_cutscene();
             }
             else if (game_state.scene_type == 'level' && Crafty.keydown[Crafty.keys.SHIFT]) {
                 if (e.key == Crafty.keys.N) {
@@ -2067,29 +2173,32 @@ function initComponents()
     });
 }
 
+function switchToNextWorld()
+{
+    prev_music_id = 'bg-world' + game_state.playing_music_for_world;
+    if (game_state.playing_music_for_world != null && Crafty.audio.isPlaying(prev_music_id)) {
+        Crafty.audio.stop(prev_music_id);
+        game_state.playing_music_for_world = null
+    }
+
+    if (game_state.cur_world + 1 == worlds.length) {
+        Crafty.enterScene('ending');
+        return;
+    }
+
+    game_state.cur_level = 0;
+    game_state.cur_world++;
+    Crafty.enterScene('w'+game_state.cur_world+'-intro');
+}
+
 function switchToNextLevel()
 {
     if (game_state.cur_level + 1 == worlds[game_state.cur_world].stages.length) {
-        if (game_state.cur_world + 1 == worlds.length) {
-            return;
-        }
-
-        game_state.cur_level = 0;
-        game_state.cur_world++;
+        switchToNextWorld();
     } else {
         game_state.cur_level++;
+        Crafty.enterScene('level');
     }
-    Crafty.enterScene('level');
-}
-
-function switchToNextWorld()
-{
-    if (game_state.cur_world + 1 == worlds.length) {
-        return;
-    }
-    game_state.cur_level = 0;
-    game_state.cur_world++;
-    Crafty.enterScene('level');
 }
 
 function switchToPrevLevel()
