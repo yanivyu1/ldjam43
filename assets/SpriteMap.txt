@@ -10,15 +10,15 @@ Row 0-1:
 Row 2-3:
   0-32 Dying (lava)
 Row 4-5:
-  0-3 Casting start
-  4-11 Casting loop
+  0-2 Casting start
+  3-10 Casting loop
 
 Enemy
 =====
 Row 4-5
-  12-18 Idle
-  19-27 Attack
-  28-34 Dying (attacked)
+  11-17 Idle
+  18-26 Attack
+  27-33 Dying (attacked)
   
 Believer/Nonbeliever 1
 ======================

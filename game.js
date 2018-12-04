@@ -6,7 +6,7 @@ var assets = function() {
         tile_lava: [0, 14],
         tile_floor: [12, 14],
         tile_trap: [13, 14],
-        enemy_stand_right: [12, 4],
+        enemy_stand_right: [11, 4],
         tile_dgate: [35, 8],
         tile_mblock: [19, 14],
         tile_wblock: [20, 14],
@@ -787,10 +787,8 @@ function initComponents()
                     Crafty.audio.toggleMute();
                 }
             }
-            else if ((e.key == Crafty.keys.DOWN_ARROW || e.key == Crafty.keys.S) && Crafty('Prophet').vy == 0 && Crafty('Prophet')) {
-                var prophet = Crafty('Prophet');
-                prophet.vx = 0;
-                prophet.disableControl();
+            else if (game_state.scene_type == 'level' && (e.key == Crafty.keys.DOWN_ARROW || e.key == Crafty.keys.S) && Crafty('Prophet').vy == 0) {
+                Crafty('Prophet').start_casting();
             }
         },
 
@@ -798,12 +796,7 @@ function initComponents()
             if (game_state.scene_type == 'level' && e.key == Crafty.keys.Z) {
                 zoomer.handleZoomPress(false, false);
             }else if ((e.key == Crafty.keys.DOWN_ARROW || e.key == Crafty.keys.S) && !Crafty('Prophet').dying) {
-                if (Crafty('Prophet').NewDirection == 1){
-                  Crafty('Prophet').animate('stand_right', -1);
-                }else {
-                    Crafty('Prophet').animate('stand_left', -1);
-                }
-                Crafty('Prophet').enableControl();
+                Crafty('Prophet').stop_casting();
             }
         }
     });
@@ -1024,12 +1017,12 @@ function initComponents()
     Crafty.c('Enemy', {
         init: function() {
             this.addComponent('2D, DOM, enemy_stand_right, SpriteAnimation, DirectionalAnimation');
-            addReel(this, 'stand_right', 4, 12, 18);
-            addReel(this, 'stand_left', 5, 12, 18);
-            addReel(this, 'attack_right', 4, 19, 27);
-            addReel(this, 'attack_left', 5, 19, 27);
-            addReel(this, 'dying_right', 4, 28, 34);
-            addReel(this, 'dying_left', 5, 28, 34);
+            addReel(this, 'stand_right', 4, 11, 17);
+            addReel(this, 'stand_left', 5, 11, 17);
+            addReel(this, 'attack_right', 4, 18, 26);
+            addReel(this, 'attack_left', 5, 18, 26);
+            addReel(this, 'dying_right', 4, 27, 33);
+            addReel(this, 'dying_left', 5, 27, 33);
             this.z = zorders.enemies;
 
             this.bind('AnimationEnd', this.onAnimationFinalized);
@@ -1576,8 +1569,8 @@ function initComponents()
             addReel(this, 'converting_right', 0, 19, 28);
             addReel(this, 'dying_in_trap_right', 0, 29, 37);
             addReel(this, 'dying_in_lava_right', 2, 0, 32);
-            addReel(this, 'start_casting_right', 4, 0, 3);
-            addReel(this, 'casting_right', 4, 4, 11);
+            addReel(this, 'start_casting_right', 4, 0, 2);
+            addReel(this, 'casting_right', 4, 3, 10);
             addReel(this, 'stand_left', 1, 0, 9);
             addReel(this, 'walk_left', 1, 10, 16);
             addReel(this, 'jump_left', 1, 17, 17);
@@ -1585,8 +1578,8 @@ function initComponents()
             addReel(this, 'converting_left', 1, 19, 28);
             addReel(this, 'dying_in_trap_left', 1, 29, 37);
             addReel(this, 'dying_in_lava_left', 3, 0, 32);
-            addReel(this, 'start_casting_right', 5, 0, 3);
-            addReel(this, 'casting_right', 5, 4, 11);
+            addReel(this, 'start_casting_left', 5, 0, 2);
+            addReel(this, 'casting_left', 5, 3, 10);
             this.dir_animate('stand', -1);
             this.setupMovement();
 
@@ -1600,6 +1593,7 @@ function initComponents()
             this.bind('Died', this.onProphetDied);
             this.bind('CheckLanding', this.onCheckLanding);
             this.onHit('Enemy', this.onHitEnemy);
+            this.bind('AnimationEnd', this.onAnimationDone);
 
             this.bind('Move', this.onMove);
 
@@ -1611,6 +1605,28 @@ function initComponents()
             this.typeStr = 'Prophet';
 
             this.nextCollectible = null;
+            this.is_casting = false;
+        },
+
+        onAnimationDone: function(data) {
+            if (data.id == 'start_casting_' + this.direction) {
+                this.dir_animate('casting', -1);
+            }
+        },
+
+        start_casting: function() {
+            if (this.is_casting) return;
+            this.is_casting = true;
+            this.vx = 0;
+            this.disableControl();
+            this.dir_animate('start_casting', 1);
+        },
+
+        stop_casting: function() {
+            if (!this.is_casting) return;
+            this.enableControl();
+            this.dir_animate('stand', -1);
+            this.is_casting = false;
         },
 
         setupMovement: function() {
@@ -1907,12 +1923,11 @@ function initComponents()
             if (Crafty.s('Keyboard').isKeyDown('DOWN_ARROW')  && Crafty('Prophet').vy == 0) {
                 actual_gap = actual_speed;
                 if (actual_gap > 0){
-                    Crafty('Prophet').animate('casting_right', -1);
+                    Crafty('Prophet').start_casting();
                 }
             }
             if (this.x < prevCharX - actual_gap) {
                 this.shift(actual_speed, 0, 0, 0);
-                // TODO(yoni): fix animations
                 this.setNewDirectionX(1);
             } else if (this.x > prevCharX + actual_gap) {
                 this.shift(-1 * actual_speed, 0, 0, 0);
