@@ -745,7 +745,11 @@ function initComponents()
                     Crafty('Prophet').die('dying_in_lava', false, true);
                     Crafty('ProphetText').refreshText(texts.restart_level);
                 }
-            }else if ((e.key == Crafty.keys.DOWN_ARROW || e.key == Crafty.keys.S) && Crafty('Prophet').vy == 0 && Crafty('Prophet')) {
+                else if (e.key == Crafty.keys.M) {
+                    Crafty.audio.toggleMute();
+                }
+            }
+            else if ((e.key == Crafty.keys.DOWN_ARROW || e.key == Crafty.keys.S) && Crafty('Prophet').vy == 0 && Crafty('Prophet')) {
                 var prophet = Crafty('Prophet');
                 prophet.vx = 0;
                 prophet.disableControl();
