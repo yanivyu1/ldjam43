@@ -64,6 +64,8 @@ var assets = function() {
             "Female-converted": ["assets/sound_fx/converted_female.mp3"],
             // SFX - prophet
             "Prophet-lava": ["assets/sound_fx/prophet_fired.mp3"],
+            // SFX - level
+            "Win-signal": ["assets/sound_fx/win_signal.mp3"]
         }
     };
 }();
@@ -503,7 +505,7 @@ function initScenes()
               .image('assets/gfx/bg-intro.png')
               .addComponent('FullScreenImage');
         Crafty.audio.stop();
-        Crafty.audio.play('bg-intro');
+        Crafty.audio.play('bg-intro', 0.75);
     });
 
     Crafty.defineScene('loading', function() {
@@ -1447,7 +1449,7 @@ function initComponents()
 
         onTouchLava: function(hitData, isFirstTouch) {
             if (this.typeStr && isFirstTouch) {
-                Crafty.audio.play(this.typeStr + '-lava');
+                Crafty.audio.play(this.typeStr + '-lava', 1);
             }
             this.die('dying_in_lava', false, false);
         },
@@ -1776,7 +1778,7 @@ function initComponents()
             }
 
             if (this.typeStr) {
-                Crafty.audio.play(this.typeStr + '-converted');
+                Crafty.audio.play(this.typeStr + '-converted', 1);
             }
             this.being_converted = true;
             this.being_converted_cb = callback;
@@ -1929,6 +1931,8 @@ function initComponents()
             if (win_lose == 'win') {
                 Crafty('ProphetText').refreshText(texts.win);
                 prophet.winning = true;
+                Crafty.audio.stop(this.typeStr + '-lava');
+                Crafty.audio.play('Win-signal', 1, 1);
 
             }
             else if (win_lose == 'lose') {
