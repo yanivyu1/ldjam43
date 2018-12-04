@@ -608,7 +608,7 @@ function initScenes()
         })
     }
 
-    defineCutscene('ending', 'ending2', 5500, {
+    defineCutscene('ending', 'ending2', 4500, {
         'background': 'assets/gfx/endscreen.png',
         'audio': 'ending',
     });
@@ -1883,8 +1883,10 @@ function initComponents()
 				var counter = Crafty('Counter');
 				if (counter.count == counter.total) {
 					switchToNextWorld();
+					return;
 				} else {
 					switchToNextLevel();
+					return;
 				}
 			}
 			restartLevel();
