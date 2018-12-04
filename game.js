@@ -65,7 +65,9 @@ var assets = function() {
             // SFX - prophet
             "Prophet-lava": ["assets/sound_fx/prophet_fired.mp3"],
             // SFX - level
-            "Win-signal": ["assets/sound_fx/win_signal.mp3"]
+            "Win-signal": ["assets/sound_fx/win_signal.mp3"],
+            "lava-freeze": ["assets/sound_fx/lava_freeze.mp3"],
+            "lava-unfreeze": ["assets/sound_fx/lava_unfreeze.mp3"]
         }
     };
 }();
@@ -695,6 +697,7 @@ var LavaAndIceManager = {
 
         // Start flood-filling
         if (initial_positions.length > 0) {
+            Crafty.audio.play("lava-freeze");
             setTimeout(function() {
                 LavaAndIceManager.onFloodFillLavaToIce(LavaAndIceManager.generation, initial_positions);
             }, consts.ice_lava_flood_fill_timeout);
@@ -717,6 +720,7 @@ var LavaAndIceManager = {
 
         // Start flood-filling
         if (initial_positions.length > 0) {
+            Crafty.audio.play("lava-unfreeze");
             setTimeout(function() {
                 LavaAndIceManager.onFloodFillIceToLava(LavaAndIceManager.generation, initial_positions);
             }, consts.ice_lava_flood_fill_timeout);
