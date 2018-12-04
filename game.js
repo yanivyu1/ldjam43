@@ -771,6 +771,7 @@ function initComponents()
                     switchToPrevLevel();
                 }
                 else if (e.key == Crafty.keys.R) {
+                    Crafty.audio.play('Prophet-lava');
                     Crafty('Prophet').die('dying_in_lava', false, true);
                     Crafty('ProphetText').refreshText(texts.restart_level);
                 }
