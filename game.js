@@ -366,7 +366,7 @@ function initScenes()
                 Crafty.audio.stop(prev_music_id);
             }
 
-            Crafty.audio.play('bg-world' + world_id, -1, 0.25);
+            Crafty.audio.play('bg-world' + world_id, -1, 0.5);
             game_state.playing_music_for_world = world_id;
         }
 
@@ -499,7 +499,7 @@ function initScenes()
               .image('assets/gfx/bg-intro.png')
               .addComponent('FullScreenImage');
         Crafty.audio.stop();
-        Crafty.audio.play('bg-intro', 0.5);
+        Crafty.audio.play('bg-intro', 0.75);
     });
 
     Crafty.defineScene('loading', function() {
@@ -1437,7 +1437,7 @@ function initComponents()
 
         onTouchLava: function(hitData, isFirstTouch) {
             if (this.typeStr && isFirstTouch) {
-                Crafty.audio.play(this.typeStr + '-lava', 0.7);
+                Crafty.audio.play(this.typeStr + '-lava', 1);
             }
             this.die('dying_in_lava', false, false);
         },
@@ -1766,7 +1766,7 @@ function initComponents()
             }
 
             if (this.typeStr) {
-                Crafty.audio.play(this.typeStr + '-converted', 0.7);
+                Crafty.audio.play(this.typeStr + '-converted', 1);
             }
             this.being_converted = true;
             this.being_converted_cb = callback;
