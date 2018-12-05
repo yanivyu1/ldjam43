@@ -790,7 +790,14 @@ var LavaAndIceManager = {
         }
     },
 
-    iceShrineTouched: function() {
+    iceShrineTouched: function(touchingEntity) {
+        if (!touchingEntity.has('Prophet')) {
+            if (hitDatas = Crafty('Prophet').hit('Shrine')) {
+                // Don't do anything if this is not a prophet, and the prophet hit a shrine.
+                return;
+            }
+        }
+
         if (!this.lava_gens) return;
 
         // Go through all the lava gens and turn them into ice gens
@@ -813,7 +820,14 @@ var LavaAndIceManager = {
         }
     },
 
-    lavaShrineTouched: function() {
+    lavaShrineTouched: function(touchingEntity) {
+        if (!touchingEntity.has('Prophet')) {
+            if (hitDatas = Crafty('Prophet').hit('Shrine')) {
+                // Don't do anything if this is not a prophet, and the prophet hit a shrine.
+                return;
+            }
+        }
+
         if (!this.ice_gens) return;
 
         // Go through all the ice gens and turn them into lava gens
@@ -1250,16 +1264,22 @@ function initComponents()
         }
     });
 
+    Crafty.c('Shrine', {
+        init: function() {
+            this.addComponent('2D, DOM');
+        }
+    });
+
     Crafty.c('IceShrine', {
         init: function() {
-            this.addComponent('2D, DOM, tile_iceshrine');
+            this.addComponent('Shrine, tile_iceshrine');
             this.z = zorders.generic_items;
         }
     });
 
     Crafty.c('LavaShrine', {
         init: function() {
-            this.addComponent('2D, DOM, tile_lavashrine');
+            this.addComponent('Shrine, tile_lavashrine');
             this.z = zorders.generic_items;
         }
     });
@@ -1485,8 +1505,11 @@ function initComponents()
 
             this.onHit('Lava', this.onTouchLava);
             this.onHit('Trap', this.onTouchTrap);
-            this.onHit('IceShrine', function() { LavaAndIceManager.iceShrineTouched(); });
-            this.onHit('LavaShrine', function() { LavaAndIceManager.lavaShrineTouched(); });
+
+            var self = this;
+
+            this.onHit('IceShrine', function() { LavaAndIceManager.iceShrineTouched(self); });
+            this.onHit('LavaShrine', function() { LavaAndIceManager.lavaShrineTouched(self); });
             this.bind('AnimationEnd', this.onAnimationEnd);
 
             this.onHit('Item', this.onHitItem);
