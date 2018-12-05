@@ -93,7 +93,7 @@ X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X	X
 																	Y												
 												M																	
 											Y	Y	Y							Y	Y	Y							
-												Y									Y				!If you made a mistake<br />press Ctrl+R or jump in<br />lava to try again.				
+												Y									Y				!If you made a mistake<br />press Shift+R or jump in<br />lava to try again.
 																													X
 							X	X	X	X																			X
 	P			m		X	X	X	X	X	X														0/2			X	X
@@ -141,7 +141,7 @@ Y	Y	X	X	X	X	X	X	X	X	X	X	X	X	X	L	L	L	X	X	X	X	X	X	X	X	X	X	X	X
 																													
 																													
 																													
-	P						!Hold Z to zoom out.<br />Press Ctrl+Z to stay zoomed out.<br />Don't forget about calling your followers!																						
+	P						!Hold Z to zoom out.<br />Press Shift+Z to stay zoomed out.<br />Don't forget about calling your followers!
 X	X	X		m																									
 X	X	X	X	X	X	X	X				X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	
 X	X	X	X	X	X	X								X	X	X						X	X	X	X	X			
@@ -204,7 +204,7 @@ X							X				X							X				X							X
 X							X				X							X				X							X
 X											X																		X
 X	X												X	X	X	X											X	X	X
-X							X	M						!Wana-Haya'yuh is not a<br />spike trap god…				X	N			X							X
+X							X	M						!Wana-Haya'yuh is not a<br />spike trap godï¿½				X	N			X							X
 X							X	X	X	X	X	~	~	~	~	~	~	X	X		X	X	M				0/1		X
 X	X	X		X	X	X	X				X	X	X	X	X	X	X	X		!...Nor a fall from height god		X	X	X			X	X	X
 		X			X																			X			X		
@@ -215,7 +215,7 @@ X	X	X		X	X	X	X				X	X	X	X	X	X	X	X		!...Nor a fall from height god		X	X	X			X	X	X
 		X		X	X																			X			X		
 		X			X																			X	L	L	X		
 					X																			X	L	L	X		
-		X	X		X	!Oooh… Pointy!																		X	L	L	X		
+		X	X		X	!Ooohï¿½ Pointy!																		X	L	L	X		
 	P	X	~	~	X																			X	L	L	X		
 Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y				Y	Y	Y	L	L	Y	Y	Y
 																													
@@ -414,7 +414,7 @@ Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	X	X	X	X	L	L	L	X	X	X	X	Y	Y	Y
 							F			^					F			L	X	X	X	X	X						
 							H								F			L	X	X	X	X	X						
 							H								F			L	X	X	X	X	X						
-					F		H			!These faces look familiar…					F			L	X	X	X	X	X						
+					F		H			!These faces look familiarï¿½					F			L	X	X	X	X	X						
 					F		H								F			L	X	X	X	X	X						
 	P				F		H		m						F			L	X	X	X	X	X						
 Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	L	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y	Y
