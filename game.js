@@ -118,6 +118,7 @@ var consts = {
     wait_for_death: 2000,
     wait_for_skip: 500,
     prophet_text_timeout: 5000,
+    believer_counter_timeout: 2500,
     title_text_timeout: 5000,
     ice_lava_flood_fill_timeout: 250,
     inventory_gap_y: 10
@@ -463,6 +464,7 @@ function initScenes()
                 var prophet = addProphet(objects[i].x, objects[i].y);
                 Crafty.viewport.follow(prophet, 0, 0);
                 Crafty.e('ProphetText');
+                Crafty.e('BelieverCounter');
                 addLevelTitle(objects[i].x, objects[i].y,
                     'Level ' + stage.name, stage.title);
             }
@@ -935,14 +937,19 @@ function initComponents()
 
     Crafty.c('FloatingOverProphet', {
         init: function() {
+            this.yoffset = 0;
             this.bind('UpdateFrame', this.positionOverProphet);
+        },
+        
+        setYOffset: function(yoff) {
+            this.yoffset = yoff;
         },
 
         positionOverProphet: function() {
             var prophet = Crafty('Prophet');
             this.attr({
                 x: prophet.x + (prophet.w - this.w) / 2,
-                y: prophet.y - this.h - consts.tile_height / 2
+                y: prophet.y - this.h - consts.tile_height / 2 + this.yoffset
             });
         }
     });
@@ -986,6 +993,33 @@ function initComponents()
                     prophet_text.text('');
                 }
             }, consts.prophet_text_timeout);
+        }
+    });
+
+    Crafty.c('BelieverCounter', {
+        init: function() {
+            this._size = '10px';
+            this._guess_size = 15;
+
+            this.addComponent('AmigaText, FloatingOverProphet');
+            this.setYOffset(14);
+            this.css('font-size', '8px');
+            this.textAlign('center');
+            this.z = zorders.prophet_text;
+        },
+
+        refreshText: function(text) {
+            // Guess the width and height... Too much width is fine since we center it.
+            this.attr({w: this._guess_size * text.length, h: this._guess_size});
+            this.text(text);
+            this.positionOverProphet();
+
+            var believer_counter = this;
+            setTimeout(function() {
+                if (believer_counter.text() == text) {
+                    believer_counter.text('');
+                }
+            }, consts.believer_counter_timeout);
         }
     });
 
@@ -2026,6 +2060,7 @@ function initComponents()
             this.nextCharacter = null;
             this.prevCharacter = null;
 
+            updateBelieverCounter();
             checkStuckConditions();
         },
 
@@ -2094,6 +2129,7 @@ function initComponents()
         onTrueBelieverDying: function() {
             var prophet = Crafty('Prophet');
             prophet.num_dying_believers++;
+            updateBelieverCounter();
             var win_lose = checkWinLoseConditions(true);
 
             if (win_lose == 'win') {
@@ -2288,6 +2324,15 @@ function checkWinLoseConditions(allow_dying_believers)
     return null;
 }
 
+function updateBelieverCounter()
+{
+    var prophet = Crafty('Prophet');
+    var trueBelievers = Crafty('TrueBeliever');
+    var living_believers = trueBelievers.length - prophet.num_dying_believers;
+    
+    Crafty('BelieverCounter').refreshText('' + living_believers);
+}
+
 function checkStuckConditions()
 {
     var prophet = Crafty('Prophet');
@@ -2296,6 +2341,7 @@ function checkStuckConditions()
     var counter = Crafty('Counter');
     var living_believers = trueBelievers.length - prophet.num_dying_believers;
     var num_unbelievers = unbelievers.length;
+    
 
     // Remaining number of living followers + unbelievers is less than remaining in the counter
     if (living_believers + num_unbelievers < counter.total - counter.count) {
