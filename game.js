@@ -173,6 +173,12 @@ function addReel(entity, anim_name, row, first_col, last_col)
     entity.reel(anim_name, 1000 * (Math.abs(last_col - first_col) + 1) / consts.anim_fps, frames);
 }
 
+function addLeftRightReels(entity, anim_name_base, row_base, first_col, last_col)
+{
+    addReel(entity, anim_name_base + '_right', row_base,     first_col, last_col);
+    addReel(entity, anim_name_base + '_left',  row_base + 1, first_col, last_col);
+}
+
 function addEntity(entity_type, tiles_x, tiles_y, tile_type)
 {
     return Crafty.e(entity_type, tile_type)
@@ -1143,12 +1149,9 @@ function initComponents()
     Crafty.c('Enemy', {
         init: function() {
             this.addComponent('2D, DOM, enemy_stand_right, SpriteAnimation, DirectionalAnimation');
-            addReel(this, 'stand_right', 6, 0, 6);
-            addReel(this, 'stand_left', 7, 0, 6);
-            addReel(this, 'attack_right', 6, 7, 15);
-            addReel(this, 'attack_left', 7, 7, 15);
-            addReel(this, 'dying_right', 6, 16, 22);
-            addReel(this, 'dying_left', 7, 16, 22);
+            addLeftRightReels(this, 'stand', 6, 0, 6);
+            addLeftRightReels(this, 'attack', 6, 7, 15);
+            addLeftRightReels(this, 'dying', 6, 16, 22);
             this.z = zorders.enemies;
 
             this.bind('AnimationEnd', this.onAnimationFinalized);
@@ -1697,28 +1700,17 @@ function initComponents()
         init: function() {
             this.addComponent('Character, HasConvertingPowers, prophet_stand_right, Multiway');
             this.setGender('p');
-            addReel(this, 'stand_right', 0, 0, 9);
-            addReel(this, 'walk_right', 0, 10, 16);
-            addReel(this, 'jump_right', 0, 17, 17);
-            addReel(this, 'fall_right', 0, 18, 18);
-            addReel(this, 'converting_right', 0, 19, 28);
-            addReel(this, 'dying_in_trap_right', 0, 29, 37);
-            addReel(this, 'dying_in_lava_right', 2, 0, 32);
-            addReel(this, 'start_casting_right', 4, 0, 2);
-            addReel(this, 'casting_right', 4, 3, 10);
-            addReel(this, 'start_waiting_right', 4, 11, 16);
-            addReel(this, 'waiting_right', 4, 17, 33);
-            addReel(this, 'stand_left', 1, 0, 9);
-            addReel(this, 'walk_left', 1, 10, 16);
-            addReel(this, 'jump_left', 1, 17, 17);
-            addReel(this, 'fall_left', 1, 18, 18);
-            addReel(this, 'converting_left', 1, 19, 28);
-            addReel(this, 'dying_in_trap_left', 1, 29, 37);
-            addReel(this, 'dying_in_lava_left', 3, 0, 32);
-            addReel(this, 'start_casting_left', 5, 0, 2);
-            addReel(this, 'casting_left', 5, 3, 10);
-            addReel(this, 'start_waiting_right', 5, 11, 16);
-            addReel(this, 'waiting_right', 5, 17, 33);
+            addLeftRightReels(this, 'stand', 0, 0, 9);
+            addLeftRightReels(this, 'walk', 0, 10, 16);
+            addLeftRightReels(this, 'jump', 0, 17, 17);
+            addLeftRightReels(this, 'fall', 0, 18, 18);
+            addLeftRightReels(this, 'converting', 0, 19, 28);
+            addLeftRightReels(this, 'dying_in_trap', 0, 29, 37);
+            addLeftRightReels(this, 'dying_in_lava', 2, 0, 32);
+            addLeftRightReels(this, 'start_casting', 4, 0, 2);
+            addLeftRightReels(this, 'casting', 4, 3, 10);
+            addLeftRightReels(this, 'start_waiting', 4, 11, 16);
+            addLeftRightReels(this, 'waiting', 4, 17, 33);
             this.dir_animate('stand', -1);
             this.setupMovement();
 
@@ -1990,12 +1982,9 @@ function initComponents()
             // Unbelievers can't fall, but Gravity triggers a fall direction for new
             // entities before it figures out that they're on the ground.
             // So we have to make fall animations which are just copies of stand animations.
-            addReel(this, 'stand_right', 8, 0, 6);
-            addReel(this, 'fall_right', 8, 0, 6); // copy stand animation
-            addReel(this, 'being_converted_right', 8, 7, 15);
-            addReel(this, 'stand_left', 9, 0, 6);
-            addReel(this, 'fall_left', 9, 0, 6); // copy stand animation
-            addReel(this, 'being_converted_left', 9, 7, 15);
+            addLeftRightReels(this, 'stand', 8, 0, 6);
+            addLeftRightReels(this, 'fall', 8, 0, 6); // copy stand animation
+            addLeftRightReels(this, 'being_converted', 8, 7, 15);
 
             this.believer_type = 1;
 
@@ -2011,12 +2000,9 @@ function initComponents()
             // Unbelievers can't fall, but Gravity triggers a fall direction for new
             // entities before it figures out that they're on the ground.
             // So we have to make fall animations which are just copies of stand animations.
-            addReel(this, 'stand_right', 12, 0, 6);
-            addReel(this, 'fall_right', 12, 0, 6); // copy stand animation
-            addReel(this, 'being_converted_right', 12, 7, 15);
-            addReel(this, 'stand_left', 13, 0, 6);
-            addReel(this, 'fall_left', 13, 0, 6); // copy stand animation
-            addReel(this, 'being_converted_left', 13, 7, 15);
+            addLeftRightReels(this, 'stand', 12, 0, 6);
+            addLeftRightReels(this, 'fall', 12, 0, 6); // copy stand animation
+            addLeftRightReels(this, 'being_converted', 12, 7, 15);
 
             this.believer_type = 2;
 
@@ -2143,20 +2129,13 @@ function initComponents()
         init: function() {
             this.addComponent('TrueBeliever');
             this.setGender('m');
-            addReel(this, 'stand_right', 8, 16, 22);
-            addReel(this, 'walk_right', 8, 23, 27);
-            addReel(this, 'converting_right', 8, 28, 36);
-            addReel(this, 'fall_right', 8, 37, 37);
-            addReel(this, 'dying_in_lava_right', 10, 0, 20);
-            addReel(this, 'dying_in_trap_right', 10, 21, 27);
-            addReel(this, 'dying_in_zap_right', 10, 28, 35);
-            addReel(this, 'stand_left', 9, 16, 22);
-            addReel(this, 'walk_left', 9, 23, 27);
-            addReel(this, 'converting_left', 9, 28, 36);
-            addReel(this, 'fall_left', 9, 37, 37);
-            addReel(this, 'dying_in_lava_left', 11, 0, 20);
-            addReel(this, 'dying_in_trap_left', 11, 21, 27);
-            addReel(this, 'dying_in_zap_left', 11, 28, 35);
+            addLeftRightReels(this, 'stand', 8, 16, 22);
+            addLeftRightReels(this, 'walk', 8, 23, 27);
+            addLeftRightReels(this, 'converting', 8, 28, 36);
+            addLeftRightReels(this, 'fall', 8, 37, 37);
+            addLeftRightReels(this, 'dying_in_lava', 10, 0, 20);
+            addLeftRightReels(this, 'dying_in_trap', 10, 21, 27);
+            addLeftRightReels(this, 'dying_in_zap', 10, 28, 35);
 
             this.typeStr = 'Male';
         }
@@ -2166,20 +2145,13 @@ function initComponents()
         init: function() {
             this.addComponent('TrueBeliever');
             this.setGender('w');
-            addReel(this, 'stand_right', 12, 16, 22);
-            addReel(this, 'walk_right', 12, 23, 27);
-            addReel(this, 'converting_right', 12, 28, 36);
-            addReel(this, 'fall_right', 12, 37, 37);
-            addReel(this, 'dying_in_lava_right', 14, 0, 20);
-            addReel(this, 'dying_in_trap_right', 14, 21, 27);
-            addReel(this, 'dying_in_zap_right', 14, 28, 35);
-            addReel(this, 'stand_left', 13, 16, 22);
-            addReel(this, 'walk_left', 13, 23, 27);
-            addReel(this, 'converting_left', 13, 28, 36);
-            addReel(this, 'fall_left', 13, 37, 37);
-            addReel(this, 'dying_in_lava_left', 15, 0, 20);
-            addReel(this, 'dying_in_trap_left', 15, 21, 27);
-            addReel(this, 'dying_in_zap_left', 15, 28, 35);
+            addLeftRightReels(this, 'stand', 12, 16, 22);
+            addLeftRightReels(this, 'walk', 12, 23, 27);
+            addLeftRightReels(this, 'converting', 12, 28, 36);
+            addLeftRightReels(this, 'fall', 12, 37, 37);
+            addLeftRightReels(this, 'dying_in_lava', 14, 0, 20);
+            addLeftRightReels(this, 'dying_in_trap', 14, 21, 27);
+            addLeftRightReels(this, 'dying_in_zap', 14, 28, 35);
 
             this.typeStr = 'Female';
         }
