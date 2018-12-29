@@ -1,33 +1,33 @@
 var assets = function() {
     var sprite_map = {
         prophet_stand_right: [0, 0],
-        unbeliever_stand_right: [0, 6],
-        true_believer_stand_right: [16, 6],
-        tile_lava: [0, 14],
-        tile_target: [0, 14],
-        tile_floor: [12, 14],
-        tile_trap: [13, 14],
-        enemy_stand_right: [11, 4],
-        tile_dgate: [35, 8],
-        tile_mblock: [19, 14],
-        tile_wblock: [20, 14],
-        tile_ice: [21, 14],
-        tile_iceshrine: [24, 14],
-        tile_lavashrine: [25, 14],
-        tile_key1: [26, 14],
-        tile_door1: [27, 14],
-        tile_key2: [28, 14],
-        tile_door2: [29, 14],
-        tile_key3: [30, 14],
-        tile_door3: [31, 14],
-        tile_switch: [32, 14],
-        tile_amulet: [33, 14],
+        unbeliever_stand_right: [0, 8],
+        true_believer_stand_right: [16, 8],
+        tile_lava: [0, 16],
+        tile_target: [14, 37],
+        tile_floor: [12, 16],
+        tile_trap: [13, 16],
+        enemy_stand_right: [0, 6],
+        tile_dgate: [35, 10],
+        tile_mblock: [19, 16],
+        tile_wblock: [20, 16],
+        tile_ice: [21, 16],
+        tile_iceshrine: [24, 16],
+        tile_lavashrine: [25, 16],
+        tile_key1: [26, 16],
+        tile_door1: [27, 16],
+        tile_key2: [28, 16],
+        tile_door2: [29, 16],
+        tile_key3: [30, 16],
+        tile_door3: [31, 16],
+        tile_switch: [32, 16],
+        tile_amulet: [33, 16],
     };
 
     for (var row = 0; row < 5; row++) {
         for (var col = 0; col < 40; col++) {
             var wall_num = row * 40 + col;
-            var wall_pos = [col, row + 15];
+            var wall_pos = [col, row + 17];
             sprite_map['tile_Wall' + wall_num] = wall_pos;
         }
     }
@@ -173,6 +173,12 @@ function addReel(entity, anim_name, row, first_col, last_col)
     }
 
     entity.reel(anim_name, 1000 * (Math.abs(last_col - first_col) + 1) / consts.anim_fps, frames);
+}
+
+function addLeftRightReels(entity, anim_name_base, row_base, first_col, last_col)
+{
+    addReel(entity, anim_name_base + '_right', row_base,     first_col, last_col);
+    addReel(entity, anim_name_base + '_left',  row_base + 1, first_col, last_col);
 }
 
 function addEntity(entity_type, tiles_x, tiles_y, tile_type)
@@ -1197,8 +1203,8 @@ function initComponents()
     Crafty.c('Lava', {
         init: function() {
             this.addComponent('2D, DOM, tile_lava, SpriteAnimation');
-            addReel(this, 'shallow', 14, 0, 5);
-            addReel(this, 'deep', 14, 6, 11);
+            addReel(this, 'shallow', 16, 0, 5);
+            addReel(this, 'deep', 16, 6, 11);
             this.z = zorders.walls;
         },
 
@@ -1212,9 +1218,9 @@ function initComponents()
     Crafty.c('Trap', {
         init: function() {
             this.addComponent('2D, DOM, tile_trap, SpriteAnimation');
-            addReel(this, 'silent', 14, 13, 13);
-            addReel(this, 'deadly', 14, 13, 18);
-            addReel(this, 'reverse_deadly', 14, 18, 13);
+            addReel(this, 'silent', 16, 13, 13);
+            addReel(this, 'deadly', 16, 13, 18);
+            addReel(this, 'reverse_deadly', 16, 18, 13);
             this.offsetBoundary(-2, -16, -2, 0);
 
             this.animate('silent', -1);
@@ -1247,12 +1253,9 @@ function initComponents()
     Crafty.c('Enemy', {
         init: function() {
             this.addComponent('2D, DOM, enemy_stand_right, SpriteAnimation, DirectionalAnimation');
-            addReel(this, 'stand_right', 4, 11, 17);
-            addReel(this, 'stand_left', 5, 11, 17);
-            addReel(this, 'attack_right', 4, 18, 26);
-            addReel(this, 'attack_left', 5, 18, 26);
-            addReel(this, 'dying_right', 4, 27, 33);
-            addReel(this, 'dying_left', 5, 27, 33);
+            addLeftRightReels(this, 'stand', 6, 0, 6);
+            addLeftRightReels(this, 'attack', 6, 7, 15);
+            addLeftRightReels(this, 'dying', 6, 16, 22);
             this.z = zorders.enemies;
 
             this.bind('AnimationEnd', this.onAnimationFinalized);
@@ -1287,22 +1290,22 @@ function initComponents()
         init: function() {
             // TODO: Actually implement this
             this.addComponent('Wall, tile_dgate');
-            // addReel(this, 'down_closed', 6, 35, 35);
-            // addReel(this, 'down_open', 6, 35, 39);
-            // addReel(this, 'down_opened', 6, 39, 39);
-            // addReel(this, 'down_close', 6, 39, 35);
-            // addReel(this, 'up_closed', 7, 35, 35);
-            // addReel(this, 'up_open', 7, 35, 39);
-            // addReel(this, 'up_opened', 7, 39, 39);
-            // addReel(this, 'up_close', 7, 39, 35);
-            // addReel(this, 'left_closed', 10, 35, 35);
-            // addReel(this, 'left_open', 10, 35, 39);
-            // addReel(this, 'left_opened', 10, 39, 39);
-            // addReel(this, 'left_close', 10, 39, 35);
-            // addReel(this, 'right_closed', 11, 35, 35);
-            // addReel(this, 'right_open', 11, 35, 39);
-            // addReel(this, 'right_opened', 11, 39, 39);
-            // addReel(this, 'right_close', 1, 39, 35);
+            // addReel(this, 'down_closed', 8, 35, 35);
+            // addReel(this, 'down_open', 8, 35, 39);
+            // addReel(this, 'down_opened', 8, 39, 39);
+            // addReel(this, 'down_close', 8, 39, 35);
+            // addReel(this, 'up_closed', 9, 35, 35);
+            // addReel(this, 'up_open', 9, 35, 39);
+            // addReel(this, 'up_opened', 9, 39, 39);
+            // addReel(this, 'up_close', 9, 39, 35);
+            // addReel(this, 'left_closed', 12, 35, 35);
+            // addReel(this, 'left_open', 12, 35, 39);
+            // addReel(this, 'left_opened', 12, 39, 39);
+            // addReel(this, 'left_close', 12, 39, 35);
+            // addReel(this, 'right_closed', 13, 35, 35);
+            // addReel(this, 'right_open', 13, 35, 39);
+            // addReel(this, 'right_opened', 13, 39, 39);
+            // addReel(this, 'right_close', 13, 39, 35);
 
             this.z = zorders.enemies;
         },
@@ -1329,8 +1332,8 @@ function initComponents()
     Crafty.c('Ice', {
         init: function() {
             this.addComponent('2D, DOM, tile_ice, SpriteAnimation, move_blocking_for_m, move_blocking_for_w, move_blocking_for_p');
-            addReel(this, 'shallow', 14, 21, 21);
-            addReel(this, 'deep', 14, 22, 22);
+            addReel(this, 'shallow', 16, 21, 21);
+            addReel(this, 'deep', 16, 22, 22);
             this.ice_type = null;
             this.associated_platform = null;
             this.z = zorders.walls;
@@ -1850,24 +1853,17 @@ function initComponents()
         init: function() {
             this.addComponent('Character, HasConvertingPowers, prophet_stand_right, Multiway');
             this.setGender('p');
-            addReel(this, 'stand_right', 0, 0, 9);
-            addReel(this, 'walk_right', 0, 10, 16);
-            addReel(this, 'jump_right', 0, 17, 17);
-            addReel(this, 'fall_right', 0, 18, 18);
-            addReel(this, 'converting_right', 0, 19, 28);
-            addReel(this, 'dying_in_trap_right', 0, 29, 37);
-            addReel(this, 'dying_in_lava_right', 2, 0, 32);
-            addReel(this, 'start_casting_right', 4, 0, 2);
-            addReel(this, 'casting_right', 4, 3, 10);
-            addReel(this, 'stand_left', 1, 0, 9);
-            addReel(this, 'walk_left', 1, 10, 16);
-            addReel(this, 'jump_left', 1, 17, 17);
-            addReel(this, 'fall_left', 1, 18, 18);
-            addReel(this, 'converting_left', 1, 19, 28);
-            addReel(this, 'dying_in_trap_left', 1, 29, 37);
-            addReel(this, 'dying_in_lava_left', 3, 0, 32);
-            addReel(this, 'start_casting_left', 5, 0, 2);
-            addReel(this, 'casting_left', 5, 3, 10);
+            addLeftRightReels(this, 'stand', 0, 0, 9);
+            addLeftRightReels(this, 'walk', 0, 10, 16);
+            addLeftRightReels(this, 'jump', 0, 17, 17);
+            addLeftRightReels(this, 'fall', 0, 18, 18);
+            addLeftRightReels(this, 'converting', 0, 19, 28);
+            addLeftRightReels(this, 'dying_in_trap', 0, 29, 37);
+            addLeftRightReels(this, 'dying_in_lava', 2, 0, 32);
+            addLeftRightReels(this, 'start_casting', 4, 0, 2);
+            addLeftRightReels(this, 'casting', 4, 3, 10);
+            addLeftRightReels(this, 'start_waiting', 4, 11, 16);
+            addLeftRightReels(this, 'waiting', 4, 17, 33);
             this.dir_animate('stand', -1);
             this.setupMovement();
 
@@ -1969,7 +1965,7 @@ function initComponents()
                     this.y -= this.dy;
                     this.y = Math.floor(this.y) - 1;
                     this.vy = 0;
-                } else if (this.vy == 0) {
+                } else if (this.vy == 0 && this.vx == 0) {
                     this.y = Math.floor(this.y) - 1;
                 }
             }
@@ -2059,7 +2055,7 @@ function initComponents()
                 this.y -= this.dy;
                 this.y = Math.floor(this.y) - 1;
                 this.vy = 0;
-            }else if (this.vy == 0) {
+            }else if (this.vy > consts.prophet_jump_speed) {
                 this.y = Math.floor(this.y) - 1;
             }
         },
@@ -2176,12 +2172,9 @@ function initComponents()
             // Unbelievers can't fall, but Gravity triggers a fall direction for new
             // entities before it figures out that they're on the ground.
             // So we have to make fall animations which are just copies of stand animations.
-            addReel(this, 'stand_right', 6, 0, 6);
-            addReel(this, 'fall_right', 6, 0, 6); // copy stand animation
-            addReel(this, 'being_converted_right', 6, 7, 15);
-            addReel(this, 'stand_left', 7, 0, 6);
-            addReel(this, 'fall_left', 7, 0, 6); // copy stand animation
-            addReel(this, 'being_converted_left', 7, 7, 15);
+            addLeftRightReels(this, 'stand', 8, 0, 6);
+            addLeftRightReels(this, 'fall', 8, 0, 6); // copy stand animation
+            addLeftRightReels(this, 'being_converted', 8, 7, 15);
 
             this.believer_type = 1;
 
@@ -2197,12 +2190,9 @@ function initComponents()
             // Unbelievers can't fall, but Gravity triggers a fall direction for new
             // entities before it figures out that they're on the ground.
             // So we have to make fall animations which are just copies of stand animations.
-            addReel(this, 'stand_right', 10, 0, 6);
-            addReel(this, 'fall_right', 10, 0, 6); // copy stand animation
-            addReel(this, 'being_converted_right', 10, 7, 15);
-            addReel(this, 'stand_left', 11, 0, 6);
-            addReel(this, 'fall_left', 11, 0, 6); // copy stand animation
-            addReel(this, 'being_converted_left', 11, 7, 15);
+            addLeftRightReels(this, 'stand', 12, 0, 6);
+            addLeftRightReels(this, 'fall', 12, 0, 6); // copy stand animation
+            addLeftRightReels(this, 'being_converted', 12, 7, 15);
 
             this.believer_type = 2;
 
@@ -2329,20 +2319,13 @@ function initComponents()
         init: function() {
             this.addComponent('TrueBeliever');
             this.setGender('m');
-            addReel(this, 'stand_right', 6, 16, 22);
-            addReel(this, 'walk_right', 6, 23, 27);
-            addReel(this, 'converting_right', 6, 28, 36);
-            addReel(this, 'fall_right', 6, 37, 37);
-            addReel(this, 'dying_in_lava_right', 8, 0, 20);
-            addReel(this, 'dying_in_trap_right', 8, 21, 27);
-            addReel(this, 'dying_in_zap_right', 8, 28, 35);
-            addReel(this, 'stand_left', 7, 16, 22);
-            addReel(this, 'walk_left', 7, 23, 27);
-            addReel(this, 'converting_left', 7, 28, 36);
-            addReel(this, 'fall_left', 7, 37, 37);
-            addReel(this, 'dying_in_lava_left', 9, 0, 20);
-            addReel(this, 'dying_in_trap_left', 9, 21, 27);
-            addReel(this, 'dying_in_zap_left', 9, 28, 35);
+            addLeftRightReels(this, 'stand', 8, 16, 22);
+            addLeftRightReels(this, 'walk', 8, 23, 27);
+            addLeftRightReels(this, 'converting', 8, 28, 36);
+            addLeftRightReels(this, 'fall', 8, 37, 37);
+            addLeftRightReels(this, 'dying_in_lava', 10, 0, 20);
+            addLeftRightReels(this, 'dying_in_trap', 10, 21, 27);
+            addLeftRightReels(this, 'dying_in_zap', 10, 28, 35);
 
             this.typeStr = 'Male';
         }
@@ -2352,20 +2335,13 @@ function initComponents()
         init: function() {
             this.addComponent('TrueBeliever');
             this.setGender('w');
-            addReel(this, 'stand_right', 10, 16, 22);
-            addReel(this, 'walk_right', 10, 23, 27);
-            addReel(this, 'converting_right', 10, 28, 36);
-            addReel(this, 'fall_right', 10, 37, 37);
-            addReel(this, 'dying_in_lava_right', 12, 0, 20);
-            addReel(this, 'dying_in_trap_right', 12, 21, 27);
-            addReel(this, 'dying_in_zap_right', 12, 28, 35);
-            addReel(this, 'stand_left', 11, 16, 22);
-            addReel(this, 'walk_left', 11, 23, 27);
-            addReel(this, 'converting_left', 11, 28, 36);
-            addReel(this, 'fall_left', 11, 37, 37);
-            addReel(this, 'dying_in_lava_left', 13, 0, 20);
-            addReel(this, 'dying_in_trap_left', 13, 21, 27);
-            addReel(this, 'dying_in_zap_left', 13, 28, 35);
+            addLeftRightReels(this, 'stand', 12, 16, 22);
+            addLeftRightReels(this, 'walk', 12, 23, 27);
+            addLeftRightReels(this, 'converting', 12, 28, 36);
+            addLeftRightReels(this, 'fall', 12, 37, 37);
+            addLeftRightReels(this, 'dying_in_lava', 14, 0, 20);
+            addLeftRightReels(this, 'dying_in_trap', 14, 21, 27);
+            addLeftRightReels(this, 'dying_in_zap', 14, 28, 35);
 
             this.typeStr = 'Female';
         }

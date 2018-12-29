@@ -6,47 +6,49 @@ Row 0-1:
   17 Jump
   18 Fall
   19-28 Converting
-  29-37m Dying (trap)
+  29-37 Dying (trap)
 Row 2-3:
   0-32 Dying (lava)
 Row 4-5:
   0-2 Casting start
   3-10 Casting loop
+  11-16 Wait start
+  17-33 Wait loop
 
 Enemy
 =====
-Row 4-5
-  11-17 Idle
-  18-26 Attack
-  27-33 Dying (attacked)
+Row 6-7
+  0-6 Idle
+  7-15 Attack
+  16-22 Dying (attacked)
   
 Believer/Nonbeliever 1
 ======================
-Row 6-7:
+Row 8-9:
   0-6 Idle nonbeliever
   7-15 Converted
   16-22 Idle believer
   23-27 Walking believer
   28-36 Converting
   37 Falling
-Row 8-9:
+Row 10-11:
   0-20 Dying (lava)
   21-27 Dying (trap)
   28-34 Dying (lightning)
 
 Believer/Nonbeliever 2
 ======================
-Row 10-11:
-  Same as rows 6-7
 Row 12-13:
+  Same as rows 6-7
+Row 14-15:
   Same as rows 8-9
 
 Gates
 =====
-Row 6 DGate:
-Row 7 UGate:
-Row 10 LGate:
-Row 11 RGate:
+Row 8 DGate:
+Row 9 UGate:
+Row 12 LGate:
+Row 13 RGate:
   35 Closed
   35-39 Open
   39 Opened
@@ -54,7 +56,7 @@ Row 11 RGate:
 
 Other Objects
 =============
-Row 14:
+Row 16:
   0-5 Lava
   6-11 DeepLava
   12 Floor
@@ -79,13 +81,13 @@ Row 14:
 
 Walls
 =====
-Row 15:
-  Wall 0-39
-Row 16:
-  Wall 40-79
 Row 17:
-  Wall 80-119
+  Wall 0-39
 Row 18:
-  Wall 120-159
+  Wall 40-79
 Row 19:
+  Wall 80-119
+Row 20:
+  Wall 120-159
+Row 21:
   Wall 160-199
