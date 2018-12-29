@@ -2076,7 +2076,7 @@ function initComponents()
             checkStuckConditions();
         },
 
-        onHitEnemy: function(hitDatas) {
+        onHitEnemy: function(hitDatas, onFirstTouch) {
             var enemy = hitDatas[0].obj;
             if (this.x < enemy.x) {
                 enemy.direction = 'left';
@@ -2086,6 +2086,9 @@ function initComponents()
             }
 
             enemy.die();
+            if (onFirstTouch) {
+                Crafty.audio.play('Male-trap', 1);
+            }
             this.startConvertingAnimation();
         },
 
