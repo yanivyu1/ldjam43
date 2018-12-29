@@ -564,7 +564,7 @@ function initScenes()
               .image('assets/gfx/bg-intro.png')
               .addComponent('FullScreenImage');
         Crafty.audio.stop();
-        Crafty.audio.play('bg-intro', 0.75);
+        Crafty.audio.play('bg-intro', -1, 0.75);
     });
 
     Crafty.defineScene('intro_cutscene1', function() {
