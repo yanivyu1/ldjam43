@@ -1,3 +1,7 @@
+if (window.assets_url === undefined) {
+    window.assets_url = 'assets/';
+}
+
 var assets = function() {
     var sprite_map = {
         prophet_stand_right: [0, 0],
@@ -33,12 +37,12 @@ var assets = function() {
 
     return {
         "sprites": {
-            "assets/SpriteMap.png": {
+            "SpriteMap.png": {
                 tile: 32,
                 tileh: 32,
                 map: sprite_map
             },
-            "assets/gfx/cutscenes/intro/intro_animation.png": {
+            "gfx/cutscenes/intro/intro_animation.png": {
                 tile: 960,
                 tileh: 640,
                 map:  {
@@ -47,55 +51,55 @@ var assets = function() {
             }
         },
         "images": [
-            'assets/gfx/bg-intro.png',
-            'assets/gfx/bg-world1.png',
-            'assets/gfx/bg-world2.png',
-            'assets/gfx/bg-world3.png',
-            'assets/gfx/bg-world4.png',
-            'assets/gfx/bg-world5.png',
-            'assets/gfx/cutscenes/intro/Background.png',
-            'assets/gfx/cutscenes/intro2/bg-beach_intro.png',
-            'assets/gfx/cutscenes/intro2/animation.gif',
-            'assets/gfx/cutscenes/transitions/w1-intro.gif',
-            'assets/gfx/cutscenes/transitions/w2-intro.gif',
-            'assets/gfx/cutscenes/transitions/w3-intro.gif',
-            'assets/gfx/cutscenes/transitions/w4-intro.gif',
-            'assets/gfx/cutscenes/transitions/w5-intro.gif',
-            'assets/gfx/endscreen.png',
-            'assets/gfx/credits.gif',
+            'gfx/bg-intro.png',
+            'gfx/bg-world1.png',
+            'gfx/bg-world2.png',
+            'gfx/bg-world3.png',
+            'gfx/bg-world4.png',
+            'gfx/bg-world5.png',
+            'gfx/cutscenes/intro/Background.png',
+            'gfx/cutscenes/intro2/bg-beach_intro.png',
+            'gfx/cutscenes/intro2/animation.gif',
+            'gfx/cutscenes/transitions/w1-intro.gif',
+            'gfx/cutscenes/transitions/w2-intro.gif',
+            'gfx/cutscenes/transitions/w3-intro.gif',
+            'gfx/cutscenes/transitions/w4-intro.gif',
+            'gfx/cutscenes/transitions/w5-intro.gif',
+            'gfx/endscreen.png',
+            'gfx/credits.gif',
         ],
         "audio": {
             // Background music
-            'bg-intro': ['assets/music/bg-intro.mp3'],
-            'bg-world1': ['assets/music/bg-world1.mp3'],
-            'bg-world2': ['assets/music/bg-world2.mp3'],
-            'bg-world3': ['assets/music/bg-world3.mp3'],
-            'bg-world4': ['assets/music/bg-world4.mp3'],
-            'bg-world5': ['assets/music/bg-world5.mp3'],
+            'bg-intro': ['music/bg-intro.mp3'],
+            'bg-world1': ['music/bg-world1.mp3'],
+            'bg-world2': ['music/bg-world2.mp3'],
+            'bg-world3': ['music/bg-world3.mp3'],
+            'bg-world4': ['music/bg-world4.mp3'],
+            'bg-world5': ['music/bg-world5.mp3'],
             // SFX - believers
-            "Male-trap": ["assets/sound_fx/stab_male.mp3"],
-            "Female-trap": ["assets/sound_fx/stab_female.mp3"],
-            "Male-lava": ["assets/sound_fx/true_believer_ascends_to_hevan.mp3"],
-            "Female-lava": ["assets/sound_fx/female_true_believer_ascends_to_hevan.mp3"],
-            "Male-converted": ["assets/sound_fx/converted_male.mp3"],
-            "Female-converted": ["assets/sound_fx/converted_female.mp3"],
+            "Male-trap": ["sound_fx/stab_male.mp3"],
+            "Female-trap": ["sound_fx/stab_female.mp3"],
+            "Male-lava": ["sound_fx/true_believer_ascends_to_hevan.mp3"],
+            "Female-lava": ["sound_fx/female_true_believer_ascends_to_hevan.mp3"],
+            "Male-converted": ["sound_fx/converted_male.mp3"],
+            "Female-converted": ["sound_fx/converted_female.mp3"],
             // SFX - prophet
-            "Prophet-lava": ["assets/sound_fx/prophet_fired.mp3"],
+            "Prophet-lava": ["sound_fx/prophet_fired.mp3"],
             // SFX - level
-            "Win-signal": ["assets/sound_fx/win_signal.mp3"],
-            "lava-freeze": ["assets/sound_fx/lava_freeze.mp3"],
-            "lava-unfreeze": ["assets/sound_fx/lava_unfreeze.mp3"],
-            "door": ["assets/sound_fx/door.mp3"],
-            "item-picked-up": ["assets/sound_fx/item_picked_up.mp3"],
+            "Win-signal": ["sound_fx/win_signal.mp3"],
+            "lava-freeze": ["sound_fx/lava_freeze.mp3"],
+            "lava-unfreeze": ["sound_fx/lava_unfreeze.mp3"],
+            "door": ["sound_fx/door.mp3"],
+            "item-picked-up": ["sound_fx/item_picked_up.mp3"],
             // Cutscenes
-            'intro-cutscene-sound': ['assets/voices/opening.mp3'],
-            'w1-intro': ['assets/voices/world1.mp3'],
-            'w2-intro': ['assets/voices/world2.mp3'],
-            'w3-intro': ['assets/voices/world3.mp3'],
-            'w4-intro': ['assets/voices/world4.mp3'],
-            'w5-intro': ['assets/voices/world5.mp3'],
-            'ending'  : ['assets/voices/end.mp3'],
-            'epic_win': ['assets/music/epic_win.mp3']
+            'intro-cutscene-sound': ['voices/opening.mp3'],
+            'w1-intro': ['voices/world1.mp3'],
+            'w2-intro': ['voices/world2.mp3'],
+            'w3-intro': ['voices/world3.mp3'],
+            'w4-intro': ['voices/world4.mp3'],
+            'w5-intro': ['voices/world5.mp3'],
+            'ending'  : ['voices/end.mp3'],
+            'epic_win': ['music/epic_win.mp3']
         }
     };
 }();
@@ -255,7 +259,7 @@ function initScenes()
         {
             Crafty.e('2D, DOM, Image')
                 .attr({x: 0, y: 0})
-                .image('assets/gfx/bg-world' + world_id + '.png');
+                .image(assets_url + 'gfx/bg-world' + world_id + '.png');
         }
 
         function addFloor(tiles_x, tiles_y)
@@ -569,7 +573,7 @@ function initScenes()
         game_state.scene_type = 'intro';
 
         Crafty.e('2D, DOM, Image')
-              .image('assets/gfx/bg-intro.png')
+              .image(assets_url + 'gfx/bg-intro.png')
               .addComponent('FullScreenImage');
         Crafty.audio.stop();
         Crafty.audio.play('bg-intro', -1, 0.75);
@@ -582,7 +586,7 @@ function initScenes()
         }
 
         Crafty.e('2D, DOM, Image')
-            .image('assets/gfx/cutscenes/intro/Background.png')
+            .image(assets_url + 'gfx/cutscenes/intro/Background.png')
             .addComponent('FullScreenImage');
 
 
@@ -603,8 +607,8 @@ function initScenes()
     });
 
     defineCutscene('intro_cutscene2', 'w0-intro', 61200, {
-        'background': 'assets/gfx/cutscenes/intro2/bg-beach_intro.png',
-        'gif': 'assets/gfx/cutscenes/intro2/animation.gif',
+        'background': assets_url + 'gfx/cutscenes/intro2/bg-beach_intro.png',
+        'gif': assets_url + 'gfx/cutscenes/intro2/animation.gif',
         'audio': 'intro-cutscene-sound',
     });
 
@@ -612,18 +616,18 @@ function initScenes()
 
     for(var i=0; i<worlds.length; i++) {
         defineCutscene('w' + i + '-intro', 'level', (intro_sounds_secs[i]-1)*1000, {
-            'gif': 'assets/gfx/cutscenes/transitions/w'+(i+1)+'-intro.gif',
+            'gif': assets_url + 'gfx/cutscenes/transitions/w'+(i+1)+'-intro.gif',
             'audio': 'w' + (i+1) + '-intro'
         })
     }
 
     defineCutscene('ending', 'ending2', 4500, {
-        'background': 'assets/gfx/endscreen.png',
+        'background': assets_url + 'gfx/endscreen.png',
         'audio': 'ending',
     });
 
     defineCutscene('ending2', 'ending2', 1000000, {
-        'gif': 'assets/gfx/credits.gif',
+        'gif': assets_url + 'gfx/credits.gif',
         'audio': 'epic_win',
     });
 
@@ -636,6 +640,7 @@ function initScenes()
             .textAlign('center')
             .attr({x: 0, y: game_state.crafty_height / 3, w: game_state.crafty_width});
 
+        Crafty.paths({audio: assets_url, images: assets_url});
         Crafty.load(assets, function() {
             initComponents();
             createNonLevelEntities();
