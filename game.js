@@ -1284,7 +1284,8 @@ function initComponents()
 
     Crafty.c('Enemy', {
         init: function() {
-            this.addComponent('2D, DOM, enemy_stand_right, SpriteAnimation, DirectionalAnimation, Mortal');
+            this.addComponent('2D, DOM, enemy_stand_right, SpriteAnimation, DirectionalAnimation,' +
+                ' MortalCountsForWin');
             addLeftRightReels(this, 'stand', 6, 0, 6);
             addLeftRightReels(this, 'attack', 6, 7, 15);
             addLeftRightReels(this, 'dying', 6, 16, 22);
@@ -1294,7 +1295,6 @@ function initComponents()
             this.bind('AnimationEnd', this.onAnimationFinalized);
 
             this.attacking = false;
-            this.dying = false;
         },
 
         onAnimationFinalized: function(data) {
@@ -1311,10 +1311,6 @@ function initComponents()
             this.attacking = true;
             this.dir_animate('attack', 1);
         },
-
-        die: function() {
-            this.die('dying', false, false);
-        }
     });
 
     Crafty.c('Gate', {
@@ -1668,7 +1664,10 @@ function initComponents()
 
     Crafty.c('Mortal', {
         init: function () {
+            console.log('Loaded mortal');
             this.dying = false;
+
+            this.bind('AnimationEnd', this.onAnimationEndForDeath);
         },
 
         die: function (death_anim, allow_falling, skip_counter) {
@@ -1701,11 +1700,59 @@ function initComponents()
             this.death_anim = this.dir_animate(death_anim, 1);
             this.trigger('Dying');
         },
+
+        onAnimationEndForDeath: function(data) {
+            if (data.id.startsWith('dying')) {
+                this.visible = false;
+                var character = this;
+                setTimeout(function() {
+                    character.trigger('Died');
+                }, consts.wait_for_death);
+            }
+        }
     });
 
     // Mortal that can trigger win conditions when killed (Unbeliever, TrueBeliever, Enemy)
-    Crafty.c('MortalForTheWin', {
+    Crafty.c('MortalCountsForWin', {
+        init: function() {
+            this.addComponent('Mortal');
+            this.bind('Dying', this.onDying());
+            this.bind('Died', this.onDied());
+        },
 
+        onDying: function() {
+            var prophet = Crafty('Prophet');
+            prophet.num_dying_believers++;
+            var win_lose = checkWinLoseConditions(true);
+
+            if (win_lose == 'win') {
+                Crafty('ProphetText').refreshText(texts.win);
+                prophet.winning = true;
+                // TODO: Change this to cover all death sounds
+                Crafty.audio.stop(this.typeStr + '-lava');
+                Crafty.audio.play('Win-signal', 1, 1);
+
+            }
+            else if (win_lose == 'lose') {
+                Crafty('ProphetText').refreshText(texts.lose);
+            }
+            else {
+                checkStuckConditions();
+            }
+        },
+
+        onDied: function() {
+            Crafty('Prophet').num_dying_believers--;
+            this.destroy();
+            var win_lose = checkWinLoseConditions(false);
+
+            if (win_lose == 'win') {
+                switchToNextLevel();
+            }
+            else if (win_lose == 'lose') {
+                restartLevel();
+            }
+        }
     });
 
     // Character is a component that includes the semantics
@@ -1736,7 +1783,7 @@ function initComponents()
 
             this.onHit('IceShrine', function() { LavaAndIceManager.iceShrineTouched(self); });
             this.onHit('LavaShrine', function() { LavaAndIceManager.lavaShrineTouched(self); });
-            this.bind('AnimationEnd', this.onAnimationEnd);
+
 
             this.onHit('Item', this.onHitItem);
 
@@ -1798,16 +1845,6 @@ function initComponents()
                 this.die('dying_in_trap', true, true);
             }
         },
-
-        onAnimationEnd: function(data) {
-            if (data.id.startsWith('dying')) {
-                this.visible = false;
-                var character = this;
-                setTimeout(function() {
-                    character.trigger('Died');
-                }, consts.wait_for_death);
-            }
-        }
     });
 
     // NewDirectionWorkaround is needed for true believers, which move horizontally by
@@ -2176,7 +2213,7 @@ function initComponents()
 
     Crafty.c('Unbeliever', {
         init: function() {
-            this.addComponent('Character, unbeliever_stand_right');
+            this.addComponent('Character, MortalCountsForWin, unbeliever_stand_right');
             this.offsetBoundary(-3, 0, -3, 0);
             this.z = zorders.believers;
 
@@ -2216,26 +2253,6 @@ function initComponents()
                 trueBeliever.dir_animate('stand', -1);
                 this.destroy();
                 this.being_converted_cb(trueBeliever);
-            }
-        },
-
-        onUnBelieverDying: function() {
-            var prophet = Crafty('Prophet');
-            prophet.num_dying_believers++;
-            var win_lose = checkWinLoseConditions(true);
-
-            if (win_lose == 'win') {
-                Crafty('ProphetText').refreshText(texts.win);
-                prophet.winning = true;
-                Crafty.audio.stop(this.typeStr + '-lava');
-                Crafty.audio.play('Win-signal', 1, 1);
-
-            }
-            else if (win_lose == 'lose') {
-                Crafty('ProphetText').refreshText(texts.lose);
-            }
-            else {
-                checkStuckConditions();
             }
         },
     });
@@ -2280,12 +2297,11 @@ function initComponents()
 
     Crafty.c('TrueBeliever', {
         init: function() {
-            this.addComponent('Character, HasConvertingPowers, NewDirectionWorkaround, true_believer_stand_right');
+            this.addComponent('Character, HasConvertingPowers, NewDirectionWorkaround, true_believer_stand_right, ' +
+                'MortalCountsForWin');
             this.z = zorders.believers;
 
             this.jumper(consts.believer_jump_speed, []);
-            this.bind('Dying', this.onTrueBelieverDying);
-            this.bind('Died', this.onTrueBelieverDied);
 
             this.onHit('Enemy', this.onHitEnemy);
 
@@ -2306,7 +2322,7 @@ function initComponents()
                 enemy.direction = 'right';
             }
 
-            enemy.die();
+            enemy.die('dying', false, true);
             this.startConvertingAnimation();
         },
 
@@ -2358,39 +2374,6 @@ function initComponents()
 
             return true;
         },
-
-        onTrueBelieverDying: function() {
-            var prophet = Crafty('Prophet');
-            prophet.num_dying_believers++;
-            var win_lose = checkWinLoseConditions(true);
-
-            if (win_lose == 'win') {
-                Crafty('ProphetText').refreshText(texts.win);
-                prophet.winning = true;
-                Crafty.audio.stop(this.typeStr + '-lava');
-                Crafty.audio.play('Win-signal', 1, 1);
-
-            }
-            else if (win_lose == 'lose') {
-                Crafty('ProphetText').refreshText(texts.lose);
-            }
-            else {
-                checkStuckConditions();
-            }
-        },
-
-        onTrueBelieverDied: function() {
-            Crafty('Prophet').num_dying_believers--;
-            this.destroy();
-            var win_lose = checkWinLoseConditions(false);
-
-            if (win_lose == 'win') {
-                switchToNextLevel();
-            }
-            else if (win_lose == 'lose') {
-                restartLevel();
-            }
-        }
     });
 
     Crafty.c('TrueBeliever1', {
