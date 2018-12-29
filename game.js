@@ -444,7 +444,7 @@ function initScenes()
                 Crafty.audio.stop(prev_music_id);
             }
 
-            Crafty.audio.play('bg-world' + world_id, -1, 0.5);
+            Crafty.audio.play('bg-world' + world_id, -1, 0.4);
             game_state.playing_music_for_world = world_id;
         }
 
