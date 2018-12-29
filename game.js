@@ -4,7 +4,7 @@ var assets = function() {
         unbeliever_stand_right: [0, 8],
         true_believer_stand_right: [16, 8],
         tile_lava: [0, 16],
-        tile_target: [14, 37],
+        tile_target: [16, 37],
         tile_floor: [12, 16],
         tile_trap: [13, 16],
         enemy_stand_right: [0, 6],
@@ -1563,7 +1563,7 @@ function initComponents()
     Crafty.c('LightningTarget', {
         init: function() {
             this.addComponent('2D, DOM, SpriteAnimation, tile_target');
-            addReel(this, 'flash_target', 14, 37, 39);
+            addReel(this, 'flash_target', 16, 37, 39);
             this.animate('flash_target', -1);
             this.z = zorders.target_and_lightning
         }
