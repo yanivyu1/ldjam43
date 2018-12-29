@@ -86,6 +86,7 @@ var assets = function() {
             // SFX - prophet
             "Prophet-trap": ["sound_fx/stab_prophet.mp3"],
             "Prophet-lava": ["sound_fx/prophet_fired.mp3"],
+            "summon": ["sound_fx/summon.mp3"],
             // SFX - level
             "Win-signal": ["sound_fx/win_signal.mp3"],
             "lava-freeze": ["sound_fx/lava_freeze.mp3"],
@@ -1794,12 +1795,14 @@ function initComponents()
             this.vx = 0;
             this.disableControl();
             this.dir_animate('start_casting', 1);
+            Crafty.audio.play('summon', -1);
         },
 
         stop_casting: function() {
             if (!this.is_casting) return;
             this.enableControl();
             this.dir_animate('stand', -1);
+            Crafty.audio.stop('summon');
             this.is_casting = false;
         },
 
