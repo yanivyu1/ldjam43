@@ -4,6 +4,7 @@ var assets = function() {
         unbeliever_stand_right: [0, 6],
         true_believer_stand_right: [16, 6],
         tile_lava: [0, 14],
+        tile_target: [0, 14],
         tile_floor: [12, 14],
         tile_trap: [13, 14],
         enemy_stand_right: [11, 4],
@@ -120,7 +121,8 @@ var consts = {
     prophet_text_timeout: 5000,
     title_text_timeout: 5000,
     ice_lava_flood_fill_timeout: 250,
-    inventory_gap_y: 10
+    inventory_gap_y: 10,
+    lightning_target_gap: 3,
 };
 
 var game_state = {
@@ -175,11 +177,12 @@ function addReel(entity, anim_name, row, first_col, last_col)
 
 function addEntity(entity_type, tiles_x, tiles_y, tile_type)
 {
-    return Crafty.e(entity_type, tile_type)
+    var obj = Crafty.e(entity_type, tile_type)
         .attr({x: tiles_x * consts.tile_width,
             y: tiles_y * consts.tile_height,
             w: consts.tile_width,
             h: consts.tile_height});
+    return obj
 }
 
 function addInvisiblePlatform(tiles_x, tiles_y)
@@ -191,6 +194,7 @@ function addLava(tiles_x, tiles_y, lava_type)
 {
     var lava_obj = addEntity('Lava', tiles_x, tiles_y).setLavaType(lava_type);
     LavaAndIceManager.registerLava(tiles_x, tiles_y, lava_obj);
+    LightningManager.add_object(tiles_x, tiles_y, 'Lava', lava_obj);
     return lava_obj;
 }
 
@@ -198,6 +202,7 @@ function addIce(tiles_x, tiles_y, ice_type)
 {
     var ice_obj = addEntity('Ice', tiles_x, tiles_y).setIceType(ice_type);
     LavaAndIceManager.registerIce(tiles_x, tiles_y, ice_obj);
+    LightningManager.add_object(tiles_x, tiles_y, 'Ice', ice_obj);
     return ice_obj;
 }
 
@@ -205,6 +210,7 @@ function addLavaGen(tiles_x, tiles_y)
 {
     var lava_gen = addEntity('LavaGen', tiles_x, tiles_y);
     LavaAndIceManager.registerLavaGen(tiles_x, tiles_y, lava_gen);
+    LightningManager.add_object(tiles_x, tiles_y, 'LavaGen', lava_gen);
     return lava_gen;
 }
 
@@ -212,6 +218,7 @@ function addIceGen(tiles_x, tiles_y)
 {
     var ice_gen = addEntity('IceGen', tiles_x, tiles_y);
     LavaAndIceManager.registerIceGen(tiles_x, tiles_y, ice_gen);
+    LightningManager.add_object(tiles_x, tiles_y, 'IceGen', ice_gen);
     return ice_gen;
 }
 
@@ -258,7 +265,9 @@ function initScenes()
 
         function addWall(tiles_x, tiles_y, floorType)
         {
-            return addEntity('Wall', tiles_x, tiles_y, floorType);
+            var obj = addEntity('Wall', tiles_x, tiles_y, floorType);
+            LightningManager.add_object(tiles_x, tiles_y, 'Wall', obj);
+            return obj;
         }
 
         function addOuterWall(tiles_x, tiles_y)
@@ -291,22 +300,29 @@ function initScenes()
             var enemy = addEntity('Enemy', tiles_x, tiles_y);
             enemy.direction = facing;
             enemy.dir_animate('stand', -1);
+            LightningManager.add_object(tiles_x, tiles_y, 'Enemy', enemy);
             return enemy;
         }
 
         function addGate(tiles_x, tiles_y, gate_type)
         {
-            return addEntity('Gate', tiles_x, tiles_y).setGateType(gate_type);
+            var obj = addEntity('Gate', tiles_x, tiles_y).setGateType(gate_type);
+            LightningManager.add_object(tiles_x, tiles_y, 'Gate', obj);
+            return obj;
         }
 
         function addMBlock(tiles_x, tiles_y)
         {
-            return addEntity('MBlock', tiles_x, tiles_y);
+            var obj = addEntity('MBlock', tiles_x, tiles_y);
+            LightningManager.add_object(tiles_x, tiles_y, 'MBlock', obj);
+            return obj;
         }
 
         function addWBlock(tiles_x, tiles_y)
         {
-            return addEntity('WBlock', tiles_x, tiles_y);
+            var obj = addEntity('WBlock', tiles_x, tiles_y);
+            LightningManager.add_object(tiles_x, tiles_y, 'WBlock', obj);
+            return obj;
         }
 
         function addIceShrine(tiles_x, tiles_y)
@@ -329,27 +345,36 @@ function initScenes()
             var invisible_platform = addEntity('InvisiblePlatformDoor', tiles_x, tiles_y).attr({h: 0});
             var door = addEntity(door_type, tiles_x, tiles_y).attr({invisiblePlatform: invisible_platform});
             invisible_platform.door = door;
+            LightningManager.add_object(tiles_x, tiles_y, door_type, door);
             return door;
         }
 
         function addDeepDoor(tiles_x, tiles_y, door_type)
         {
-            return addEntity(door_type, tiles_x, tiles_y);
+            var obj = addEntity(door_type, tiles_x, tiles_y);
+            LightningManager.add_object(tiles_x, tiles_y, door_type, obj);
+            return obj;
         }
 
         function addKey2(tiles_x, tiles_y)
         {
-            return addEntity('Key2', tiles_x, tiles_y);
+            var obj = addEntity('Key2', tiles_x, tiles_y);
+            LightningManager.add_object(tiles_x, tiles_y, 'Key2', obj);
+            return obj;
         }
 
         function addKey3(tiles_x, tiles_y)
         {
-            return addEntity('Key3', tiles_x, tiles_y);
+            var obj = addEntity('Key3', tiles_x, tiles_y);
+            LightningManager.add_object(tiles_x, tiles_y, 'Key3', obj);
+            return obj;
         }
 
         function addSwitch(tiles_x, tiles_y)
         {
-            return addEntity('Switch', tiles_x, tiles_y);
+            var obj = addEntity('Switch', tiles_x, tiles_y);
+            LightningManager.add_object(tiles_x, tiles_y, 'Switch', obj);
+            return obj;
         }
 
         function addAmulet(tiles_x, tiles_y)
@@ -367,6 +392,7 @@ function initScenes()
             var u = addEntity('Unbeliever' + type_idx, tiles_x, tiles_y);
             u.direction = facing;
             u.dir_animate('stand', -1);
+            LightningManager.add_object(tiles_x, tiles_y, 'Unbeliever', u);
             return u;
         }
 
@@ -411,6 +437,7 @@ function initScenes()
         game_state.scene_type = 'level';
         zoomer.reset();
         LavaAndIceManager.reset();
+        LightningManager.reset();
 
         for (var i = 0; i < consts.level_height; i++) {
             addOuterWall(0, i);
@@ -677,6 +704,75 @@ var zoomer = {
     }
 };
 
+var LightningManager = {
+    level_map: null, // [tileX][tileY] -> {type: 'wall' etc; 'lightning_blocking': true/false, 'zappable': true/false}
+    lightning_blocking_types: ['MBlock', 'WBlock', 'Lava', 'DeepLava', 'LavaGen', 'Ice', 'DeepIce', 'IceGen',
+        'Wall', 'Door'],
+    zappable_types: ['Believer'],
+
+    reset: function() {
+        this.level_map = new Array(consts.level_width);
+        for (var i = 0; i < consts.level_width; i++) {
+            this.level_map[i] = new Array(consts.level_height);
+        }
+    },
+
+    _is_lightning_blocking: function(obj) {
+        for (x in this.lightning_blocking_types) {
+            if (obj.has(this.lightning_blocking_types[x])) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    _is_zappable: function(obj) {
+        for (x in this.zappable_types) {
+            if (obj.has(this.zappable_types[x])) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    add_object: function(x, y, type, obj) {
+        this.level_map[x][y] = {
+            type: type,
+            lightning_blocking: this._is_lightning_blocking(obj),
+            zappable: this._is_zappable(obj)
+        };
+    },
+
+    _find_lightning_target: function(prophetX, prophetDirection) {
+        var tile_num = Math.floor(prophetX / consts.tile_width);
+        var direction_multiplier = prophetDirection == 'right' ? 1 : -1;
+        var tileX = (tile_num + direction_multiplier * consts.lightning_target_gap)
+
+        var tileY;
+        for (tileY= 0; tileY < 30; tileY++) {
+            cur_tile = this.level_map[tileX][tileY];
+            if (!cur_tile) { continue; }
+            if (this.level_map[tileX][tileY].lightning_blocking) {
+                return {tileX: tileX, tileY: tileY-1};
+            } else if (this.level_map[tileX][tileY].zappable) {
+                return {tileX: tileX, tileY: tileY};
+            }
+        }
+    },
+
+    show_target: function(prophetX, prophetDirection) {
+        var target_coords = this._find_lightning_target(prophetX, prophetDirection);
+        this.target_obj = addEntity('LightningTarget', target_coords.tileX, target_coords.tileY);
+    },
+
+    unshow_target: function() {
+        if (this.target_obj) {
+            this.target_obj.destroy();
+            this.target_obj = undefined;
+        }
+    }
+};
+
 var LavaAndIceManager = {
     level_map: null,  // [x][y] -> {type: 'lava' or 'ice', obj: obj} or null
     lava_gens: null,  // list of {x, y, obj} of lava gens
@@ -913,16 +1009,24 @@ function initComponents()
                     Crafty.audio.toggleMute();
                 }
             }
-            else if (game_state.scene_type == 'level' && (e.key == Crafty.keys.DOWN_ARROW || e.key == Crafty.keys.S) && Crafty('Prophet').vy == 0) {
-                Crafty('Prophet').start_casting();
+            // Prophet spells (in level, should be standing on the floor)
+            else if (game_state.scene_type == 'level' && Crafty('Prophet').vy == 0) {
+                if (e.key == Crafty.keys.DOWN_ARROW || e.key == Crafty.keys.S) {
+                    Crafty('Prophet').start_casting();
+                } else if (e.key == Crafty.keys.X) {
+                    Crafty('Prophet').startChargeLightning();
+                }
             }
         },
 
         onKeyUp: function(e) {
+            var prophet = Crafty('Prophet');
             if (game_state.scene_type == 'level' && e.key == Crafty.keys.Z) {
                 zoomer.handleZoomPress(false, false);
-            }else if ((e.key == Crafty.keys.DOWN_ARROW || e.key == Crafty.keys.S) && !Crafty('Prophet').dying) {
-                Crafty('Prophet').stop_casting();
+            } else if ((e.key == Crafty.keys.DOWN_ARROW || e.key == Crafty.keys.S) && prophet && !prophet.dying) {
+                prophet.stop_casting();
+            } else if (e.key == Crafty.keys.X && prophet) {
+                prophet.stopChargeLightning();
             }
         }
     });
@@ -1427,7 +1531,40 @@ function initComponents()
             this.addComponent('Item, tile_amulet');
             this.itemType = 'Amulet';
         }
-    })
+    });
+
+    Crafty.c('Lightning', {
+        init: function() {
+            this.addComponent('2D, DOM');
+        }
+    });
+
+    Crafty.c('Lightning1', {
+        init:function() {
+            this.addComponent('Lightning, tile_lightning1');
+        }
+    });
+
+    Crafty.c('Lightning2', {
+        init:function() {
+            this.addComponent('Lightning, tile_lightning2');
+        }
+    });
+
+    Crafty.c('Lightning3', {
+        init:function() {
+            this.addComponent('Lightning, tile_lightning3');
+        }
+    });
+
+    Crafty.c('LightningTarget', {
+        init: function() {
+            this.addComponent('2D, DOM, SpriteAnimation, tile_target');
+            addReel(this, 'flash_target', 14, 37, 39);
+            this.animate('flash_target', -1);
+            this.z = zorders.target_and_lightning
+        }
+    });
 
     Crafty.c('CollectedAmulet', {
         init: function() {
@@ -1757,6 +1894,7 @@ function initComponents()
 
             this.nextCollectible = null;
             this.is_casting = false;
+            this.is_lightninging = false;
         },
 
         onAnimationDone: function(data) {
@@ -1766,7 +1904,7 @@ function initComponents()
         },
 
         start_casting: function() {
-            if (this.is_casting) return;
+            if (this.is_casting || this.is_lightninging) return;
             this.is_casting = true;
             this.vx = 0;
             this.disableControl();
@@ -1778,6 +1916,31 @@ function initComponents()
             this.enableControl();
             this.dir_animate('stand', -1);
             this.is_casting = false;
+        },
+
+        startChargeLightning: function() {
+            // TODO: Only do this if the prophet has an amulet
+            if (this.is_lightninging) return;
+            this.is_lightninging = true;
+            // If we are already casting, cancel the casting but leave control disabled and don't restart animation
+            if (this.is_casting) {
+                this.is_casting = false;
+            } else {
+                this.vx = 0;
+                this.disableControl();
+                this.dir_animate('start_casting', 1);
+            }
+
+            LightningManager.show_target(this.x, this.direction);
+        },
+
+        stopChargeLightning: function() {
+            if (!this.is_lightninging) return;
+            this.enableControl();
+            this.dir_animate('stand', -1);
+            this.is_lightninging = false;
+
+            LightningManager.unshow_target();
         },
 
         setupMovement: function() {
