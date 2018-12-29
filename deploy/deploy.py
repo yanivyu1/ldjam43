@@ -39,7 +39,7 @@ def deploy():
     os.makedirs(TARGET)
     copytree('assets')
     copytree('lib')
-    copytree('website', to_target=True)
+    # copytree('website', to_target=True)
 
     # game.min.js
     os.system(UGLIFY_CMDLINE)
