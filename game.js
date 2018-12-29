@@ -1790,7 +1790,7 @@ function initComponents()
                     this.y -= this.dy;
                     this.y = Math.floor(this.y) - 1;
                     this.vy = 0;
-                } else if (this.vy == 0) {
+                } else if (this.vy == 0 && this.vx == 0) {
                     this.y = Math.floor(this.y) - 1;
                 }
             }
