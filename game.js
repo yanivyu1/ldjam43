@@ -1326,6 +1326,19 @@ function initComponents()
         }
     });
 
+    Crafty.c('Amulet', {
+        init: function() {
+            this.addComponent('Item, tile_amulet');
+            this.itemType = 'Amulet';
+        }
+    });
+
+    Crafty.c('CollectedAmulet', {
+        init: function() {
+            this.addComponent('CollectedItem, tile_amulet');
+        }
+    });
+
     Crafty.c('Key1', {
         init: function() {
             // TODO: Actually implement this
@@ -1525,7 +1538,10 @@ function initComponents()
 
         onHitItem: function(hitDatas) {
             itemType = hitDatas[0].obj.itemType;
-            Crafty('Prophet').addCollectible(itemType);
+            // Add an item to the prophet if it is not an amulet, or the prophet already has an amulet
+            if (itemType != 'Amulet' || !(Crafty('Prophet').findItem('CollectedAmulet'))) {
+                Crafty('Prophet').addCollectible(itemType);
+            }
             hitDatas[0].obj.destroy();
         },
 
@@ -1813,6 +1829,17 @@ function initComponents()
                 }
                 x = x.nextCollectible;
             }
+            return false;
+        },
+
+        hasAmulet: function() {
+            x = this.nextCollectible;
+            while (x != null) {
+                if (x.itemType == 'Amulet') {
+                    return true;
+                }
+            }
+
             return false;
         },
 
