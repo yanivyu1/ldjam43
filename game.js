@@ -84,6 +84,7 @@ var assets = function() {
             "Male-converted": ["sound_fx/converted_male.mp3"],
             "Female-converted": ["sound_fx/converted_female.mp3"],
             // SFX - prophet
+            "Prophet-trap": ["sound_fx/stab_prophet.mp3"],
             "Prophet-lava": ["sound_fx/prophet_fired.mp3"],
             // SFX - level
             "Win-signal": ["sound_fx/win_signal.mp3"],
@@ -1639,6 +1640,9 @@ function initComponents()
                     var trap = hitData[trap_idx].obj;
                     trap.activate();
                 }
+                if (this.typeStr) {
+                    Crafty.audio.play(this.typeStr + '-trap', 1);
+                }
                 this.die('dying_in_trap', true, true);
             }
         },
@@ -1955,7 +1959,7 @@ function initComponents()
 			restartLevel();
         },
 
-        onHitEnemy: function(hitDatas) {
+        onHitEnemy: function(hitDatas, isFirstTouch) {
             var enemy = hitDatas[0].obj;
             if (this.x < enemy.x) {
                 enemy.direction = 'left';
@@ -1965,6 +1969,9 @@ function initComponents()
             }
 
             enemy.attack();
+            if (isFirstTouch) {
+                Crafty.audio.play('Prophet-trap', 1);
+            }
             this.die('dying_in_trap', true, true);
         }
     });
