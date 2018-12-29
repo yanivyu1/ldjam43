@@ -22,6 +22,9 @@ var assets = function() {
         tile_door3: [31, 16],
         tile_switch: [32, 16],
         tile_amulet: [33, 16],
+        tile_lightning1: [34, 16],
+        tile_lightning2: [35, 16],
+        tile_lightning3: [36, 16],
     };
 
     for (var row = 0; row < 5; row++) {
@@ -82,6 +85,7 @@ var assets = function() {
             "Female-converted": ["assets/sound_fx/converted_female.mp3"],
             // SFX - prophet
             "Prophet-lava": ["assets/sound_fx/prophet_fired.mp3"],
+            "lightning": ["assets/sound_fx/lightning.mp3"],
             // SFX - level
             "Win-signal": ["assets/sound_fx/win_signal.mp3"],
             "lava-freeze": ["assets/sound_fx/lava_freeze.mp3"],
@@ -123,6 +127,10 @@ var consts = {
     ice_lava_flood_fill_timeout: 250,
     inventory_gap_y: 10,
     lightning_target_gap: 3,
+    // How long lightning stays on the screen
+    lightning_duration_ms: 500,
+    // How long the X button must be held for divine fury to be unleashed
+    lightning_delay_ms: 2000,
 };
 
 var game_state = {
@@ -398,7 +406,7 @@ function initScenes()
             var u = addEntity('Unbeliever' + type_idx, tiles_x, tiles_y);
             u.direction = facing;
             u.dir_animate('stand', -1);
-            LightningManager.add_object(tiles_x, tiles_y, 'Unbeliever', u);
+            LightningManager.add_object(tiles_x, tiles_y, 'Unbeliever' + type_idx, u);
             return u;
         }
 
@@ -714,7 +722,7 @@ var LightningManager = {
     level_map: null, // [tileX][tileY] -> {type: 'wall' etc; 'lightning_blocking': true/false, 'zappable': true/false}
     lightning_blocking_types: ['MBlock', 'WBlock', 'Lava', 'DeepLava', 'LavaGen', 'Ice', 'DeepIce', 'IceGen',
         'Wall', 'Door'],
-    zappable_types: ['Believer'],
+    zappable_types: ['Character', 'Enemy'],
 
     reset: function() {
         this.level_map = new Array(consts.level_width);
@@ -745,7 +753,8 @@ var LightningManager = {
         this.level_map[x][y] = {
             type: type,
             lightning_blocking: this._is_lightning_blocking(obj),
-            zappable: this._is_zappable(obj)
+            zappable: this._is_zappable(obj),
+            obj: obj
         };
     },
 
@@ -759,16 +768,16 @@ var LightningManager = {
             cur_tile = this.level_map[tileX][tileY];
             if (!cur_tile) { continue; }
             if (this.level_map[tileX][tileY].lightning_blocking) {
-                return {tileX: tileX, tileY: tileY-1};
+                return {tileX: tileX, tileY: tileY-1, type: 'blocking', obj: this.level_map[tileX][tileY].obj};
             } else if (this.level_map[tileX][tileY].zappable) {
-                return {tileX: tileX, tileY: tileY};
+                return {tileX: tileX, tileY: tileY, type: 'zappable', obj: this.level_map[tileX][tileY].obj};
             }
         }
     },
 
     show_target: function(prophetX, prophetDirection) {
-        var target_coords = this._find_lightning_target(prophetX, prophetDirection);
-        this.target_obj = addEntity('LightningTarget', target_coords.tileX, target_coords.tileY);
+        this.target_coords = this._find_lightning_target(prophetX, prophetDirection);
+        this.target_obj = addEntity('LightningTarget', this.target_coords.tileX, this.target_coords.tileY);
     },
 
     unshow_target: function() {
@@ -776,7 +785,30 @@ var LightningManager = {
             this.target_obj.destroy();
             this.target_obj = undefined;
         }
-    }
+    },
+
+    zap: function() {
+        if (!this.target_coords) {return;}
+        var lightningType = 0;
+        var lightningList = [];
+        Crafty.audio.play('lightning');
+        for (var tileY=0; tileY<=this.target_coords.tileY; tileY++) {
+            lightningList[tileY] = addEntity('Lightning' + (lightningType+1), this.target_coords.tileX, tileY);
+            lightningType = (lightningType + 1) % 3;
+
+        }
+        if (this.target_coords.type == 'zappable') {
+            // TODO: Hack
+            Crafty.audio.play('Male-lava');
+            this.target_coords.obj.die('dying_in_zap')
+        }
+
+        setTimeout(function() {
+            for (x in lightningList) {
+                lightningList[x].destroy();
+            }
+        }, consts.lightning_duration_ms);
+    },
 };
 
 var LavaAndIceManager = {
@@ -1252,10 +1284,11 @@ function initComponents()
 
     Crafty.c('Enemy', {
         init: function() {
-            this.addComponent('2D, DOM, enemy_stand_right, SpriteAnimation, DirectionalAnimation');
+            this.addComponent('2D, DOM, enemy_stand_right, SpriteAnimation, DirectionalAnimation, Mortal');
             addLeftRightReels(this, 'stand', 6, 0, 6);
             addLeftRightReels(this, 'attack', 6, 7, 15);
             addLeftRightReels(this, 'dying', 6, 16, 22);
+            addLeftRightReels(this, 'dying_in_zap', 10, 28, 34);
             this.z = zorders.enemies;
 
             this.bind('AnimationEnd', this.onAnimationFinalized);
@@ -1280,9 +1313,7 @@ function initComponents()
         },
 
         die: function() {
-            if (this.dying) return;
-            this.dying = true;
-            this.dir_animate('dying', 1);
+            this.die('dying', false, false);
         }
     });
 
@@ -1539,6 +1570,7 @@ function initComponents()
     Crafty.c('Lightning', {
         init: function() {
             this.addComponent('2D, DOM');
+            this.z = zorders.target_and_lightning;
         }
     });
 
@@ -1634,6 +1666,48 @@ function initComponents()
         }
     });
 
+    Crafty.c('Mortal', {
+        init: function () {
+            this.dying = false;
+        },
+
+        die: function (death_anim, allow_falling, skip_counter) {
+            if (this.dying) {
+                return;
+            }
+            this.disableControl();
+            this.dying = true;
+            this.disable_movement_animations = true;
+            this.vx = 0;
+            prev_vy = this.vy;
+            if (this.has('TrueBeliever')) {
+                this.removeThisFromCharacterQueue();
+            }
+            this.removeComponent('Multiway'); // If we could walk, don't walk anymore
+            if (allow_falling) {
+                // work around bug(?) in Crafty - vy is reset even though we're falling
+                this.vy = prev_vy;
+            }
+            else {
+                this.removeComponent('Jumper');   // Don't jump/fall anymore
+                this.removeComponent('Gravity');  // Don't fall anymore
+                this.resetMotion();
+            }
+
+            if (!skip_counter) {
+                Crafty('Counter').increment();
+            }
+
+            this.death_anim = this.dir_animate(death_anim, 1);
+            this.trigger('Dying');
+        },
+    });
+
+    // Mortal that can trigger win conditions when killed (Unbeliever, TrueBeliever, Enemy)
+    Crafty.c('MortalForTheWin', {
+
+    });
+
     // Character is a component that includes the semantics
     // shared by all characters: Prophets, believers and non-believers.
     // 1. It has animations for standing/walking/jumping/falling/dying.
@@ -1650,10 +1724,9 @@ function initComponents()
     // All should be defined with "_left" and "_right"
     Crafty.c('Character', {
         init: function() {
-            this.addComponent('2D, DOM, SpriteAnimation, Gravity, Jumper, Collision, DirectionalAnimation');
+            this.addComponent('2D, DOM, SpriteAnimation, Gravity, Jumper, Collision, DirectionalAnimation, Mortal');
 
             this.offsetBoundary(-5, -5, -5, 0);
-            this.dying = false;
             this.death_anim = null;
 
             this.onHit('Lava', this.onTouchLava);
@@ -1709,37 +1782,6 @@ function initComponents()
             }
         },
 
-        die: function(death_anim, allow_falling, skip_counter) {
-            if (this.dying) {
-                return;
-            }
-            this.disableControl();
-            this.dying = true;
-            this.disable_movement_animations = true;
-            this.vx = 0;
-            prev_vy = this.vy;
-            if (this.has('TrueBeliever')) {
-                this.removeThisFromCharacterQueue();
-            }
-            this.removeComponent('Multiway'); // If we could walk, don't walk anymore
-            if (allow_falling) {
-                // work around bug(?) in Crafty - vy is reset even though we're falling
-                this.vy = prev_vy;
-            }
-            else {
-                this.removeComponent('Jumper');   // Don't jump/fall anymore
-                this.removeComponent('Gravity');  // Don't fall anymore
-                this.resetMotion();
-            }
-
-            if (!skip_counter) {
-                Crafty('Counter').increment();
-            }
-
-            this.death_anim = this.dir_animate(death_anim, 1);
-            this.trigger('Dying');
-        },
-
         onTouchLava: function(hitData, isFirstTouch) {
             if (this.typeStr && isFirstTouch) {
                 Crafty.audio.play(this.typeStr + '-lava', 1);
@@ -1758,7 +1800,7 @@ function initComponents()
         },
 
         onAnimationEnd: function(data) {
-            if (data.id == this.death_anim) {
+            if (data.id.startsWith('dying')) {
                 this.visible = false;
                 var character = this;
                 setTimeout(function() {
@@ -1828,11 +1870,14 @@ function initComponents()
         },
 
         collisionUnbeliever: function(hitData) {
+            var collidedUnbeliever = hitData[0].obj;
+            // Ignore collisions with dying (=invisible) unbelievers
+            if (collidedUnbeliever.dying) { return; }
+
             if (!this.startConvertingAnimation()) {
                 return;
             }
 
-            var collidedUnbeliever = hitData[0].obj;
             var self = this;
             collidedUnbeliever.trulyBelieve(function(trueBeliever) {
                 self.insertBelieverAfterThis(trueBeliever);
@@ -1928,13 +1973,22 @@ function initComponents()
             }
 
             LightningManager.show_target(this.x, this.direction);
+
+            var self = this;
+            this.lightning_timeout = setTimeout(function() {
+                if (!self.is_lightninging) {return;}
+                self.stopChargeLightning();
+                LightningManager.zap();
+            }, consts.lightning_delay_ms);
         },
 
         stopChargeLightning: function() {
-            if (!this.is_lightninging) return;
             this.enableControl();
             this.dir_animate('stand', -1);
             this.is_lightninging = false;
+            if (this.lightning_timeout) {
+                clearTimeout(this.lightning_timeout);
+            }
 
             LightningManager.unshow_target();
         },
@@ -2133,6 +2187,8 @@ function initComponents()
             this.being_converted_cb = null;
 
             this.bind('AnimationEnd', this.onAnimationFinished);
+
+            this.bind('Dying', this.onUnBelieverDying);
         },
 
         trulyBelieve: function(callback) {
@@ -2161,7 +2217,27 @@ function initComponents()
                 this.destroy();
                 this.being_converted_cb(trueBeliever);
             }
-        }
+        },
+
+        onUnBelieverDying: function() {
+            var prophet = Crafty('Prophet');
+            prophet.num_dying_believers++;
+            var win_lose = checkWinLoseConditions(true);
+
+            if (win_lose == 'win') {
+                Crafty('ProphetText').refreshText(texts.win);
+                prophet.winning = true;
+                Crafty.audio.stop(this.typeStr + '-lava');
+                Crafty.audio.play('Win-signal', 1, 1);
+
+            }
+            else if (win_lose == 'lose') {
+                Crafty('ProphetText').refreshText(texts.lose);
+            }
+            else {
+                checkStuckConditions();
+            }
+        },
     });
 
     // Male unbeliever
@@ -2175,6 +2251,7 @@ function initComponents()
             addLeftRightReels(this, 'stand', 8, 0, 6);
             addLeftRightReels(this, 'fall', 8, 0, 6); // copy stand animation
             addLeftRightReels(this, 'being_converted', 8, 7, 15);
+            addLeftRightReels(this, 'dying_in_zap', 10, 28, 34);
 
             this.believer_type = 1;
 
@@ -2193,6 +2270,7 @@ function initComponents()
             addLeftRightReels(this, 'stand', 12, 0, 6);
             addLeftRightReels(this, 'fall', 12, 0, 6); // copy stand animation
             addLeftRightReels(this, 'being_converted', 12, 7, 15);
+            addLeftRightReels(this, 'dying_in_zap', 14, 28, 34);
 
             this.believer_type = 2;
 
@@ -2325,7 +2403,7 @@ function initComponents()
             addLeftRightReels(this, 'fall', 8, 37, 37);
             addLeftRightReels(this, 'dying_in_lava', 10, 0, 20);
             addLeftRightReels(this, 'dying_in_trap', 10, 21, 27);
-            addLeftRightReels(this, 'dying_in_zap', 10, 28, 35);
+            addLeftRightReels(this, 'dying_in_zap', 10, 28, 34);
 
             this.typeStr = 'Male';
         }
@@ -2341,7 +2419,7 @@ function initComponents()
             addLeftRightReels(this, 'fall', 12, 37, 37);
             addLeftRightReels(this, 'dying_in_lava', 14, 0, 20);
             addLeftRightReels(this, 'dying_in_trap', 14, 21, 27);
-            addLeftRightReels(this, 'dying_in_zap', 14, 28, 35);
+            addLeftRightReels(this, 'dying_in_zap', 14, 28, 34);
 
             this.typeStr = 'Female';
         }
