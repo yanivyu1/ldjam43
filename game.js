@@ -1865,11 +1865,12 @@ function initComponents()
             // Black magic.
             this.x -= this.dx;
             this.x = Math.round(this.x);
+            Crafty.log(this.vy)
             if (this.hit('move_blocking_for_' + this.gender) && this.vy < 0) { // Still touching block, and jumping
                 this.y -= this.dy;
                 this.y = Math.floor(this.y) - 1;
                 this.vy = 0;
-            }else if (this.vy == 0) {
+            }else if (this.vy > consts.prophet_jump_speed) {
                 this.y = Math.floor(this.y) - 1;
             }
         },
