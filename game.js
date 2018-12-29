@@ -1471,6 +1471,7 @@ function initComponents()
             this.direction = 'right';
             this.new_direction_workaround = false;
             this.disable_movement_animations = false;
+            this.stand_loops = -1;
 
             this.bind('NewDirection', this.onNewDirection);
         },
@@ -1507,7 +1508,7 @@ function initComponents()
             if (direction.y == 0) {
                 // On the ground
                 if (direction.x == 0) {
-                    this.dir_animate('stand', -1);
+                    this.dir_animate('stand', this.stand_loops);
                 }
                 else {
                     this.dir_animate('walk', -1);
@@ -1734,7 +1735,7 @@ function initComponents()
             if (data.id == this.converting_anim) {
                 this.converting = false;
                 this.disable_movement_animations = false;
-                this.dir_animate('stand', -1);
+                this.dir_animate('stand', this.stand_loops);
                 this.trigger('ConversionEnded');
             }
         }
@@ -1743,6 +1744,7 @@ function initComponents()
     Crafty.c('Prophet', {
         init: function() {
             this.addComponent('Character, HasConvertingPowers, prophet_stand_right, Multiway');
+            this.stand_loops = 3
             this.setGender('p');
             addLeftRightReels(this, 'stand', 0, 0, 9);
             addLeftRightReels(this, 'walk', 0, 10, 16);
@@ -1755,7 +1757,7 @@ function initComponents()
             addLeftRightReels(this, 'casting', 4, 3, 10);
             addLeftRightReels(this, 'start_waiting', 4, 11, 16);
             addLeftRightReels(this, 'waiting', 4, 17, 33);
-            this.dir_animate('stand', -1);
+            this.dir_animate('stand', this.stand_loops);
             this.setupMovement();
 
             this.z = zorders.prophet;
@@ -1769,6 +1771,7 @@ function initComponents()
             this.bind('CheckLanding', this.onCheckLanding);
             this.onHit('Enemy', this.onHitEnemy);
             this.bind('AnimationEnd', this.onAnimationDone);
+            this.bind('EnterFrame', this.beforeEnterFrame);
 
             this.bind('Move', this.onMove);
 
@@ -1786,6 +1789,10 @@ function initComponents()
         onAnimationDone: function(data) {
             if (data.id == 'start_casting_' + this.direction) {
                 this.dir_animate('casting', -1);
+            } else if (data.id == 'stand_' + this.direction) {
+                this.dir_animate('start_waiting', 1);
+            } else if (data.id == 'start_waiting_' + this.direction) {
+                this.dir_animate('waiting', -1);
             }
         },
 
@@ -1801,7 +1808,7 @@ function initComponents()
         stop_casting: function() {
             if (!this.is_casting) return;
             this.enableControl();
-            this.dir_animate('stand', -1);
+            this.dir_animate('stand', this.stand_loops);
             Crafty.audio.stop('summon');
             this.is_casting = false;
         },
