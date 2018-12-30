@@ -824,6 +824,9 @@ var LightningManager = {
             lightningType = (lightningType + 1) % 3;
         }
 
+        // Remove an amulet.
+        Crafty('Prophet').findAmulet().removeThis();
+
         // Remove the lightning sprites after the duration.
         setTimeout(function() {
             for (x in lightningList) {
@@ -1820,10 +1823,7 @@ function initComponents()
 
         onHitItem: function(hitDatas) {
             itemType = hitDatas[0].obj.itemType;
-            // Add an item to the prophet if it is not an amulet, or the prophet already has an amulet
-            if (itemType != 'Amulet' || !(Crafty('Prophet').findItem('CollectedAmulet'))) {
-                Crafty('Prophet').addCollectible(itemType);
-            }
+            Crafty('Prophet').addCollectible(itemType);
             hitDatas[0].obj.destroy();
         },
 
@@ -2021,8 +2021,8 @@ function initComponents()
         },
 
         startChargeLightning: function() {
-            // TODO: Only do this if the prophet has an amulet
             if (this.is_lightninging) return;
+            if (!this.findAmulet()) return;
             this.is_lightninging = true;
             // If we are already casting, cancel the casting but leave control disabled and don't restart animation
             if (this.is_casting) {
@@ -2108,15 +2108,14 @@ function initComponents()
             return false;
         },
 
-        hasAmulet: function() {
+        findAmulet: function() {
             x = this.nextCollectible;
             while (x != null) {
                 if (x.itemType == 'Amulet') {
-                    return true;
+                    return x;
                 }
             }
-
-            return false;
+            return null;
         },
 
         onHitDoor: function(hitDatas) {
