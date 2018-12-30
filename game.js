@@ -89,8 +89,8 @@ var assets = function() {
             "Female-converted": ["sound_fx/converted_female.mp3"],
             // SFX - prophet
             "Prophet-trap": ["sound_fx/stab_prophet.mp3"],
-            "Prophet-lava": ["assets/sound_fx/prophet_fired.mp3"],
-            "lightning": ["assets/sound_fx/lightning.mp3"],
+            "Prophet-lava": ["sound_fx/prophet_fired.mp3"],
+            "lightning": ["sound_fx/lightning.mp3"],
             "summon": ["sound_fx/summon.mp3"],
             "Prophet-trap": ["sound_fx/stab_prophet.mp3"],
             // SFX - level
@@ -1516,7 +1516,7 @@ function initComponents()
                 this.nextCollectible.prevCollectible = this.prevCollectible;
             }
 
-            this.prevCollectible = this.nextCollectible;
+            this.prevCollectible.nextCollectible = this.nextCollectible;
             this.destroy();
         },
 
@@ -1825,7 +1825,9 @@ function initComponents()
         },
 
         onDied: function() {
-            Crafty('Prophet').num_dying_believers--;
+            if (this.has('TrueBeliever')) {
+                Crafty('Prophet').num_dying_believers--;
+            }
             this.destroy();
             var win_lose = checkWinLoseConditions(false);
 
@@ -2293,6 +2295,7 @@ function initComponents()
 
         onHitEnemy: function(hitDatas, isFirstTouch) {
             var enemy = hitDatas[0].obj;
+            if (enemy.dying) {return;} // Dying enemies should not do anything
             if (this.x < enemy.x) {
                 enemy.direction = 'left';
             }
