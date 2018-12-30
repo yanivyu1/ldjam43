@@ -130,7 +130,7 @@ var consts = {
     // How long lightning stays on the screen
     lightning_duration_ms: 500,
     // How long the X button must be held for divine fury to be unleashed
-    lightning_delay_ms: 2000,
+    lightning_delay_ms: 1750,
 };
 
 var game_state = {
@@ -743,7 +743,15 @@ var LightningManager = {
     _is_zappable: function(obj) {
         for (x in this.zappable_types) {
             if (obj.has(this.zappable_types[x])) {
-                return true;
+                // Hack to get around Crafty.destroy() not deleting objects from memory.
+                // A destroyed object still exists but loses its mapping in Crafty, so we search for the target obj by
+                // id to see if it is really zappable. [0] is a quicker method to get the ID.
+                if (Crafty(obj[0]).length) {
+                    return true;
+                } else {
+                    // No point in checking other types if this object has already been destroyed.
+                    return false;
+                }
             }
         }
         return false;
@@ -767,10 +775,9 @@ var LightningManager = {
         for (tileY= 0; tileY < 30; tileY++) {
             cur_tile = this.level_map[tileX][tileY];
             if (!cur_tile) { continue; }
+
             if (this.level_map[tileX][tileY].lightning_blocking) {
-                return {tileX: tileX, tileY: tileY-1, type: 'blocking', obj: this.level_map[tileX][tileY].obj};
-            } else if (this.level_map[tileX][tileY].zappable) {
-                return {tileX: tileX, tileY: tileY, type: 'zappable', obj: this.level_map[tileX][tileY].obj};
+                return {tileX: tileX, tileY: tileY - 1, obj: this.level_map[tileX][tileY].obj};
             }
         }
     },
@@ -789,20 +796,35 @@ var LightningManager = {
 
     zap: function() {
         if (!this.target_coords) {return;}
+        // Get all entities along the lightning's path.
+        lightning_rect = {
+            _x: this.target_coords.tileX * consts.tile_width,
+            _y: 0,
+            _h: (this.target_coords.tileY + 1) * consts.tile_width,
+            _w: consts.tile_width};
+        entities = Crafty.map.search(lightning_rect)
+
+        for (idx in entities) {
+            if (this._is_zappable(entities[idx])) {
+                entities[idx].die('dying_in_zap', true, false);
+                if (entities[idx].gender == 'w') {
+                    Crafty.audio.play('Female-lava');
+                } else {
+                    Crafty.audio.play('Male-lava');
+                }
+            }
+        }
+
+        // Draw the lightning.
         var lightningType = 0;
         var lightningList = [];
-        Crafty.audio.play('lightning');
+        Crafty.audio.play('lightning', 1, 0.7);
         for (var tileY=0; tileY<=this.target_coords.tileY; tileY++) {
             lightningList[tileY] = addEntity('Lightning' + (lightningType+1), this.target_coords.tileX, tileY);
             lightningType = (lightningType + 1) % 3;
-
-        }
-        if (this.target_coords.type == 'zappable') {
-            // TODO: Hack
-            Crafty.audio.play('Male-lava');
-            this.target_coords.obj.die('dying_in_zap')
         }
 
+        // Remove the lightning sprites after the duration.
         setTimeout(function() {
             for (x in lightningList) {
                 lightningList[x].destroy();
@@ -1295,6 +1317,7 @@ function initComponents()
             this.bind('AnimationEnd', this.onAnimationFinalized);
 
             this.attacking = false;
+            this.gender = 'm';
         },
 
         onAnimationFinalized: function(data) {
@@ -1664,7 +1687,6 @@ function initComponents()
 
     Crafty.c('Mortal', {
         init: function () {
-            console.log('Loaded mortal');
             this.dying = false;
 
             this.bind('AnimationEnd', this.onAnimationEndForDeath);
@@ -1716,8 +1738,8 @@ function initComponents()
     Crafty.c('MortalCountsForWin', {
         init: function() {
             this.addComponent('Mortal');
-            this.bind('Dying', this.onDying());
-            this.bind('Died', this.onDied());
+            this.bind('Dying', this.onDying);
+            this.bind('Died', this.onDied);
         },
 
         onDying: function() {
@@ -1986,12 +2008,14 @@ function initComponents()
             this.is_casting = true;
             this.vx = 0;
             this.disableControl();
+            this.disable_movement_animations = true;
             this.dir_animate('start_casting', 1);
         },
 
         stop_casting: function() {
             if (!this.is_casting) return;
             this.enableControl();
+            this.disable_movement_animations = false;
             this.dir_animate('stand', -1);
             this.is_casting = false;
         },
@@ -2006,6 +2030,7 @@ function initComponents()
             } else {
                 this.vx = 0;
                 this.disableControl();
+                this.disable_movement_animations = true;
                 this.dir_animate('start_casting', 1);
             }
 
@@ -2021,6 +2046,7 @@ function initComponents()
 
         stopChargeLightning: function() {
             this.enableControl();
+            this.disable_movement_animations = false;
             this.dir_animate('stand', -1);
             this.is_lightninging = false;
             if (this.lightning_timeout) {
