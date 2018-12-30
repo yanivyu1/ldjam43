@@ -1,3 +1,7 @@
+if (window.assets_url === undefined) {
+    window.assets_url = 'assets/';
+}
+
 var assets = function() {
     var sprite_map = {
         prophet_stand_right: [0, 0],
@@ -37,12 +41,12 @@ var assets = function() {
 
     return {
         "sprites": {
-            "assets/SpriteMap.png": {
+            "SpriteMap.png": {
                 tile: 32,
                 tileh: 32,
                 map: sprite_map
             },
-            "assets/gfx/cutscenes/intro/intro_animation.png": {
+            "gfx/cutscenes/intro/intro_animation.png": {
                 tile: 960,
                 tileh: 640,
                 map:  {
@@ -51,56 +55,59 @@ var assets = function() {
             }
         },
         "images": [
-            'assets/gfx/bg-intro.png',
-            'assets/gfx/bg-world1.png',
-            'assets/gfx/bg-world2.png',
-            'assets/gfx/bg-world3.png',
-            'assets/gfx/bg-world4.png',
-            'assets/gfx/bg-world5.png',
-            'assets/gfx/cutscenes/intro/Background.png',
-            'assets/gfx/cutscenes/intro2/bg-beach_intro.png',
-            'assets/gfx/cutscenes/intro2/animation.gif',
-            'assets/gfx/cutscenes/transitions/w1-intro.gif',
-            'assets/gfx/cutscenes/transitions/w2-intro.gif',
-            'assets/gfx/cutscenes/transitions/w3-intro.gif',
-            'assets/gfx/cutscenes/transitions/w4-intro.gif',
-            'assets/gfx/cutscenes/transitions/w5-intro.gif',
-            'assets/gfx/endscreen.png',
-            'assets/gfx/credits.gif',
+            'gfx/bg-intro.png',
+            'gfx/bg-world1.png',
+            'gfx/bg-world2.png',
+            'gfx/bg-world3.png',
+            'gfx/bg-world4.png',
+            'gfx/bg-world5.png',
+            'gfx/cutscenes/intro/Background.png',
+            'gfx/cutscenes/intro2/bg-beach_intro.png',
+            'gfx/cutscenes/intro2/animation.gif',
+            'gfx/cutscenes/transitions/w1-intro.gif',
+            'gfx/cutscenes/transitions/w2-intro.gif',
+            'gfx/cutscenes/transitions/w3-intro.gif',
+            'gfx/cutscenes/transitions/w4-intro.gif',
+            'gfx/cutscenes/transitions/w5-intro.gif',
+            'gfx/endscreen.png',
+            'gfx/credits.gif',
         ],
         "audio": {
             // Background music
-            'bg-intro': ['assets/music/bg-intro.mp3'],
-            'bg-world1': ['assets/music/bg-world1.mp3'],
-            'bg-world2': ['assets/music/bg-world2.mp3'],
-            'bg-world3': ['assets/music/bg-world3.mp3'],
-            'bg-world4': ['assets/music/bg-world4.mp3'],
-            'bg-world5': ['assets/music/bg-world5.mp3'],
+            'bg-intro': ['music/bg-intro.mp3'],
+            'bg-world1': ['music/bg-world1.mp3'],
+            'bg-world2': ['music/bg-world2.mp3'],
+            'bg-world3': ['music/bg-world3.mp3'],
+            'bg-world4': ['music/bg-world4.mp3'],
+            'bg-world5': ['music/bg-world5.mp3'],
             // SFX - believers
-            "Male-trap": ["assets/sound_fx/stab_male.mp3"],
-            "Female-trap": ["assets/sound_fx/stab_female.mp3"],
-            "Male-lava": ["assets/sound_fx/true_believer_ascends_to_hevan.mp3"],
-            "Female-lava": ["assets/sound_fx/female_true_believer_ascends_to_hevan.mp3"],
-            "Male-converted": ["assets/sound_fx/converted_male.mp3"],
-            "Female-converted": ["assets/sound_fx/converted_female.mp3"],
+            "Male-trap": ["sound_fx/stab_male.mp3"],
+            "Female-trap": ["sound_fx/stab_female.mp3"],
+            "Male-lava": ["sound_fx/true_believer_ascends_to_hevan.mp3"],
+            "Female-lava": ["sound_fx/female_true_believer_ascends_to_hevan.mp3"],
+            "Male-converted": ["sound_fx/converted_male.mp3"],
+            "Female-converted": ["sound_fx/converted_female.mp3"],
             // SFX - prophet
+            "Prophet-trap": ["sound_fx/stab_prophet.mp3"],
             "Prophet-lava": ["assets/sound_fx/prophet_fired.mp3"],
             "lightning": ["assets/sound_fx/lightning.mp3"],
+            "summon": ["sound_fx/summon.mp3"],
+            "Prophet-trap": ["sound_fx/stab_prophet.mp3"],
             // SFX - level
-            "Win-signal": ["assets/sound_fx/win_signal.mp3"],
-            "lava-freeze": ["assets/sound_fx/lava_freeze.mp3"],
-            "lava-unfreeze": ["assets/sound_fx/lava_unfreeze.mp3"],
-            "door": ["assets/sound_fx/door.mp3"],
-            "item-picked-up": ["assets/sound_fx/item_picked_up.mp3"],
+            "Win-signal": ["sound_fx/win_signal.mp3"],
+            "lava-freeze": ["sound_fx/lava_freeze.mp3"],
+            "lava-unfreeze": ["sound_fx/lava_unfreeze.mp3"],
+            "door": ["sound_fx/door.mp3"],
+            "item-picked-up": ["sound_fx/item_picked_up.mp3"],
             // Cutscenes
-            'intro-cutscene-sound': ['assets/voices/opening.mp3'],
-            'w1-intro': ['assets/voices/world1.mp3'],
-            'w2-intro': ['assets/voices/world2.mp3'],
-            'w3-intro': ['assets/voices/world3.mp3'],
-            'w4-intro': ['assets/voices/world4.mp3'],
-            'w5-intro': ['assets/voices/world5.mp3'],
-            'ending'  : ['assets/voices/end.mp3'],
-            'epic_win': ['assets/music/epic_win.mp3']
+            'intro-cutscene-sound': ['voices/opening.mp3'],
+            'w1-intro': ['voices/world1.mp3'],
+            'w2-intro': ['voices/world2.mp3'],
+            'w3-intro': ['voices/world3.mp3'],
+            'w4-intro': ['voices/world4.mp3'],
+            'w5-intro': ['voices/world5.mp3'],
+            'ending'  : ['voices/end.mp3'],
+            'epic_win': ['music/epic_win.mp3']
         }
     };
 }();
@@ -123,6 +130,7 @@ var consts = {
     wait_for_death: 2000,
     wait_for_skip: 500,
     prophet_text_timeout: 5000,
+    believer_counter_timeout: 2500,
     title_text_timeout: 5000,
     ice_lava_flood_fill_timeout: 250,
     inventory_gap_y: 10,
@@ -269,7 +277,7 @@ function initScenes()
         {
             Crafty.e('2D, DOM, Image')
                 .attr({x: 0, y: 0})
-                .image('assets/gfx/bg-world' + world_id + '.png');
+                .image(assets_url + 'gfx/bg-world' + world_id + '.png');
         }
 
         function addFloor(tiles_x, tiles_y)
@@ -472,7 +480,7 @@ function initScenes()
                 Crafty.audio.stop(prev_music_id);
             }
 
-            Crafty.audio.play('bg-world' + world_id, -1, 0.5);
+            Crafty.audio.play('bg-world' + world_id, -1, 0.4);
             game_state.playing_music_for_world = world_id;
         }
 
@@ -498,6 +506,7 @@ function initScenes()
                 var prophet = addProphet(objects[i].x, objects[i].y);
                 Crafty.viewport.follow(prophet, 0, 0);
                 Crafty.e('ProphetText');
+                Crafty.e('BelieverCounter');
                 addLevelTitle(objects[i].x, objects[i].y,
                     'Level ' + stage.name, stage.title);
             }
@@ -602,7 +611,7 @@ function initScenes()
         game_state.scene_type = 'intro';
 
         Crafty.e('2D, DOM, Image')
-              .image('assets/gfx/bg-intro.png')
+              .image(assets_url + 'gfx/bg-intro.png')
               .addComponent('FullScreenImage');
         Crafty.audio.stop();
         Crafty.audio.play('bg-intro', -1, 0.75);
@@ -615,7 +624,7 @@ function initScenes()
         }
 
         Crafty.e('2D, DOM, Image')
-            .image('assets/gfx/cutscenes/intro/Background.png')
+            .image(assets_url + 'gfx/cutscenes/intro/Background.png')
             .addComponent('FullScreenImage');
 
 
@@ -636,8 +645,8 @@ function initScenes()
     });
 
     defineCutscene('intro_cutscene2', 'w0-intro', 61200, {
-        'background': 'assets/gfx/cutscenes/intro2/bg-beach_intro.png',
-        'gif': 'assets/gfx/cutscenes/intro2/animation.gif',
+        'background': assets_url + 'gfx/cutscenes/intro2/bg-beach_intro.png',
+        'gif': assets_url + 'gfx/cutscenes/intro2/animation.gif',
         'audio': 'intro-cutscene-sound',
     });
 
@@ -645,18 +654,18 @@ function initScenes()
 
     for(var i=0; i<worlds.length; i++) {
         defineCutscene('w' + i + '-intro', 'level', (intro_sounds_secs[i]-1)*1000, {
-            'gif': 'assets/gfx/cutscenes/transitions/w'+(i+1)+'-intro.gif',
+            'gif': assets_url + 'gfx/cutscenes/transitions/w'+(i+1)+'-intro.gif',
             'audio': 'w' + (i+1) + '-intro'
         })
     }
 
     defineCutscene('ending', 'ending2', 4500, {
-        'background': 'assets/gfx/endscreen.png',
+        'background': assets_url + 'gfx/endscreen.png',
         'audio': 'ending',
     });
 
     defineCutscene('ending2', 'ending2', 1000000, {
-        'gif': 'assets/gfx/credits.gif',
+        'gif': assets_url + 'gfx/credits.gif',
         'audio': 'epic_win',
     });
 
@@ -669,6 +678,7 @@ function initScenes()
             .textAlign('center')
             .attr({x: 0, y: game_state.crafty_height / 3, w: game_state.crafty_width});
 
+        Crafty.paths({audio: assets_url, images: assets_url});
         Crafty.load(assets, function() {
             initComponents();
             createNonLevelEntities();
@@ -1096,14 +1106,19 @@ function initComponents()
 
     Crafty.c('FloatingOverProphet', {
         init: function() {
+            this.yoffset = 0;
             this.bind('UpdateFrame', this.positionOverProphet);
+        },
+
+        setYOffset: function(yoff) {
+            this.yoffset = yoff;
         },
 
         positionOverProphet: function() {
             var prophet = Crafty('Prophet');
             this.attr({
                 x: prophet.x + (prophet.w - this.w) / 2,
-                y: prophet.y - this.h - consts.tile_height / 2
+                y: prophet.y - this.h - consts.tile_height / 2 + this.yoffset
             });
         }
     });
@@ -1147,6 +1162,33 @@ function initComponents()
                     prophet_text.text('');
                 }
             }, consts.prophet_text_timeout);
+        }
+    });
+
+    Crafty.c('BelieverCounter', {
+        init: function() {
+            this._size = '10px';
+            this._guess_size = 15;
+
+            this.addComponent('AmigaText, FloatingOverProphet');
+            this.setYOffset(14);
+            this.css('font-size', '8px');
+            this.textAlign('center');
+            this.z = zorders.prophet_text;
+        },
+
+        refreshText: function(text) {
+            // Guess the width and height... Too much width is fine since we center it.
+            this.attr({w: this._guess_size * text.length, h: this._guess_size});
+            this.text(text);
+            this.positionOverProphet();
+
+            var believer_counter = this;
+            setTimeout(function() {
+                if (believer_counter.text() == text) {
+                    believer_counter.text('');
+                }
+            }, consts.believer_counter_timeout);
         }
     });
 
@@ -1634,6 +1676,7 @@ function initComponents()
             this.direction = 'right';
             this.new_direction_workaround = false;
             this.disable_movement_animations = false;
+            this.stand_loops = -1;
 
             this.bind('NewDirection', this.onNewDirection);
         },
@@ -1670,7 +1713,7 @@ function initComponents()
             if (direction.y == 0) {
                 // On the ground
                 if (direction.x == 0) {
-                    this.dir_animate('stand', -1);
+                    this.dir_animate('stand', this.stand_loops);
                 }
                 else {
                     this.dir_animate('walk', -1);
@@ -1748,6 +1791,9 @@ function initComponents()
         onDying: function() {
             var prophet = Crafty('Prophet');
             prophet.num_dying_believers++;
+            if (this.has('TrueBeliever')) {
+                updateBelieverCounter();
+            }
             var win_lose = checkWinLoseConditions(true);
 
             if (win_lose == 'win') {
@@ -1864,6 +1910,9 @@ function initComponents()
                     var trap = hitData[trap_idx].obj;
                     trap.activate();
                 }
+                if (this.typeStr) {
+                    Crafty.audio.play(this.typeStr + '-trap', 1);
+                }
                 this.die('dying_in_trap', true, true);
             }
         },
@@ -1947,7 +1996,7 @@ function initComponents()
             if (data.id == this.converting_anim) {
                 this.converting = false;
                 this.disable_movement_animations = false;
-                this.dir_animate('stand', -1);
+                this.dir_animate('stand', this.stand_loops);
                 this.trigger('ConversionEnded');
             }
         }
@@ -1956,6 +2005,7 @@ function initComponents()
     Crafty.c('Prophet', {
         init: function() {
             this.addComponent('Character, HasConvertingPowers, prophet_stand_right, Multiway');
+            this.stand_loops = 3
             this.setGender('p');
             addLeftRightReels(this, 'stand', 0, 0, 9);
             addLeftRightReels(this, 'walk', 0, 10, 16);
@@ -1968,7 +2018,7 @@ function initComponents()
             addLeftRightReels(this, 'casting', 4, 3, 10);
             addLeftRightReels(this, 'start_waiting', 4, 11, 16);
             addLeftRightReels(this, 'waiting', 4, 17, 33);
-            this.dir_animate('stand', -1);
+            this.dir_animate('stand', this.stand_loops);
             this.setupMovement();
 
             this.z = zorders.prophet;
@@ -1982,6 +2032,7 @@ function initComponents()
             this.bind('CheckLanding', this.onCheckLanding);
             this.onHit('Enemy', this.onHitEnemy);
             this.bind('AnimationEnd', this.onAnimationDone);
+            this.bind('EnterFrame', this.beforeEnterFrame);
 
             this.bind('Move', this.onMove);
 
@@ -2000,6 +2051,10 @@ function initComponents()
         onAnimationDone: function(data) {
             if (data.id == 'start_casting_' + this.direction) {
                 this.dir_animate('casting', -1);
+            } else if (data.id == 'stand_' + this.direction) {
+                this.dir_animate('start_waiting', 1);
+            } else if (data.id == 'start_waiting_' + this.direction) {
+                this.dir_animate('waiting', -1);
             }
         },
 
@@ -2010,13 +2065,15 @@ function initComponents()
             this.disableControl();
             this.disable_movement_animations = true;
             this.dir_animate('start_casting', 1);
+            Crafty.audio.play('summon', -1);
         },
 
         stop_casting: function() {
             if (!this.is_casting) return;
             this.enableControl();
             this.disable_movement_animations = false;
-            this.dir_animate('stand', -1);
+            this.dir_animate('stand', this.stand_loops);
+            Crafty.audio.stop('summon');
             this.is_casting = false;
         },
 
@@ -2171,7 +2228,7 @@ function initComponents()
                 this.y -= this.dy;
                 this.y = Math.floor(this.y) - 1;
                 this.vy = 0;
-            }else if (this.vy > consts.prophet_jump_speed) {
+            }else if (this.vy == 0) {
                 this.y = Math.floor(this.y) - 1;
             }
         },
@@ -2222,7 +2279,7 @@ function initComponents()
 			restartLevel();
         },
 
-        onHitEnemy: function(hitDatas) {
+        onHitEnemy: function(hitDatas, isFirstTouch) {
             var enemy = hitDatas[0].obj;
             if (this.x < enemy.x) {
                 enemy.direction = 'left';
@@ -2232,6 +2289,9 @@ function initComponents()
             }
 
             enemy.attack();
+            if (isFirstTouch) {
+                Crafty.audio.play('Prophet-trap', 1);
+            }
             this.die('dying_in_trap', true, true);
         }
     });
@@ -2335,10 +2395,11 @@ function initComponents()
             this.nextCharacter = null;
             this.prevCharacter = null;
 
+            updateBelieverCounter();
             checkStuckConditions();
         },
 
-        onHitEnemy: function(hitDatas) {
+        onHitEnemy: function(hitDatas, onFirstTouch) {
             var enemy = hitDatas[0].obj;
             if (this.x < enemy.x) {
                 enemy.direction = 'left';
@@ -2348,6 +2409,9 @@ function initComponents()
             }
 
             enemy.die('dying', false, true);
+            if (onFirstTouch) {
+                Crafty.audio.play('Male-trap', 1);
+            }
             this.startConvertingAnimation();
         },
 
@@ -2399,7 +2463,6 @@ function initComponents()
 
             return true;
         },
-    });
 
     Crafty.c('TrueBeliever1', {
         init: function() {
@@ -2564,6 +2627,15 @@ function checkWinLoseConditions(allow_dying_believers)
     return null;
 }
 
+function updateBelieverCounter()
+{
+    var prophet = Crafty('Prophet');
+    var trueBelievers = Crafty('TrueBeliever');
+    var living_believers = trueBelievers.length - prophet.num_dying_believers;
+
+    Crafty('BelieverCounter').refreshText('' + living_believers);
+}
+
 function checkStuckConditions()
 {
     var prophet = Crafty('Prophet');
@@ -2572,6 +2644,7 @@ function checkStuckConditions()
     var counter = Crafty('Counter');
     var living_believers = trueBelievers.length - prophet.num_dying_believers;
     var num_unbelievers = unbelievers.length;
+
 
     // Remaining number of living followers + unbelievers is less than remaining in the counter
     if (living_believers + num_unbelievers < counter.total - counter.count) {

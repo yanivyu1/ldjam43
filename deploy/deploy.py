@@ -5,6 +5,8 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TARGET = os.path.join(BASE, 'deploy', 'stuff')
 UGLIFY_CMDLINE = f"uglifyjs {os.path.join(BASE, 'game.js')} -c -m -o {os.path.join(TARGET, 'game.min.js')}"
 
+POST_JAM_VERSION = True
+
 
 def is_ignored(item):
     return item.lower().endswith('.txt')
@@ -43,6 +45,10 @@ def deploy():
 
     # game.min.js
     os.system(UGLIFY_CMDLINE)
+
+    # Post-jam, the game.html files are on yonispants.com and not on S3
+    if POST_JAM_VERSION:
+        return
 
     # game.min.html
     game_html = open(os.path.join(BASE, 'game.html'), 'rb').read()

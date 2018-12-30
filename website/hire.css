@@ -53,8 +53,8 @@ body {
 
 @font-face {
     font-family: Amiga4ever;
-    src: url(assets/amiga4ever_pro2.ttf);
-    src: url(assets/amiga4ever_pro2.ttf) format('truetype');
+    src: url(amiga4ever_pro2.ttf);
+    src: url(amiga4ever_pro2.ttf) format('truetype');
 }
 
 .section {
@@ -71,6 +71,14 @@ h1 {
     text-align: center;
     margin-bottom: 20px;
     letter-spacing: 5px;
+}
+
+h2 {
+    font-family: Amiga4ever, 'Lucida Sans', sans-serif;
+    font-size: 20px;
+    text-align: left;
+    margin-bottom: 14px;
+    margin-top: 14px;
 }
 
 .quote {
@@ -144,6 +152,11 @@ p {
     font-size: 125%;
 }
 
+.mid-bold {
+    font-weight: bold;
+    font-size: 200%;
+}
+
 .bolder {
     font-weight: bolder;
     font-size: 300%;
@@ -151,32 +164,6 @@ p {
 
 em {
     font-style: italic;
-}
-
-table.controls {
-    width: 400px;
-}
-
-table.download {
-    margin: auto;
-}
-
-/*th {
-    background-color: #b7f42f;
-    border: 1px solid #888;
-    padding: 2px 10px;
-}*/
-
-tr td {
-    background-color:#EAF2D3;
-    border: 1px solid #888;
-    padding: 2px 10px;
-}
-
-tr.alt td {
-    background-color: #ced6b7;
-    border: 1px solid #888;
-    padding: 2px 10px;
 }
 
 .centered {
@@ -189,28 +176,10 @@ img {
 
 a {
     color: #3f5593;
+    text-decoration: none;
 }
 a:hover {
     color: #6183e2;
-}
-
-pre {
-    border: 1px solid black;
-    margin: 5px;
-    padding: 10px;
-}
-
-pre.changelog {
-    background-color: #d8d8d8;
-    font-family: 'Courier New', serif;
-    font-size: 70%;
-}
-
-pre.song {
-    background-color: #d7d8ac;
-    width: 280px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 b {
@@ -219,4 +188,32 @@ b {
 
 ol, ul {
     margin: 10px 60px;
+}
+
+table.play-table {
+    margin: auto;
+    background-color: #eaf2d3;
+    padding: 0 30px;
+}
+
+table.play-table td {
+    padding: 5px 10px;
+}
+
+table.play-table tr {
+    border: 1px solid #888;
+}
+
+table.play-table td:first-child {
+    font-size: 20px;
+    padding-right: 80px;
+    padding-left: 50px;
+}
+
+table.play-table tr:first-child td:first-child {
+    font-weight: bold;
+}
+
+table.play-table td:last-child {
+    padding-right: 50px;
 }
