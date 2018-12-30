@@ -270,6 +270,12 @@ function defineCutscene(scene_name, next_scene, msecs, properties) {
     });
 }
 
+function removeComponentIfHas(obj, component) {
+    if (obj.has(component)) {
+        obj.remove(component);
+    }
+}
+
 function initScenes()
 {
     Crafty.defineScene('level', function() {
@@ -618,6 +624,7 @@ function initScenes()
     });
 
     Crafty.defineScene('intro_cutscene1', function() {
+        Crafty.audio.stop('bg-intro');
         game_state.scene_type = 'cutscene';
         game_state.end_cutscene = function () {
             Crafty.enterScene('intro_cutscene2');
@@ -1742,7 +1749,9 @@ function initComponents()
             if (this.dying) {
                 return;
             }
-            this.disableControl();
+            if (this.has('Controllable')) {
+                this.disableControl();
+            }
             this.dying = true;
             this.disable_movement_animations = true;
             this.vx = 0;
@@ -1750,15 +1759,17 @@ function initComponents()
             if (this.has('TrueBeliever')) {
                 this.removeThisFromCharacterQueue();
             }
-            this.removeComponent('Multiway'); // If we could walk, don't walk anymore
+            removeComponentIfHas(this, 'Multiway');
             if (allow_falling) {
                 // work around bug(?) in Crafty - vy is reset even though we're falling
                 this.vy = prev_vy;
             }
             else {
-                this.removeComponent('Jumper');   // Don't jump/fall anymore
-                this.removeComponent('Gravity');  // Don't fall anymore
-                this.resetMotion();
+                removeComponentIfHas(this, 'Jumper'); // Don't jump/fall anymore
+                removeComponentIfHas(this, 'Gravity'); // Don't fall anymore
+                if (this.has('Motion')) {
+                    this.resetMotion();
+                }
             }
 
             if (!skip_counter) {
@@ -1790,8 +1801,8 @@ function initComponents()
 
         onDying: function() {
             var prophet = Crafty('Prophet');
-            prophet.num_dying_believers++;
             if (this.has('TrueBeliever')) {
+                prophet.num_dying_believers++;
                 updateBelieverCounter();
             }
             var win_lose = checkWinLoseConditions(true);
@@ -2381,7 +2392,7 @@ function initComponents()
     });
 
     Crafty.c('TrueBeliever', {
-        init: function() {
+        init: function () {
             this.addComponent('Character, HasConvertingPowers, NewDirectionWorkaround, true_believer_stand_right, ' +
                 'MortalCountsForWin');
             this.z = zorders.believers;
@@ -2399,12 +2410,11 @@ function initComponents()
             checkStuckConditions();
         },
 
-        onHitEnemy: function(hitDatas, onFirstTouch) {
+        onHitEnemy: function (hitDatas, onFirstTouch) {
             var enemy = hitDatas[0].obj;
             if (this.x < enemy.x) {
                 enemy.direction = 'left';
-            }
-            else {
+            } else {
                 enemy.direction = 'right';
             }
 
@@ -2415,7 +2425,7 @@ function initComponents()
             this.startConvertingAnimation();
         },
 
-        beforeEnterFrame: function(data) {
+        beforeEnterFrame: function (data) {
             // Handle falls
             if (this.vy != 0) {
                 // Don't move on x axis while falling
@@ -2432,9 +2442,9 @@ function initComponents()
             var prev_x = this.x;
 
             actual_gap = consts.follow_x_gap_px + consts.tile_width;
-            if (Crafty.s('Keyboard').isKeyDown('DOWN_ARROW')  && Crafty('Prophet').vy == 0) {
+            if (Crafty.s('Keyboard').isKeyDown('DOWN_ARROW') && Crafty('Prophet').vy == 0) {
                 actual_gap = actual_speed;
-                if (actual_gap > 0){
+                if (actual_gap > 0) {
                     Crafty('Prophet').start_casting();
                 }
             }
@@ -2454,7 +2464,7 @@ function initComponents()
             }
         },
 
-        checkIfStillWallBlocked: function(prophetX) {
+        checkIfStillWallBlocked: function (prophetX) {
             // Basically, check if the prophet is nearby to "reactivate" believer
             if (Math.abs(prophetX - this.x) <= (consts.tile_width / 2)) {
                 this.blocked_by_wall = false;
@@ -2463,6 +2473,7 @@ function initComponents()
 
             return true;
         },
+    });
 
     Crafty.c('TrueBeliever1', {
         init: function() {
