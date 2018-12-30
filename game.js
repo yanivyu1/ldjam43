@@ -334,7 +334,8 @@ function initScenes()
 
         function addGate(tiles_x, tiles_y, gate_type)
         {
-            var obj = addEntity('Gate', tiles_x, tiles_y).setGateType(gate_type);
+            var obj = addEntity('Gate', tiles_x, tiles_y);
+            obj.setGateType(gate_type);
             LightningManager.add_object(tiles_x, tiles_y, 'Gate', obj);
             return obj;
         }
