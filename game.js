@@ -1499,7 +1499,7 @@ function initComponents()
         init: function() {
             this.addComponent('2D, DOM, SpriteAnimation, Gravity, Jumper, Collision, DirectionalAnimation');
 
-            this.offsetBoundary(-5, -5, -5, 0);
+            this.offsetBoundary(-5, 0, -5, 0);
             this.dying = false;
             this.death_anim = null;
 
@@ -1863,15 +1863,27 @@ function initComponents()
 
         onHitMoveBlocking: function(hitData) {
             // Black magic.
-            this.x -= this.dx;
-            this.x = Math.round(this.x);
-            Crafty.log(this.vy)
-            if (this.hit('move_blocking_for_' + this.gender) && this.vy < 0) { // Still touching block, and jumping
-                this.y -= this.dy;
-                this.y = Math.floor(this.y) - 1;
-                this.vy = 0;
-            }else if (this.vy > consts.prophet_jump_speed) {
-                this.y = Math.floor(this.y) - 1;
+            if(this.hit('move_blocking_for_' + this.gender)){
+                if(this.hit('OuterWall')){
+                  if(hitData[0].obj.x == 0){
+                      this.x += (Math.abs(this.dx) + 0.5);
+                      this.x = Math.round(this.x);
+                  } else {
+                    this.x -= (Math.abs(this.dx) + 0.5);
+                    this.x = Math.round(this.x);
+                  }
+                }else if(hitData[0].obj.x >= this.x){
+                    this.x -= (Math.abs(this.dx) + 0.5);
+                    this.x = Math.round(this.x);
+                } else if(hitData[0].obj.x <= this.x){
+                    this.x += (Math.abs(this.dx));
+                    this.x = Math.round(this.x);
+                }
+                if(Math.abs(hitData[0].obj.y - this.y) > 27 && Math.abs(hitData[0].obj.x - this.x) < 27 && this.vy != 0){
+                    this.vy = 0;
+                    this.y -= this.dy;
+                    this.y = Math.round(this.y) + 1;
+                }
             }
         },
 
@@ -1890,6 +1902,7 @@ function initComponents()
             // Stop being able to walk and jump
             this.removeComponent('Multiway');
             this.removeComponent('Jumper');
+            this.disableControl();
         },
 
         onConversionEnded: function() {
@@ -1897,28 +1910,29 @@ function initComponents()
             this.addComponent('Multiway');
             this.addComponent('Jumper');
             this.setupMovement();
+            this.enableControl();
         },
 
         onProphetDying: function() {
-			if (worlds[game_state.cur_world].stages[game_state.cur_level].name == '5-10') {
-				return;
-			} else {
-				Crafty('ProphetText').refreshText(this.winning ? texts.oops : texts.lose);
-			}
+      			if (worlds[game_state.cur_world].stages[game_state.cur_level].name == '5-10') {
+      				return;
+      			} else {
+      				Crafty('ProphetText').refreshText(this.winning ? texts.oops : texts.lose);
+      			}
         },
 
         onProphetDied: function() {
-			if (worlds[game_state.cur_world].stages[game_state.cur_level].name == '5-10') {
-				var counter = Crafty('Counter');
-				if (counter.count == counter.total) {
-					switchToNextWorld();
-					return;
-				} else {
-					switchToNextLevel();
-					return;
-				}
-			}
-			restartLevel();
+      			if (worlds[game_state.cur_world].stages[game_state.cur_level].name == '5-10') {
+      				var counter = Crafty('Counter');
+      				if (counter.count == counter.total) {
+      					switchToNextWorld();
+      					return;
+      				} else {
+      					switchToNextLevel();
+      					return;
+      				}
+      			}
+      			restartLevel();
         },
 
         onHitEnemy: function(hitDatas) {
