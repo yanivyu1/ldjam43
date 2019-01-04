@@ -1879,7 +1879,7 @@ function initComponents()
                     this.x += (Math.abs(this.dx));
                     this.x = Math.round(this.x);
                 }
-                if(Math.abs(hitData[0].obj.y - this.y) > 27 && Math.abs(hitData[0].obj.x - this.x) < 27 && this.vy != 0){
+                if(Math.abs(hitData[0].obj.y - this.y) > 27 && Math.abs(hitData[0].obj.x - this.x) < 27 || this.vy != 0){
                     this.vy = 0;
                     this.y -= this.dy;
                     this.y = Math.round(this.y) + 1;
