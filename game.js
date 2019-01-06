@@ -564,10 +564,11 @@ function initScenes()
               .image('assets/gfx/bg-intro.png')
               .addComponent('FullScreenImage');
         Crafty.audio.stop();
-        Crafty.audio.play('bg-intro', 0.75);
+        Crafty.audio.play('bg-intro',-1, 0.75);
     });
 
     Crafty.defineScene('intro_cutscene1', function() {
+        Crafty.audio.stop();
         game_state.scene_type = 'cutscene';
         game_state.end_cutscene = function () {
             Crafty.enterScene('intro_cutscene2');
@@ -1505,7 +1506,7 @@ function initComponents()
 
             this.onHit('Lava', this.onTouchLava);
             this.onHit('Trap', this.onTouchTrap);
-
+            this.onHit('TrueBeliever', this.onHitTrueBeliever);
             var self = this;
 
             this.onHit('IceShrine', function() { LavaAndIceManager.iceShrineTouched(self); });
@@ -1528,7 +1529,6 @@ function initComponents()
             Crafty('Prophet').addCollectible(itemType);
             hitDatas[0].obj.destroy();
         },
-
         setGender: function(gender) {
             // gender = "m" or "w" or "p" for prophet
             this.gender = gender;
@@ -2043,7 +2043,7 @@ function initComponents()
             this.jumper(consts.believer_jump_speed, []);
             this.bind('Dying', this.onTrueBelieverDying);
             this.bind('Died', this.onTrueBelieverDied);
-
+            this.onHit('TrueBeliever', this.onHitTrueBeliever);
             this.onHit('Enemy', this.onHitEnemy);
 
             this.bind('EnterFrame', this.beforeEnterFrame);
@@ -2053,7 +2053,6 @@ function initComponents()
 
             checkStuckConditions();
         },
-
         onHitEnemy: function(hitDatas) {
             var enemy = hitDatas[0].obj;
             if (this.x < enemy.x) {
